@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>QueueTech Rider</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0d1420;
+  --ink-soft:#1b2431;
+  --line:rgba(255,255,255,.10);
+  --paper:#f4f6f8;
+  --paper-line:#e2e6ea;
+  --on:#22c55e;
+  --on-soft:rgba(34,197,94,.16);
+  --off:#64748b;
+  --warn:#f5a524;
+  --danger:#ef4444;
+  --brand:#2f6fed;
+  --brand-deep:#1d4ed8;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;margin:0;overscroll-behavior:none;}
+body{
+  font-family:'Prompt',system-ui,sans-serif;
+  background:var(--ink);
+  color:#101826;
+  -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit;}
+#app{position:fixed;inset:0;overflow:hidden;}
+
+/* ---------- Screens without the map (login / pending) ---------- */
+.screen-center{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  padding:28px 20px calc(28px + var(--safe-bottom));
+  background:radial-gradient(circle at 20% -10%, #16223a 0%, var(--ink) 55%);
+}
+.auth-card{width:100%;max-width:360px;color:#fff;}
+.auth-mark{display:flex;align-items:center;gap:10px;margin-bottom:26px;}
+.auth-mark .dot{width:11px;height:11px;border-radius:50%;background:var(--on);box-shadow:0 0 0 5px var(--on-soft);}
+.auth-mark b{font-size:15px;letter-spacing:.2px;color:#dbe4f5;}
+.auth-card h1{font-size:26px;line-height:1.28;margin:0 0 6px;font-weight:700;}
+.auth-card p.sub{margin:0 0 26px;color:#9fb0c9;font-size:14px;line-height:1.6;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:12.5px;color:#9fb0c9;margin-bottom:6px;}
+.field input{
+  width:100%;padding:13px 14px;border-radius:13px;border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.05);color:#fff;font-size:16px;outline:none;
+}
+.field input::placeholder{color:#6d7c93;}
+.field input:focus{border-color:var(--brand);background:rgba(47,111,237,.10);}
+.btn{
+  appearance:none;border:none;cursor:pointer;border-radius:14px;font-weight:700;
+  font-size:15px;padding:15px 18px;display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-brand{background:linear-gradient(135deg,var(--brand),var(--brand-deep));color:#fff;width:100%;margin-top:6px;box-shadow:0 10px 26px rgba(29,78,216,.35);}
+.btn-brand:disabled{opacity:.55;box-shadow:none;}
+.auth-err{margin-top:14px;font-size:13px;color:#fca5a5;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.28);padding:10px 12px;border-radius:10px;line-height:1.5;display:none;}
+.auth-err.show{display:block;}
+.auth-foot{margin-top:22px;text-align:center;font-size:12.5px;color:#5f6f88;}
+
+.pending-card{width:100%;max-width:360px;text-align:center;color:#fff;}
+.pending-icon{font-size:44px;margin-bottom:14px;}
+.pending-card h1{font-size:21px;margin:0 0 8px;}
+.pending-card p{color:#9fb0c9;font-size:14px;line-height:1.7;margin:0 0 22px;}
+.pending-pill{display:inline-block;padding:7px 14px;border-radius:999px;background:rgba(245,165,36,.16);border:1px solid rgba(245,165,36,.4);color:#f5c778;font-size:13px;font-weight:600;margin-bottom:20px;}
+
+/* ---------- Main driving screen ---------- */
+.stage{position:fixed;inset:0;display:none;}
+.stage.show{display:block;}
+#map{position:absolute;inset:0;}
+
+.topbar{
+  position:absolute;top:0;left:0;right:0;z-index:500;
+  padding:calc(14px + var(--safe-top)) 14px 34px;
+  background:linear-gradient(180deg, rgba(10,15,24,.82) 0%, rgba(10,15,24,.35) 65%, transparent 100%);
+  display:flex;align-items:flex-start;justify-content:space-between;gap:10px;pointer-events:none;
+}
+.topbar > *{pointer-events:auto;}
+.who{display:flex;flex-direction:column;gap:3px;color:#fff;}
+.who .name{font-weight:700;font-size:15.5px;}
+.who .plate{font-size:12px;color:#c6d1e3;}
+.status-pill{
+  display:flex;align-items:center;gap:8px;background:rgba(13,20,32,.72);
+  border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:7px 8px 7px 14px;
+  color:#fff;font-size:13px;font-weight:600;backdrop-filter:blur(6px);
+}
+.status-pill .dot{width:9px;height:9px;border-radius:50%;background:var(--off);}
+.status-pill.on .dot{background:var(--on);box-shadow:0 0 0 4px var(--on-soft);}
+.status-switch{
+  width:42px;height:24px;border-radius:14px;background:rgba(255,255,255,.16);position:relative;border:none;cursor:pointer;flex:0 0 auto;
+}
+.status-switch::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#cbd5e1;transition:transform .18s ease, background .18s ease;}
+.status-switch.on{background:var(--on-soft);}
+.status-switch.on::after{transform:translateX(18px);background:var(--on);}
+
+.fab-stack{position:absolute;right:14px;top:calc(96px + var(--safe-top));z-index:500;display:flex;flex-direction:column;gap:10px;}
+.fab{
+  width:44px;height:44px;border-radius:50%;background:#fff;border:none;box-shadow:0 8px 20px rgba(0,0,0,.22);
+  display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;color:#233045;
+}
+.fab:active{transform:scale(.94);}
+
+.sheet{
+  position:absolute;left:0;right:0;bottom:0;z-index:500;
+  background:var(--paper);border-radius:22px 22px 0 0;
+  box-shadow:0 -12px 30px rgba(0,0,0,.22);
+  padding:14px 16px calc(14px + var(--safe-bottom) + 78px);
+  max-height:64vh;overflow-y:auto;
+}
+.sheet-handle{width:38px;height:4px;border-radius:3px;background:#d3d9df;margin:0 auto 12px;}
+.sheet-title{font-size:16px;font-weight:700;color:#101826;margin:0 0 4px;}
+.sheet-sub{font-size:13px;color:#6b7686;margin:0 0 14px;line-height:1.5;}
+
+.go-toggle{
+  width:100%;padding:16px;border-radius:16px;border:none;cursor:pointer;font-weight:700;font-size:16px;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.go-toggle.off{background:var(--ink);color:#fff;}
+.go-toggle.on{background:var(--on-soft);color:#166534;border:1.5px solid rgba(34,197,94,.45);}
+
+.job-row{
+  background:#fff;border:1px solid var(--paper-line);border-radius:16px;padding:13px;margin-bottom:10px;
+  display:flex;flex-direction:column;gap:8px;
+}
+.job-row .top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;}
+.job-row .shop{font-weight:700;font-size:14.5px;color:#101826;}
+.job-row .meta{font-size:12.5px;color:#6b7686;}
+.job-row .fee{font-weight:800;color:var(--brand-deep);font-size:15px;white-space:nowrap;}
+.job-row .accept{
+  align-self:flex-end;background:var(--brand-deep);color:#fff;border:none;border-radius:11px;
+  padding:9px 16px;font-weight:700;font-size:13.5px;cursor:pointer;
+}
+.empty-note{padding:26px 6px;text-align:center;color:#8492a6;font-size:13.5px;line-height:1.7;}
+
+.job-card{background:#fff;border-radius:18px;padding:16px;border:1px solid var(--paper-line);}
+.job-card .oid{font-size:12px;color:#8492a6;margin-bottom:6px;}
+.job-card .stage-label{
+  display:inline-flex;align-items:center;gap:6px;background:#eef2ff;color:#3348c9;
+  font-size:12.5px;font-weight:700;padding:5px 11px;border-radius:999px;margin-bottom:12px;
+}
+.stop{display:flex;gap:10px;margin-bottom:10px;}
+.stop .mk{width:20px;flex:0 0 auto;display:flex;flex-direction:column;align-items:center;padding-top:3px;}
+.stop .mk i{width:9px;height:9px;border-radius:50%;background:var(--brand-deep);display:block;}
+.stop .mk .ln{flex:1;width:2px;background:var(--paper-line);margin-top:4px;min-height:18px;}
+.stop .tx{flex:1;}
+.stop .tx b{display:block;font-size:14px;color:#101826;}
+.stop .tx span{font-size:12.5px;color:#6b7686;}
+.job-actions{display:flex;gap:8px;margin-top:6px;}
+.job-actions a, .job-actions button{
+  flex:1;border-radius:12px;border:1px solid var(--paper-line);background:#fff;color:#233045;
+  padding:11px 8px;font-size:13px;font-weight:600;text-align:center;text-decoration:none;cursor:pointer;
+}
+.job-primary{
+  width:100%;margin-top:12px;padding:15px;border-radius:14px;border:none;background:var(--brand-deep);
+  color:#fff;font-weight:700;font-size:15.5px;cursor:pointer;
+}
+.job-primary.done{background:var(--on);}
+
+.bottomnav{
+  position:absolute;left:0;right:0;bottom:0;z-index:600;background:#fff;border-top:1px solid var(--paper-line);
+  display:flex;padding:8px 6px calc(8px + var(--safe-bottom));
+}
+.bottomnav button{
+  flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:6px 2px;color:#94a1b3;font-size:11px;font-weight:600;cursor:pointer;
+}
+.bottomnav button span.ic{font-size:19px;}
+.bottomnav button.active{color:var(--brand-deep);}
+
+.panel-screen{
+  position:absolute;inset:0;background:var(--paper);z-index:400;overflow-y:auto;
+  padding:calc(18px + var(--safe-top)) 16px calc(96px + var(--safe-bottom));display:none;
+}
+.panel-screen.show{display:block;}
+.panel-head{font-size:19px;font-weight:700;margin:6px 0 16px;color:#101826;}
+.hist-row{background:#fff;border:1px solid var(--paper-line);border-radius:14px;padding:12px 14px;margin-bottom:9px;font-size:13.5px;color:#374151;display:flex;justify-content:space-between;gap:10px;}
+.hist-row b{color:#101826;}
+.profile-card{background:#fff;border:1px solid var(--paper-line);border-radius:18px;padding:18px;margin-bottom:14px;}
+.profile-card .pname{font-size:18px;font-weight:700;color:#101826;}
+.profile-card .prow{display:flex;justify-content:space-between;padding:9px 0;border-top:1px solid var(--paper-line);font-size:13.5px;color:#4b5563;}
+.profile-card .prow:first-of-type{border-top:none;margin-top:10px;}
+.btn-logout{width:100%;background:#fff;border:1.5px solid rgba(239,68,68,.4);color:var(--danger);border-radius:14px;padding:14px;font-weight:700;font-size:14.5px;cursor:pointer;}
+
+.toast{
+  position:fixed;left:50%;bottom:calc(96px + var(--safe-bottom));transform:translate(-50%,14px);
+  background:#101826;color:#fff;padding:11px 18px;border-radius:999px;font-size:13.5px;z-index:900;
+  opacity:0;transition:.25s;max-width:86%;text-align:center;pointer-events:none;
+}
+.toast.show{opacity:1;transform:translate(-50%,0);}
+
+.spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.emoji-pin{font-size:26px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35));}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast" class="toast"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+/* =========================================================================
+   QueueTech Rider — standalone prototype
+   Connects to the same Supabase project as the main QueueTech app.
+   Scope on purpose: login, online/offline, see + accept nearby open jobs,
+   run one active delivery through its status steps, call/navigate, simple
+   job history, profile + logout. Everything else (chat, notifications,
+   documents upload, multi-job queue) is left for a later pass.
+   ========================================================================= */
+const SB = {
+  URL: 'https://pkypiqhlrmzocysgeqew.supabase.co',
+  KEY: 'sb_publishable_Vn2Il4jp-iBtzNsGRNY8Lg_Tpvk2Vre'
+};
+const SESSION_KEY = 'qtr_session_v1';
+const NEARBY_RADIUS_KM = 6;
+const POLL_MS = 7000;
+
+function sbHeaders(token){
+  const h = {apikey:SB.KEY, 'Content-Type':'application/json'};
+  if(token) h.Authorization = 'Bearer '+token;
+  return h;
+}
+async function sbAuth(path, body){
+  const r = await fetch(SB.URL+'/auth/v1/'+path, {method:'POST', headers:sbHeaders(), body:JSON.stringify(body)});
+  const data = await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error(data.error_description || data.msg || data.message || 'AUTH_ERROR');
+  return data;
+}
+async function sbTable(path, options={}){
+  const headers = sbHeaders(options.token);
+  if(options.method && options.method!=='GET') headers.Prefer = 'return=representation';
+  const r = await fetch(SB.URL+'/rest/v1/'+path, {
+    method: options.method||'GET', headers, body: options.body?JSON.stringify(options.body):undefined
+  });
+  const data = await r.json().catch(()=>null);
+  if(!r.ok) throw new Error((data&&data.message) || 'DB_ERROR_'+r.status);
+  return data;
+}
+function authEmailFromPhone(phone){ return String(phone||'').replace(/\D/g,'')+'@auth.queuetech.local'; }
+function jwtExpiryMs(token){
+  try{
+    const part = String(token||'').split('.')[1];
+    const b64 = part.replace(/-/g,'+').replace(/_/g,'/') + '==='.slice((part.length+3)%4);
+    return Number(JSON.parse(atob(b64)).exp||0)*1000;
+  }catch(e){ return 0; }
+}
+function readSession(){ try{ return JSON.parse(localStorage.getItem(SESSION_KEY)||'null'); }catch(e){ return null; } }
+function writeSession(s){ try{ localStorage.setItem(SESSION_KEY, JSON.stringify(s)); }catch(e){} }
+function clearSession(){ try{ localStorage.removeItem(SESSION_KEY); }catch(e){} }
+async function getAccessToken(){
+  const s = readSession(); if(!s) return '';
+  const exp = Number(s.expiresAt||0) || jwtExpiryMs(s.accessToken);
+  if(exp - Date.now() > 60000) return s.accessToken;
+  if(!s.refreshToken) return s.accessToken;
+  try{
+    const r = await fetch(SB.URL+'/auth/v1/token?grant_type=refresh_token', {
+      method:'POST', headers:sbHeaders(), body:JSON.stringify({refresh_token:s.refreshToken})
+    });
+    const data = await r.json().catch(()=>({}));
+    if(!r.ok || !data.access_token) return s.accessToken;
+    const next = {...s, accessToken:data.access_token, refreshToken:data.refresh_token||s.refreshToken, expiresAt:(data.expires_at?data.expires_at*1000:0)};
+    writeSession(next);
+    return next.accessToken;
+  }catch(e){ return s.accessToken; }
+}
+function esc(v){ return String(v??'').replace(/[&<>"']/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch])); }
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast._t); toast._t = setTimeout(()=>t.classList.remove('show'), 2400);
+}
+function haversineKm(lat1,lon1,lat2,lon2){
+  if([lat1,lon1,lat2,lon2].some(v=>!Number.isFinite(Number(v)))) return Infinity;
+  const R=6371, dLat=(lat2-lat1)*Math.PI/180, dLon=(lon2-lon1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+function mapsLink(lat,lng,address){
+  if(Number.isFinite(Number(lat)) && Number.isFinite(Number(lng))) return 'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(lat+','+lng);
+  return address ? 'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(address) : 'https://www.google.com/maps/';
+}
+
+/* order status <-> db column + note tag, matching the main QueueTech app */
+function statusToDb(s){
+  return {ready:'ready', assigned:'assigned', picked_up:'picked_up', delivering:'in_progress', arrived:'in_progress', completed:'completed'}[s] || s;
+}
+function statusFromRow(row){
+  const m = (row.note||'').match(/__QT_ORDER_STATUS__=([^\n]+)/);
+  if(m) return m[1];
+  return {ready:'ready', assigned:'assigned', picked_up:'picked_up', in_progress:'delivering', completed:'completed'}[row.status] || row.status;
+}
+function noteWithTag(row, tag){
+  const body = (row.note||'').replace(/__QT_ORDER_STATUS__=[^\n]+\n?/,'');
+  return ('__QT_ORDER_STATUS__='+tag+'\n'+body).trim();
+}
+const STEP_LABEL = {
+  assigned:'ไปรับสินค้าที่ร้าน', picked_up:'รับสินค้าแล้ว — ไปส่งลูกค้า',
+  delivering:'กำลังจัดส่ง', arrived:'ถึงลูกค้าแล้ว', completed:'ส่งสำเร็จ'
+};
+const STEP_NEXT = { assigned:{to:'picked_up', label:'ถึงร้านแล้ว / รับสินค้า'},
+  picked_up:{to:'delivering', label:'เริ่มจัดส่ง'},
+  delivering:{to:'arrived', label:'ถึงลูกค้าแล้ว'},
+  arrived:{to:'completed', label:'ยืนยันส่งสำเร็จ'} };
+
+/* ---------- app state ---------- */
+const S = {
+  session:null, user:null, riderProfile:null,
+  online:false, pos:null, map:null, riderMarker:null, jobMarkers:[],
+  activeOrder:null, openJobs:[], history:[], activeTab:'home', pollTimer:null
+};
+
+function el(html){ const t=document.createElement('template'); t.innerHTML=html.trim(); return t.content.firstElementChild; }
+
+/* ---------- boot ---------- */
+function boot(){
+  const s = readSession();
+  if(s){ S.session = s; resumeSession(); }
+  else renderLogin();
+}
+async function resumeSession(){
+  try{
+    const token = await getAccessToken();
+    const rows = await sbTable('users?select=*&auth_user_id=eq.'+encodeURIComponent(S.session.authUserId), {token});
+    const u = Array.isArray(rows) ? rows[0] : null;
+    if(!u || u.role!=='rider'){ clearSession(); renderLogin('บัญชีนี้ไม่ใช่บัญชีไรเดอร์'); return; }
+    S.user = u;
+    if(u.status==='suspended'){ renderPending(u,'บัญชีถูกระงับการใช้งาน กรุณาติดต่อผู้ดูแลระบบ'); return; }
+    if(u.status!=='active'){ renderPending(u,'ใบสมัครของคุณอยู่ระหว่างตรวจสอบ'); return; }
+    await loadRiderProfile();
+    renderStage();
+  }catch(e){ console.error(e); clearSession(); renderLogin('เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่'); }
+}
+async function loadRiderProfile(){
+  const token = await getAccessToken();
+  const rows = await sbTable('rider_profiles?select=*&user_id=eq.'+encodeURIComponent(S.user.id), {token});
+  S.riderProfile = Array.isArray(rows) && rows[0] ? rows[0] : null;
+  S.online = !!(S.riderProfile && S.riderProfile.metadata && S.riderProfile.metadata.online);
+}
+
+/* ---------- LOGIN ---------- */
+function renderLogin(err){
+  const app = document.getElementById('app');
+  app.innerHTML = '';
+  app.appendChild(el(`
+    <div class="screen-center">
+      <div class="auth-card">
+        <div class="auth-mark"><span class="dot"></span><b>QUEUETECH RIDER</b></div>
+        <h1>เข้าสู่ระบบไรเดอร์</h1>
+        <p class="sub">ใช้เบอร์โทรและรหัสผ่านบัญชีไรเดอร์ของคุณใน QueueTech</p>
+        <div class="field"><label>เบอร์โทรศัพท์</label><input id="li-phone" inputmode="tel" placeholder="08xxxxxxxx"></div>
+        <div class="field"><label>รหัสผ่าน</label><input id="li-pass" type="password" placeholder="รหัสผ่าน"></div>
+        <button class="btn btn-brand" id="li-btn">เข้าสู่ระบบ</button>
+        <div class="auth-err" id="li-err"></div>
+        <div class="auth-foot">เวอร์ชันทดสอบ • ฟังก์ชันหลักสำหรับไรเดอร์เท่านั้น</div>
+      </div>
+    </div>`));
+  const errBox = document.getElementById('li-err');
+  if(err){ errBox.textContent = err; errBox.classList.add('show'); }
+  document.getElementById('li-btn').onclick = doLogin;
+  document.getElementById('li-pass').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+}
+async function doLogin(){
+  const btn = document.getElementById('li-btn');
+  const errBox = document.getElementById('li-err');
+  const phone = document.getElementById('li-phone').value.trim();
+  const pass = document.getElementById('li-pass').value;
+  errBox.classList.remove('show');
+  if(!phone || !pass){ errBox.textContent='กรุณากรอกเบอร์โทรและรหัสผ่าน'; errBox.classList.add('show'); return; }
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+  try{
+    const email = phone.includes('@') ? phone : authEmailFromPhone(phone);
+    const auth = await sbAuth('token?grant_type=password', {email, password:pass});
+    const rows = await sbTable('users?select=*&auth_user_id=eq.'+encodeURIComponent(auth.user.id), {token:auth.access_token});
+    const u = Array.isArray(rows) ? rows[0] : null;
+    if(!u || u.role!=='rider'){ throw new Error('บัญชีนี้ไม่ใช่บัญชีไรเดอร์'); }
+    S.session = {authUserId:auth.user.id, accessToken:auth.access_token, refreshToken:auth.refresh_token||null, expiresAt:auth.expires_at?auth.expires_at*1000:0};
+    writeSession(S.session);
+    S.user = u;
+    if(u.status==='suspended'){ renderPending(u,'บัญชีถูกระงับการใช้งาน กรุณาติดต่อผู้ดูแลระบบ'); return; }
+    if(u.status!=='active'){ renderPending(u,'ใบสมัครของคุณอยู่ระหว่างตรวจสอบ'); return; }
+    await loadRiderProfile();
+    renderStage();
+  }catch(e){
+    console.error(e);
+    errBox.textContent = /invalid/i.test(e.message) ? 'เบอร์โทรหรือรหัสผ่านไม่ถูกต้อง' : e.message;
+    errBox.classList.add('show');
+  }finally{ btn.disabled=false; btn.textContent='เข้าสู่ระบบ'; }
+}
+
+/* ---------- PENDING ---------- */
+function renderPending(u, msg){
+  const app = document.getElementById('app');
+  app.innerHTML = '';
+  app.appendChild(el(`
+    <div class="screen-center">
+      <div class="pending-card">
+        <div class="pending-icon">⏳</div>
+        <div class="pending-pill">${esc(msg||'รออนุมัติ')}</div>
+        <h1>สวัสดี ${esc(u.name||'ไรเดอร์')}</h1>
+        <p>เมื่อบัญชีของคุณพร้อมใช้งานแล้ว กลับมาเปิดหน้านี้แล้วเข้าสู่ระบบอีกครั้งได้เลย</p>
+        <button class="btn btn-brand" id="pd-logout" style="background:#1b2431;box-shadow:none;">ออกจากระบบ</button>
+      </div>
+    </div>`));
+  document.getElementById('pd-logout').onclick = doLogout;
+}
+function doLogout(){
+  clearSession(); stopPolling();
+  if(S.watchId) navigator.geolocation.clearWatch(S.watchId);
+  Object.assign(S, {session:null,user:null,riderProfile:null,online:false,activeOrder:null,openJobs:[],history:[]});
+  renderLogin();
+}
+
+/* ---------- MAIN STAGE ---------- */
+function renderStage(){
+  const app = document.getElementById('app');
+  app.innerHTML = '';
+  app.appendChild(el(`
+    <div class="stage show" id="stage">
+      <div id="map"></div>
+      <div class="topbar">
+        <div class="who">
+          <div class="name">${esc(S.user.name||'ไรเดอร์')}</div>
+          <div class="plate">🛵 ${esc((S.riderProfile&&S.riderProfile.vehicle_plate)||'ยังไม่ระบุทะเบียน')}</div>
+        </div>
+        <div class="status-pill" id="status-pill">
+          <span class="dot"></span><span id="status-text">ออฟไลน์</span>
+          <button class="status-switch" id="status-switch" aria-label="สลับสถานะออนไลน์"></button>
+        </div>
+      </div>
+      <div class="fab-stack">
+        <button class="fab" id="fab-locate" title="ตำแหน่งของฉัน">📍</button>
+        <button class="fab" id="fab-refresh" title="รีเฟรช">🔄</button>
+      </div>
+      <div class="sheet" id="sheet"></div>
+      <div class="panel-screen" id="panel-jobs"></div>
+      <div class="panel-screen" id="panel-profile"></div>
+      <div class="bottomnav">
+        <button class="tab-btn active" data-tab="home"><span class="ic">🏠</span>หน้าแรก</button>
+        <button class="tab-btn" data-tab="jobs"><span class="ic">📦</span>งานของฉัน</button>
+        <button class="tab-btn" data-tab="profile"><span class="ic">👤</span>โปรไฟล์</button>
+      </div>
+    </div>`));
+
+  document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click', ()=>switchTab(b.dataset.tab)));
+  document.getElementById('status-switch').addEventListener('click', toggleOnline);
+  document.getElementById('fab-locate').addEventListener('click', recenterMap);
+  document.getElementById('fab-refresh').addEventListener('click', ()=>{ toast('กำลังรีเฟรช...'); refreshData(); });
+
+  initMap();
+  updateStatusUI();
+  renderSheet();
+  startGeolocation();
+  refreshData();
+  startPolling();
+}
+
+function switchTab(tab){
+  S.activeTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+  document.getElementById('panel-jobs').classList.toggle('show', tab==='jobs');
+  document.getElementById('panel-profile').classList.toggle('show', tab==='profile');
+  document.getElementById('sheet').style.display = tab==='home' ? '' : 'none';
+  document.getElementById('map').style.display = tab==='home' ? '' : 'none';
+  document.querySelectorAll('.fab-stack .fab').forEach(f=>f.style.display = tab==='home' ? '' : 'none');
+  if(tab==='jobs') renderHistoryPanel();
+  if(tab==='profile') renderProfilePanel();
+}
+
+function initMap(){
+  S.map = L.map('map', {zoomControl:false, attributionControl:false}).setView([13.7563,100.5018], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19}).addTo(S.map);
+}
+function startGeolocation(){
+  if(!navigator.geolocation){ toast('อุปกรณ์นี้ไม่รองรับ GPS'); return; }
+  S.watchId = navigator.geolocation.watchPosition(pos=>{
+    S.pos = {lat:pos.coords.latitude, lng:pos.coords.longitude};
+    placeRiderMarker();
+    if(!S._centeredOnce){ S.map.setView([S.pos.lat,S.pos.lng], 15); S._centeredOnce = true; }
+    if(S.online) pushLocation();
+    if(S.activeTab==='home') renderSheet();
+  }, ()=>toast('ไม่สามารถขอตำแหน่ง GPS ได้'), {enableHighAccuracy:true, maximumAge:5000, timeout:12000});
+}
+function placeRiderMarker(){
+  if(!S.pos) return;
+  const icon = L.divIcon({html:'<div class="emoji-pin">🛵</div>', className:'', iconSize:[30,30], iconAnchor:[15,15]});
+  if(S.riderMarker) S.riderMarker.setLatLng([S.pos.lat,S.pos.lng]);
+  else S.riderMarker = L.marker([S.pos.lat,S.pos.lng], {icon}).addTo(S.map);
+}
+function recenterMap(){
+  if(!S.pos){ toast('ยังไม่ได้ตำแหน่ง GPS'); return; }
+  S.map.setView([S.pos.lat,S.pos.lng], 15);
+}
+
+/* ---------- online toggle ---------- */
+async function toggleOnline(){
+  const next = !S.online;
+  S.online = next;
+  updateStatusUI();
+  try{
+    const token = await getAccessToken();
+    const meta = Object.assign({}, (S.riderProfile&&S.riderProfile.metadata)||{}, {online:next});
+    const body = {user_id:S.user.id, rider_name:S.user.name||'ไรเดอร์', phone:S.user.phone||null,
+      vehicle_type:(S.riderProfile&&S.riderProfile.vehicle_type)||null, vehicle_plate:(S.riderProfile&&S.riderProfile.vehicle_plate)||null,
+      latitude:S.pos?S.pos.lat:null, longitude:S.pos?S.pos.lng:null, status:'active', metadata:meta};
+    const rows = await sbTable('rider_profiles?on_conflict=user_id', {method:'POST', token, body});
+    S.riderProfile = Array.isArray(rows)?rows[0]:rows;
+    toast(next ? '🟢 เปิดรับงานแล้ว' : '⚪ ปิดรับงานแล้ว');
+    refreshData();
+  }catch(e){
+    console.error(e); S.online = !next; updateStatusUI();
+    toast('เปลี่ยนสถานะไม่สำเร็จ: '+e.message);
+  }
+}
+async function pushLocation(){
+  if(!S.pos || !S.riderProfile) return;
+  try{
+    const token = await getAccessToken();
+    await sbTable('rider_profiles?user_id=eq.'+encodeURIComponent(S.user.id), {method:'PATCH', token, body:{latitude:S.pos.lat, longitude:S.pos.lng}});
+  }catch(e){ /* best-effort */ }
+}
+function updateStatusUI(){
+  const pill = document.getElementById('status-pill');
+  const sw = document.getElementById('status-switch');
+  const label = document.getElementById('status-text');
+  if(!pill) return;
+  pill.classList.toggle('on', S.online);
+  sw.classList.toggle('on', S.online);
+  label.textContent = S.online ? 'ออนไลน์' : 'ออฟไลน์';
+}
+
+/* ---------- data refresh ---------- */
+async function refreshData(){
+  try{
+    const token = await getAccessToken();
+    const mine = await sbTable('orders?select=*&order_type=eq.shopping&rider_id=eq.'+encodeURIComponent(S.user.id)+'&status=in.(assigned,picked_up,in_progress)&order=created_at.desc&limit=1', {token});
+    S.activeOrder = Array.isArray(mine) && mine[0] ? mine[0] : null;
+
+    if(S.activeOrder){
+      await enrichOrder(S.activeOrder);
+      S.openJobs = [];
+    } else if(S.online){
+      const open = await sbTable('orders?select=*&order_type=eq.shopping&status=eq.ready&rider_id=is.null&order=created_at.asc&limit=25', {token});
+      const list = Array.isArray(open) ? open : [];
+      for(const o of list) await enrichOrder(o);
+      S.openJobs = list
+        .map(o=>({order:o, distanceKm: haversineKm(S.pos&&S.pos.lat, S.pos&&S.pos.lng, o.pickup_latitude, o.pickup_longitude)}))
+        .filter(x=>x.distanceKm <= NEARBY_RADIUS_KM)
+        .sort((a,b)=>a.distanceKm-b.distanceKm);
+    } else {
+      S.openJobs = [];
+    }
+    if(S.activeTab==='home') renderSheet();
+    placeJobMarkers();
+
+    const hist = await sbTable('orders?select=*&order_type=eq.shopping&rider_id=eq.'+encodeURIComponent(S.user.id)+'&status=eq.completed&order=updated_at.desc&limit=30', {token});
+    S.history = Array.isArray(hist) ? hist : [];
+    if(S.activeTab==='jobs') renderHistoryPanel();
+  }catch(e){ console.error('refreshData failed', e); }
+}
+async function enrichOrder(o){
+  const token = await getAccessToken();
+  if(o.shop_id && !o._shop){
+    try{ const rows = await sbTable('shop_profiles?select=shop_name,phone,address&id=eq.'+encodeURIComponent(o.shop_id), {token}); o._shop = Array.isArray(rows)&&rows[0] ? rows[0] : null; }
+    catch(e){ o._shop = null; }
+  }
+  if(o.customer_id && !o._customer){
+    try{ const rows = await sbTable('users?select=name,phone&id=eq.'+encodeURIComponent(o.customer_id), {token}); o._customer = Array.isArray(rows)&&rows[0] ? rows[0] : null; }
+    catch(e){ o._customer = null; }
+  }
+}
+function placeJobMarkers(){
+  S.jobMarkers.forEach(m=>S.map.removeLayer(m)); S.jobMarkers = [];
+  const list = S.activeOrder ? [S.activeOrder] : S.openJobs.map(x=>x.order);
+  list.forEach(o=>{
+    if(Number.isFinite(Number(o.pickup_latitude))){
+      const m = L.marker([o.pickup_latitude,o.pickup_longitude], {icon:L.divIcon({html:'<div class="emoji-pin">🏪</div>',className:'',iconSize:[26,26],iconAnchor:[13,13]})}).addTo(S.map);
+      S.jobMarkers.push(m);
+    }
+    if(S.activeOrder && Number.isFinite(Number(o.delivery_latitude))){
+      const m = L.marker([o.delivery_latitude,o.delivery_longitude], {icon:L.divIcon({html:'<div class="emoji-pin">🏁</div>',className:'',iconSize:[26,26],iconAnchor:[13,13]})}).addTo(S.map);
+      S.jobMarkers.push(m);
+    }
+  });
+}
+
+/* ---------- sheet (home) ---------- */
+function renderSheet(){
+  const sheet = document.getElementById('sheet');
+  if(!sheet) return;
+  if(S.activeOrder){ sheet.innerHTML = jobCardHTML(S.activeOrder); bindJobCardEvents(S.activeOrder); return; }
+  if(!S.online){
+    sheet.innerHTML = `
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">พร้อมออกงานหรือยัง?</div>
+      <div class="sheet-sub">เปิดรับงานเพื่อดูออเดอร์ที่รอไรเดอร์ในระยะ ${NEARBY_RADIUS_KM} กม. จากตำแหน่งของคุณ</div>
+      <button class="go-toggle off" id="go-online">🟢 เปิดรับงาน</button>`;
+    document.getElementById('go-online').onclick = toggleOnline;
+    return;
+  }
+  sheet.innerHTML = `
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">งานที่รอไรเดอร์ (${S.openJobs.length})</div>
+    <div class="sheet-sub">เรียงจากใกล้ตำแหน่งคุณที่สุด</div>
+    ${S.openJobs.length ? S.openJobs.map(x=>jobRowHTML(x)).join('') : '<div class="empty-note">ยังไม่มีออเดอร์รอไรเดอร์ในระยะใกล้ตอนนี้<br>ระบบจะอัปเดตอัตโนมัติทุกไม่กี่วินาที</div>'}`;
+  S.openJobs.forEach(x=>{
+    const b = document.getElementById('accept-'+x.order.id);
+    if(b) b.onclick = ()=>acceptJob(x.order.id);
+  });
+}
+function jobRowHTML(x){
+  const o = x.order;
+  const shopName = o._shop ? o._shop.shop_name : 'ร้านค้า';
+  return `<div class="job-row">
+    <div class="top">
+      <div><div class="shop">${esc(shopName)}</div><div class="meta">ห่างจากคุณ ${x.distanceKm.toFixed(1)} กม. • ${(o.pickup_address? esc(o.pickup_address): '')}</div></div>
+      <div class="fee">฿${Number(o.delivery_fee||0)}</div>
+    </div>
+    <button class="accept" id="accept-${o.id}">รับงานนี้</button>
+  </div>`;
+}
+function jobCardHTML(o){
+  const status = statusFromRow(o);
+  const shop = o._shop || {}; const cust = o._customer || {};
+  const next = STEP_NEXT[status];
+  return `<div class="sheet-handle"></div>
+    <div class="job-card">
+      <div class="oid">ออเดอร์ ${esc(o.order_number||o.id.slice(0,8))}</div>
+      <div class="stage-label">${esc(STEP_LABEL[status]||status)}</div>
+      <div class="stop">
+        <div class="mk"><i></i><div class="ln"></div></div>
+        <div class="tx"><b>${esc(shop.shop_name||'ร้านค้า')}</b><span>${esc(o.pickup_address||'จุดรับสินค้า')}</span></div>
+      </div>
+      <div class="stop">
+        <div class="mk"><i style="background:var(--on)"></i></div>
+        <div class="tx"><b>${esc(cust.name||'ลูกค้า')}</b><span>${esc(o.delivery_address||'จุดส่งสินค้า')}</span></div>
+      </div>
+      <div class="job-actions">
+        ${shop.phone ? `<a href="tel:${esc(shop.phone)}">📞 โทรร้าน</a>` : ''}
+        ${cust.phone ? `<a href="tel:${esc(cust.phone)}">📞 โทรลูกค้า</a>` : ''}
+        <a href="${esc(mapsLink(status==='assigned'?o.pickup_latitude:o.delivery_latitude, status==='assigned'?o.pickup_longitude:o.delivery_longitude, status==='assigned'?o.pickup_address:o.delivery_address))}" target="_blank" rel="noopener">🧭 นำทาง</a>
+      </div>
+      ${next ? `<button class="job-primary" id="advance-btn">${esc(next.label)}</button>` : ''}
+    </div>`;
+}
+function bindJobCardEvents(o){
+  const btn = document.getElementById('advance-btn');
+  if(btn) btn.onclick = ()=>advanceOrder(o);
+}
+
+async function acceptJob(orderId){
+  try{
+    const token = await getAccessToken();
+    const rows = await sbTable('orders?id=eq.'+encodeURIComponent(orderId), {token});
+    const current = Array.isArray(rows) ? rows[0] : null;
+    if(!current || current.rider_id){ toast('งานนี้มีคนรับไปแล้ว'); refreshData(); return; }
+    await sbTable('orders?id=eq.'+encodeURIComponent(orderId), {method:'PATCH', token, body:{
+      rider_id:S.user.id, status:statusToDb('assigned'), note:noteWithTag(current,'assigned'), updated_at:new Date().toISOString()
+    }});
+    toast('รับงานสำเร็จ 🎉');
+    refreshData();
+  }catch(e){ console.error(e); toast('รับงานไม่สำเร็จ: '+e.message); }
+}
+async function advanceOrder(o){
+  const status = statusFromRow(o);
+  const next = STEP_NEXT[status];
+  if(!next) return;
+  try{
+    const token = await getAccessToken();
+    await sbTable('orders?id=eq.'+encodeURIComponent(o.id), {method:'PATCH', token, body:{
+      status:statusToDb(next.to), note:noteWithTag(o,next.to), updated_at:new Date().toISOString()
+    }});
+    toast(next.to==='completed' ? 'ส่งสำเร็จ! 🎉' : 'อัปเดตสถานะแล้ว');
+    refreshData();
+  }catch(e){ console.error(e); toast('อัปเดตสถานะไม่สำเร็จ: '+e.message); }
+}
+
+/* ---------- job history panel ---------- */
+function renderHistoryPanel(){
+  const p = document.getElementById('panel-jobs');
+  p.innerHTML = `<div class="panel-head">📦 งานที่ส่งสำเร็จ</div>
+    ${S.history.length ? S.history.map(o=>`
+      <div class="hist-row"><span><b>${esc(o.order_number||o.id.slice(0,8))}</b><br>${new Date(o.updated_at||o.created_at).toLocaleString('th-TH')}</span><span>฿${Number(o.total_amount||0)}</span></div>
+    `).join('') : '<div class="empty-note">ยังไม่มีงานที่ส่งสำเร็จ</div>'}`;
+}
+
+/* ---------- profile panel ---------- */
+function renderProfilePanel(){
+  const p = document.getElementById('panel-profile');
+  const rp = S.riderProfile || {};
+  p.innerHTML = `<div class="panel-head">👤 โปรไฟล์</div>
+    <div class="profile-card">
+      <div class="pname">${esc(S.user.name||'ไรเดอร์')}</div>
+      <div class="prow"><span>เบอร์โทร</span><b>${esc(S.user.phone||'-')}</b></div>
+      <div class="prow"><span>ประเภทรถ</span><b>${esc(rp.vehicle_type||'-')}</b></div>
+      <div class="prow"><span>ทะเบียนรถ</span><b>${esc(rp.vehicle_plate||'-')}</b></div>
+      <div class="prow"><span>สถานะบัญชี</span><b>${S.user.status==='active'?'อนุมัติแล้ว':esc(S.user.status)}</b></div>
+    </div>
+    <button class="btn-logout" id="pf-logout">ออกจากระบบ</button>`;
+  document.getElementById('pf-logout').onclick = doLogout;
+}
+
+/* ---------- polling ---------- */
+function startPolling(){ stopPolling(); S.pollTimer = setInterval(refreshData, POLL_MS); }
+function stopPolling(){ if(S.pollTimer) clearInterval(S.pollTimer); S.pollTimer=null; }
+
+boot();
+</script>
+</body>
+</html>
