@@ -218,7 +218,7 @@ const SB = {
   KEY: 'sb_publishable_Vn2Il4jp-iBtzNsGRNY8Lg_Tpvk2Vre'
 };
 const SESSION_KEY = 'qtr_session_v1';
-const NEARBY_RADIUS_KM = 6;
+const NEARBY_RADIUS_KM = 2;
 const POLL_MS = 7000;
 
 function sbHeaders(token){
@@ -508,7 +508,12 @@ async function toggleOnline(){
     const body = {user_id:S.user.id, rider_name:S.user.name||'ไรเดอร์', phone:S.user.phone||null,
       vehicle_type:(S.riderProfile&&S.riderProfile.vehicle_type)||null, vehicle_plate:(S.riderProfile&&S.riderProfile.vehicle_plate)||null,
       latitude:S.pos?S.pos.lat:null, longitude:S.pos?S.pos.lng:null, status:'active', metadata:meta};
-    const rows = await sbTable('rider_profiles?on_conflict=user_id', {method:'POST', token, body});
+    let rows;
+    if(S.riderProfile && S.riderProfile.user_id){
+      rows = await sbTable('rider_profiles?user_id=eq.'+encodeURIComponent(S.user.id), {method:'PATCH', token, body});
+    }else{
+      rows = await sbTable('rider_profiles', {method:'POST', token, body});
+    }
     S.riderProfile = Array.isArray(rows)?rows[0]:rows;
     toast(next ? '🟢 เปิดรับงานแล้ว' : '⚪ ปิดรับงานแล้ว');
     refreshData();
@@ -548,10 +553,14 @@ async function refreshData(){
       const open = await sbTable('orders?select=*&order_type=eq.shopping&status=eq.ready&rider_id=is.null&order=created_at.asc&limit=25', {token});
       const list = Array.isArray(open) ? open : [];
       for(const o of list) await enrichOrder(o);
-      S.openJobs = list
+      const candidates = list
         .map(o=>({order:o, distanceKm: haversineKm(S.pos&&S.pos.lat, S.pos&&S.pos.lng, o.pickup_latitude, o.pickup_longitude)}))
-        .filter(x=>x.distanceKm <= NEARBY_RADIUS_KM)
+        .filter(x=>Number.isFinite(x.distanceKm))
         .sort((a,b)=>a.distanceKm-b.distanceKm);
+      const nearby = candidates.filter(x=>x.distanceKm <= NEARBY_RADIUS_KM);
+      // Rider-side fallback: if there is no job within 2 km, keep the nearest open job visible.
+      // Final nearest-Rider assignment must be enforced server-side/RPC to prevent two riders claiming the same fallback job.
+      S.openJobs = nearby.length ? nearby : (candidates.length ? [{...candidates[0], fallback:true}] : []);
     } else {
       S.openJobs = [];
     }
@@ -606,8 +615,8 @@ function renderSheet(){
   sheet.innerHTML = `
     <div class="sheet-handle"></div>
     <div class="sheet-title">งานที่รอไรเดอร์ (${S.openJobs.length})</div>
-    <div class="sheet-sub">เรียงจากใกล้ตำแหน่งคุณที่สุด</div>
-    ${S.openJobs.length ? S.openJobs.map(x=>jobRowHTML(x)).join('') : '<div class="empty-note">ยังไม่มีออเดอร์รอไรเดอร์ในระยะใกล้ตอนนี้<br>ระบบจะอัปเดตอัตโนมัติทุกไม่กี่วินาที</div>'}`;
+    <div class="sheet-sub">ค้นหางานในรัศมี 2 กม. ก่อน และถ้าไม่มีงานใกล้เคียงจะแสดงงานที่ใกล้ที่สุด</div>
+    ${S.openJobs.length ? S.openJobs.map(x=>jobRowHTML(x)).join('') : '<div class="empty-note">ยังไม่มีออเดอร์รอไรเดอร์ตอนนี้<br>ระบบจะอัปเดตอัตโนมัติทุกไม่กี่วินาที</div>'}`;
   S.openJobs.forEach(x=>{
     const b = document.getElementById('accept-'+x.order.id);
     if(b) b.onclick = ()=>acceptJob(x.order.id);
@@ -618,7 +627,7 @@ function jobRowHTML(x){
   const shopName = o._shop ? o._shop.shop_name : 'ร้านค้า';
   return `<div class="job-row">
     <div class="top">
-      <div><div class="shop">${esc(shopName)}</div><div class="meta">ห่างจากคุณ ${x.distanceKm.toFixed(1)} กม. • ${(o.pickup_address? esc(o.pickup_address): '')}</div></div>
+      <div><div class="shop">${esc(shopName)}</div><div class="meta">${x.fallback ? 'นอก 2 กม. • ' : ''}ห่างจากคุณ ${x.distanceKm.toFixed(1)} กม. • ${(o.pickup_address? esc(o.pickup_address): '')}</div></div>
       <div class="fee">฿${Number(o.delivery_fee||0)}</div>
     </div>
     <button class="accept" id="accept-${o.id}">รับงานนี้</button>
