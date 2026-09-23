@@ -137,7 +137,7 @@ button{font-family:inherit;}
 .job-distance b{display:block;color:#172033;font-size:13px;margin-top:2px;}
 .job-distance.pickup{border-left:4px solid #16a34a;}
 .job-distance.delivery{border-left:4px solid #dc2626;}
-.map-legend{position:absolute;z-index:900;top:76px;left:12px;background:rgba(255,255,255,.95);border:1px solid rgba(20,30,45,.1);border-radius:12px;padding:8px 10px;box-shadow:0 4px 16px rgba(0,0,0,.12);font-size:11px;line-height:1.7;}
+.map-legend{position:absolute;z-index:900;bottom:118px;left:12px;background:rgba(255,255,255,.95);border:1px solid rgba(20,30,45,.1);border-radius:12px;padding:8px 10px;box-shadow:0 4px 16px rgba(0,0,0,.12);font-size:11px;line-height:1.7;}
 .map-legend .green{color:#15803d;font-weight:800;}
 .map-legend .red{color:#b91c1c;font-weight:800;}
 .job-row .accept{
@@ -169,6 +169,35 @@ button{font-family:inherit;}
   color:#fff;font-weight:700;font-size:15.5px;cursor:pointer;
 }
 .job-primary.done{background:var(--on);}
+
+/* ---------- rider chat / payment summary ---------- */
+.chat-screen,.summary-screen{position:absolute;inset:0;background:var(--paper);z-index:1000;display:none;overflow-y:auto;padding:calc(18px + var(--safe-top)) 16px calc(28px + var(--safe-bottom));}
+.chat-screen.show,.summary-screen.show{display:block;}
+.subpage-head{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.back-btn{width:40px;height:40px;border:1px solid var(--paper-line);background:#fff;border-radius:12px;font-size:20px;cursor:pointer;}
+.subpage-title{font-size:18px;font-weight:700;color:#101826;}
+.chat-order{font-size:12.5px;color:#6b7686;margin:-8px 0 12px 50px;}
+.chat-box{background:#fff;border:1px solid var(--paper-line);border-radius:16px;padding:12px;height:calc(100vh - 210px);overflow-y:auto;display:flex;flex-direction:column;gap:8px;}
+.chat-bubble{max-width:82%;padding:9px 11px;border-radius:14px;font-size:13.5px;line-height:1.5;}
+.chat-bubble.mine{align-self:flex-end;background:#dbeafe;color:#172033;border-bottom-right-radius:5px;}
+.chat-bubble.theirs{align-self:flex-start;background:#f1f5f9;color:#172033;border-bottom-left-radius:5px;}
+.chat-time{font-size:10.5px;color:#7b8798;margin-top:3px;}
+.chat-compose-rider{display:flex;gap:8px;margin-top:10px;}
+.chat-compose-rider input{flex:1;min-width:0;border:1px solid var(--paper-line);background:#fff;border-radius:13px;padding:12px;font-family:inherit;font-size:14px;outline:none;}
+.chat-compose-rider button{border:0;border-radius:13px;background:var(--brand-deep);color:#fff;padding:0 17px;font-weight:700;}
+.summary-card{background:#fff;border:1px solid var(--paper-line);border-radius:20px;padding:20px;margin-top:12px;}
+.summary-ok{text-align:center;font-size:46px;margin-bottom:6px;}
+.summary-card h2{text-align:center;margin:0 0 4px;font-size:21px;}
+.summary-order{text-align:center;color:#6b7686;font-size:13px;margin-bottom:18px;}
+.summary-total{background:#f7f9fc;border-radius:15px;padding:16px;margin:12px 0;}
+.summary-total .label{font-size:13px;color:#64748b;}
+.summary-total .amount{font-size:30px;font-weight:800;color:#101826;margin-top:3px;}
+.summary-cash{display:flex;align-items:center;gap:10px;padding:13px;border:1px solid #bbf7d0;background:#f0fdf4;border-radius:14px;color:#166534;font-weight:700;}
+.summary-back{width:100%;margin-top:16px;border:0;border-radius:14px;padding:15px;background:var(--brand-deep);color:#fff;font-family:inherit;font-size:15px;font-weight:700;}
+.slide-wrap{position:relative;width:100%;height:52px;margin-top:12px;border-radius:14px;background:#e7ebf2;overflow:hidden;border:1px solid #d8dee8;}
+.slide-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:14px;font-weight:700;pointer-events:none;}
+.slide-thumb{position:absolute;left:3px;top:3px;width:46px;height:44px;border-radius:11px;background:var(--brand-deep);color:#fff;border:0;font-size:18px;font-weight:800;cursor:grab;touch-action:none;z-index:2;}
+.slide-wrap.done .slide-thumb{background:var(--on);}
 
 .bottomnav{
   position:absolute;left:0;right:0;bottom:0;z-index:600;background:#fff;border-top:1px solid var(--paper-line);
@@ -320,7 +349,7 @@ const STEP_NEXT = { assigned:{to:'picked_up', label:'ถึงร้านแล
 const S = {
   session:null, user:null, riderProfile:null,
   online:false, pos:null, map:null, riderMarker:null, jobMarkers:[],
-  activeOrder:null, openJobs:[], history:[], activeTab:'home', pollTimer:null
+  activeOrder:null, openJobs:[], history:[], activeTab:'home', pollTimer:null, chatOrder:null, chatTimer:null
 };
 
 function el(html){ const t=document.createElement('template'); t.innerHTML=html.trim(); return t.content.firstElementChild; }
@@ -646,7 +675,7 @@ function jobRowHTML(x){
   const deliveryKm = haversineKm(o.pickup_latitude,o.pickup_longitude,o.delivery_latitude,o.delivery_longitude);
   return `<div class="job-row">
     <div class="top">
-      <div><div class="shop">${esc(shopName)}</div><div class="meta"><b>ออเดอร์ ${esc(o.order_number||o.id.slice(0,8))}</b></div></div>
+      <div><div class="shop">${esc(shopName)}</div><div class="meta">งานรอรับ</div></div>
       <div class="fee">฿${Number(o.delivery_fee||0)}</div>
     </div>
     <div class="job-distances">
@@ -670,9 +699,10 @@ function jobCardHTML(o){
   const navLat = status==='assigned' ? o.pickup_latitude : o.delivery_latitude;
   const navLng = status==='assigned' ? o.pickup_longitude : o.delivery_longitude;
   const navAddr = status==='assigned' ? o.pickup_address : o.delivery_address;
+  const showOrderNo = true;
   return `<div class="sheet-handle"></div>
     <div class="job-card">
-      <div class="oid">ออเดอร์ ${esc(o.order_number||o.id.slice(0,8))}</div>
+      ${showOrderNo ? `<div class="oid">ออเดอร์ ${esc(o.order_number||o.id.slice(0,8))}</div>` : ''}
       <div class="stage-label">${esc(STEP_LABEL[status]||status)}</div>
       <div class="job-distances">
         <div class="job-distance pickup">🟢 ไรเดอร์ → จุดรับ<b>${Number.isFinite(riderToShop)?riderToShop.toFixed(1)+' กม.':'ไม่มีพิกัด'}</b></div>
@@ -689,15 +719,123 @@ function jobCardHTML(o){
       <div class="job-actions">
         ${shop.phone ? `<a href="tel:${esc(shop.phone)}">📞 โทรร้าน</a>` : ''}
         ${cust.phone ? `<a href="tel:${esc(cust.phone)}">📞 โทรลูกค้า</a>` : ''}
-        <a href="${esc(mapsLink(navLat,navLng,navAddr))}" target="_blank" rel="noopener">🧭 Google Maps</a>
+        <button type="button" id="chat-btn">💬</button>
+        <a class="nav-btn" href="${esc(mapsLink(navLat,navLng,navAddr))}" target="_blank" rel="noopener">🧭 นำทาง</a>
       </div>
-      ${next ? `<button class="job-primary" id="advance-btn">${esc(next.label)}</button>` : ''}
+      ${next && next.to==='completed' ? slideConfirmHTML() : (next ? `<button class="job-primary" id="advance-btn">${esc(next.label)}</button>` : '')}
     </div>`;
+}
+
+function slideConfirmHTML(){
+  return `<div class="slide-wrap" id="delivery-slide" aria-label="เลื่อนเพื่อยืนยันส่งสำเร็จ">
+    <div class="slide-label">เลื่อนเพื่อยืนยันส่งสำเร็จ</div>
+    <button class="slide-thumb" id="delivery-slide-thumb" type="button">›</button>
+  </div>`;
 }
 
 function bindJobCardEvents(o){
   const btn = document.getElementById('advance-btn');
   if(btn) btn.onclick = ()=>advanceOrder(o);
+  const chatBtn = document.getElementById('chat-btn');
+  if(chatBtn) chatBtn.onclick = ()=>openChat(o);
+  const slide = document.getElementById('delivery-slide');
+  const thumb = document.getElementById('delivery-slide-thumb');
+  if(slide && thumb) bindDeliverySlide(slide,thumb,()=>completeAndShowSummary(o));
+}
+
+function bindDeliverySlide(track,thumb,onDone){
+  let startX=0,current=0,drag=false,finished=false;
+  const max=()=>Math.max(0,track.clientWidth-thumb.offsetWidth-6);
+  const move=x=>{ current=Math.max(0,Math.min(max(),x-startX)); thumb.style.transform=`translateX(${current}px)`; };
+  const end=()=>{ if(!drag||finished)return; drag=false; if(current>=max()*0.82){ finished=true; current=max(); thumb.style.transform=`translateX(${current}px)`; track.classList.add('done'); thumb.textContent='✓'; onDone(); } else { current=0; thumb.style.transform='translateX(0)'; } };
+  thumb.addEventListener('pointerdown',e=>{ if(finished)return; drag=true; startX=e.clientX-current; thumb.setPointerCapture?.(e.pointerId); });
+  thumb.addEventListener('pointermove',e=>{ if(drag)move(e.clientX); });
+  thumb.addEventListener('pointerup',end);
+  thumb.addEventListener('pointercancel',end);
+}
+
+async function completeAndShowSummary(o){
+  try{
+    const token=await getAccessToken();
+    const updated=await sbTable('orders?id=eq.'+encodeURIComponent(o.id),{method:'PATCH',token,body:{status:'completed',note:noteWithTag(o,'completed'),updated_at:new Date().toISOString()}});
+    let finalOrder=Array.isArray(updated)&&updated[0]?updated[0]:null;
+    if(!finalOrder){
+      const rows=await sbTable('orders?id=eq.'+encodeURIComponent(o.id)+'&select=*',{token});
+      finalOrder=Array.isArray(rows)?rows[0]:null;
+    }
+    if(!finalOrder) finalOrder=o;
+    stopPolling();
+    renderPaymentSummary(finalOrder);
+  }catch(e){ console.error(e); toast('ยืนยันส่งสำเร็จไม่สำเร็จ: '+e.message); }
+}
+
+function renderPaymentSummary(o){
+  const stage=document.querySelector('.stage');
+  if(stage) stage.style.display='none';
+  let screen=document.getElementById('summary-screen');
+  if(!screen){ screen=document.createElement('div'); screen.id='summary-screen'; screen.className='summary-screen'; document.getElementById('app').appendChild(screen); }
+  const amount=Number(o.total_amount||0);
+  screen.innerHTML=`<div class="subpage-head"><button class="back-btn" id="summary-back">‹</button><div class="subpage-title">สรุปการส่งออเดอร์</div></div>
+    <div class="summary-card">
+      <div class="summary-ok">✓</div>
+      <h2>ส่งออเดอร์สำเร็จ</h2>
+      <div class="summary-order">ออเดอร์ ${esc(o.order_number||o.id.slice(0,8))}</div>
+      <div class="summary-total"><div class="label">ราคาที่ลูกค้าต้องชำระ</div><div class="amount">฿${amount.toLocaleString('th-TH')}</div></div>
+      <div class="summary-cash">💵 เก็บเงินสดจากลูกค้า</div>
+      <button class="summary-back" id="summary-home">กลับหน้าหลัก Rider</button>
+    </div>`;
+  screen.classList.add('show');
+  const back=()=>{ screen.classList.remove('show'); if(stage){stage.style.display='block';} S.activeOrder=null; refreshData(); startPolling(); };
+  document.getElementById('summary-back').onclick=back;
+  document.getElementById('summary-home').onclick=back;
+}
+
+function closeChat(){
+  if(S.chatTimer) clearInterval(S.chatTimer); S.chatTimer=null; S.chatOrder=null;
+  const screen=document.getElementById('chat-screen'); if(screen) screen.classList.remove('show');
+  const stage=document.querySelector('.stage'); if(stage) stage.style.display='block';
+  renderSheet();
+}
+
+async function loadChatMessages(orderId){
+  try{
+    const token=await getAccessToken();
+    const rows=await sbTable('order_chat_messages?select=*&order_id=eq.'+encodeURIComponent(orderId)+'&order=created_at.asc',{token});
+    return Array.isArray(rows)?rows:[];
+  }catch(e){ console.error('chat load failed',e); return []; }
+}
+
+function renderChatMessages(rows){
+  const box=document.getElementById('chat-box'); if(!box)return;
+  box.innerHTML=rows.length?rows.map(m=>`<div class="chat-bubble ${String(m.sender_id)===String(S.user.id)?'mine':'theirs'}"><div>${esc(m.message||'')}</div><div class="chat-time">${new Date(m.created_at).toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})}</div></div>`).join(''):'<div class="empty-note">ยังไม่มีข้อความ เริ่มแชทกับลูกค้าได้เลย</div>';
+  box.scrollTop=box.scrollHeight;
+}
+
+async function openChat(o){
+  S.chatOrder=o;
+  const stage=document.querySelector('.stage'); if(stage) stage.style.display='none';
+  let screen=document.getElementById('chat-screen');
+  if(!screen){ screen=document.createElement('div'); screen.id='chat-screen'; screen.className='chat-screen'; document.getElementById('app').appendChild(screen); }
+  const cust=o._customer||{};
+  screen.innerHTML=`<div class="subpage-head"><button class="back-btn" id="chat-back">‹</button><div class="subpage-title">แชทกับลูกค้า</div></div>
+    <div class="chat-order">ออเดอร์ ${esc(o.order_number||o.id.slice(0,8))} • ${esc(cust.name||'ลูกค้า')}</div>
+    <div class="chat-box" id="chat-box"><div class="empty-note">กำลังโหลดข้อความ...</div></div>
+    <form class="chat-compose-rider" id="chat-form"><input id="chat-input" maxlength="500" autocomplete="off" placeholder="พิมพ์ข้อความถึงลูกค้า..." required><button type="submit">ส่ง</button></form>`;
+  screen.classList.add('show');
+  document.getElementById('chat-back').onclick=closeChat;
+  document.getElementById('chat-form').onsubmit=async e=>{e.preventDefault(); await sendRiderChat(o);};
+  renderChatMessages(await loadChatMessages(o.id));
+  if(S.chatTimer)clearInterval(S.chatTimer);
+  S.chatTimer=setInterval(async()=>{if(S.chatOrder?.id===o.id)renderChatMessages(await loadChatMessages(o.id));},4000);
+}
+
+async function sendRiderChat(o){
+  const input=document.getElementById('chat-input'); const message=(input?.value||'').trim(); if(!message)return;
+  try{
+    const token=await getAccessToken();
+    await sbTable('order_chat_messages',{method:'POST',token,body:{order_id:o.id,sender_id:S.user.id,message}});
+    input.value=''; renderChatMessages(await loadChatMessages(o.id));
+  }catch(e){ console.error(e); toast('ส่งข้อความไม่สำเร็จ: '+e.message); }
 }
 
 async function acceptJob(orderId){
