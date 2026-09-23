@@ -131,7 +131,15 @@ button{font-family:inherit;}
 .job-row .top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;}
 .job-row .shop{font-weight:700;font-size:14.5px;color:#101826;}
 .job-row .meta{font-size:12.5px;color:#6b7686;}
-.job-row .fee{font-weight:800;color:var(--brand-deep);font-size:15px;white-space:nowrap;}
+ .job-row .fee{font-weight:800;color:var(--brand-deep);font-size:15px;white-space:nowrap;}
+.job-distances{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:2px;}
+.job-distance{background:#f7f9fc;border:1px solid #e7ebf2;border-radius:10px;padding:8px 9px;font-size:12px;color:#5d6878;}
+.job-distance b{display:block;color:#172033;font-size:13px;margin-top:2px;}
+.job-distance.pickup{border-left:4px solid #16a34a;}
+.job-distance.delivery{border-left:4px solid #dc2626;}
+.map-legend{position:absolute;z-index:900;top:76px;left:12px;background:rgba(255,255,255,.95);border:1px solid rgba(20,30,45,.1);border-radius:12px;padding:8px 10px;box-shadow:0 4px 16px rgba(0,0,0,.12);font-size:11px;line-height:1.7;}
+.map-legend .green{color:#15803d;font-weight:800;}
+.map-legend .red{color:#b91c1c;font-weight:800;}
 .job-row .accept{
   align-self:flex-end;background:var(--brand-deep);color:#fff;border:none;border-radius:11px;
   padding:9px 16px;font-weight:700;font-size:13.5px;cursor:pointer;
@@ -423,6 +431,7 @@ function renderStage(){
   app.appendChild(el(`
     <div class="stage show" id="stage">
       <div id="map"></div>
+<div class="map-legend"><div class="green">● จุดรับ — ร้านค้า</div><div class="red">● จุดส่ง — ลูกค้า</div><div>🛵 ตำแหน่งไรเดอร์</div></div>
       <div class="topbar">
         <div class="who">
           <div class="name">${esc(S.user.name||'ไรเดอร์')}</div>
@@ -543,7 +552,7 @@ function updateStatusUI(){
 async function refreshData(){
   try{
     const token = await getAccessToken();
-    const mine = await sbTable('orders?select=*&order_type=eq.shopping&rider_id=eq.'+encodeURIComponent(S.user.id)+'&status=in.(assigned,picked_up,in_progress)&order=created_at.desc&limit=1', {token});
+    const mine = await sbTable('orders?select=*&order_type=eq.shopping&rider_id=eq.'+encodeURIComponent(S.riderProfile.id)+'&status=in.(assigned,picked_up,in_progress)&order=created_at.desc&limit=1', {token});
     S.activeOrder = Array.isArray(mine) && mine[0] ? mine[0] : null;
 
     if(S.activeOrder){
@@ -567,7 +576,7 @@ async function refreshData(){
     if(S.activeTab==='home') renderSheet();
     placeJobMarkers();
 
-    const hist = await sbTable('orders?select=*&order_type=eq.shopping&rider_id=eq.'+encodeURIComponent(S.user.id)+'&status=eq.completed&order=updated_at.desc&limit=30', {token});
+    const hist = await sbTable('orders?select=*&order_type=eq.shopping&rider_id=eq.'+encodeURIComponent(S.riderProfile.id)+'&status=eq.completed&order=updated_at.desc&limit=30', {token});
     S.history = Array.isArray(hist) ? hist : [];
     if(S.activeTab==='jobs') renderHistoryPanel();
   }catch(e){ console.error('refreshData failed', e); }
@@ -586,16 +595,24 @@ async function enrichOrder(o){
 function placeJobMarkers(){
   S.jobMarkers.forEach(m=>S.map.removeLayer(m)); S.jobMarkers = [];
   const list = S.activeOrder ? [S.activeOrder] : S.openJobs.map(x=>x.order);
+  const bounds = [];
   list.forEach(o=>{
-    if(Number.isFinite(Number(o.pickup_latitude))){
-      const m = L.marker([o.pickup_latitude,o.pickup_longitude], {icon:L.divIcon({html:'<div class="emoji-pin">🏪</div>',className:'',iconSize:[26,26],iconAnchor:[13,13]})}).addTo(S.map);
-      S.jobMarkers.push(m);
+    const plat=Number(o.pickup_latitude), plng=Number(o.pickup_longitude);
+    const dlat=Number(o.delivery_latitude), dlng=Number(o.delivery_longitude);
+    if(Number.isFinite(plat)&&Number.isFinite(plng)){
+      const m=L.marker([plat,plng],{icon:L.divIcon({html:'<div style="width:18px;height:18px;border-radius:50%;background:#16a34a;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>',className:'',iconSize:[24,24],iconAnchor:[12,12]})}).addTo(S.map);
+      m.bindPopup('<b style="color:#15803d">จุดรับ</b><br>'+esc(o.pickup_address||'ร้านค้า'));
+      S.jobMarkers.push(m); bounds.push([plat,plng]);
     }
-    if(S.activeOrder && Number.isFinite(Number(o.delivery_latitude))){
-      const m = L.marker([o.delivery_latitude,o.delivery_longitude], {icon:L.divIcon({html:'<div class="emoji-pin">🏁</div>',className:'',iconSize:[26,26],iconAnchor:[13,13]})}).addTo(S.map);
-      S.jobMarkers.push(m);
+    if(Number.isFinite(dlat)&&Number.isFinite(dlng)){
+      const m=L.marker([dlat,dlng],{icon:L.divIcon({html:'<div style="width:18px;height:18px;border-radius:50%;background:#dc2626;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>',className:'',iconSize:[24,24],iconAnchor:[12,12]})}).addTo(S.map);
+      m.bindPopup('<b style="color:#b91c1c">จุดส่ง</b><br>'+esc(o.delivery_address||'บ้านลูกค้า'));
+      S.jobMarkers.push(m); bounds.push([dlat,dlng]);
     }
   });
+  if(bounds.length && S.activeTab==='home' && !S.pos){
+    try{ S.map.fitBounds(bounds,{padding:[45,45],maxZoom:16}); }catch(e){}
+  }
 }
 
 /* ---------- sheet (home) ---------- */
@@ -625,56 +642,92 @@ function renderSheet(){
 function jobRowHTML(x){
   const o = x.order;
   const shopName = o._shop ? o._shop.shop_name : 'ร้านค้า';
+  const pickupKm = Number.isFinite(Number(x.distanceKm)) ? Number(x.distanceKm) : haversineKm(S.pos&&S.pos.lat,S.pos&&S.pos.lng,o.pickup_latitude,o.pickup_longitude);
+  const deliveryKm = haversineKm(o.pickup_latitude,o.pickup_longitude,o.delivery_latitude,o.delivery_longitude);
   return `<div class="job-row">
     <div class="top">
-      <div><div class="shop">${esc(shopName)}</div><div class="meta">${x.fallback ? 'นอก 2 กม. • ' : ''}ห่างจากคุณ ${x.distanceKm.toFixed(1)} กม. • ${(o.pickup_address? esc(o.pickup_address): '')}</div></div>
+      <div><div class="shop">${esc(shopName)}</div><div class="meta"><b>ออเดอร์ ${esc(o.order_number||o.id.slice(0,8))}</b></div></div>
       <div class="fee">฿${Number(o.delivery_fee||0)}</div>
     </div>
-    <button class="accept" id="accept-${o.id}">รับงานนี้</button>
+    <div class="job-distances">
+      <div class="job-distance pickup">🟢 จุดรับจากคุณ<b>${Number.isFinite(pickupKm)?pickupKm.toFixed(1)+' กม.':'ไม่มีพิกัด'}</b></div>
+      <div class="job-distance delivery">🔴 จุดรับ → จุดส่ง<b>${Number.isFinite(deliveryKm)?deliveryKm.toFixed(1)+' กม.':'ไม่มีพิกัด'}</b></div>
+    </div>
+    <div class="meta">📍 ${esc(o.pickup_address||'ไม่มีที่อยู่จุดรับ')}<br>🏠 ${esc(o.delivery_address||'ไม่มีที่อยู่จุดส่ง')}</div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap">
+      <a class="accept" style="text-decoration:none;display:inline-block" href="${esc(mapsLink(o.pickup_latitude,o.pickup_longitude,o.pickup_address))}" target="_blank" rel="noopener">🧭 นำทางไปร้าน</a>
+      <button class="accept" id="accept-${o.id}">รับงานนี้</button>
+    </div>
   </div>`;
 }
+
 function jobCardHTML(o){
   const status = statusFromRow(o);
   const shop = o._shop || {}; const cust = o._customer || {};
   const next = STEP_NEXT[status];
+  const riderToShop = haversineKm(S.pos&&S.pos.lat,S.pos&&S.pos.lng,o.pickup_latitude,o.pickup_longitude);
+  const shopToCustomer = haversineKm(o.pickup_latitude,o.pickup_longitude,o.delivery_latitude,o.delivery_longitude);
+  const navLat = status==='assigned' ? o.pickup_latitude : o.delivery_latitude;
+  const navLng = status==='assigned' ? o.pickup_longitude : o.delivery_longitude;
+  const navAddr = status==='assigned' ? o.pickup_address : o.delivery_address;
   return `<div class="sheet-handle"></div>
     <div class="job-card">
       <div class="oid">ออเดอร์ ${esc(o.order_number||o.id.slice(0,8))}</div>
       <div class="stage-label">${esc(STEP_LABEL[status]||status)}</div>
+      <div class="job-distances">
+        <div class="job-distance pickup">🟢 ไรเดอร์ → จุดรับ<b>${Number.isFinite(riderToShop)?riderToShop.toFixed(1)+' กม.':'ไม่มีพิกัด'}</b></div>
+        <div class="job-distance delivery">🔴 จุดรับ → จุดส่ง<b>${Number.isFinite(shopToCustomer)?shopToCustomer.toFixed(1)+' กม.':'ไม่มีพิกัด'}</b></div>
+      </div>
       <div class="stop">
-        <div class="mk"><i></i><div class="ln"></div></div>
+        <div class="mk"><i style="background:#16a34a"></i><div class="ln"></div></div>
         <div class="tx"><b>${esc(shop.shop_name||'ร้านค้า')}</b><span>${esc(o.pickup_address||'จุดรับสินค้า')}</span></div>
       </div>
       <div class="stop">
-        <div class="mk"><i style="background:var(--on)"></i></div>
+        <div class="mk"><i style="background:#dc2626"></i></div>
         <div class="tx"><b>${esc(cust.name||'ลูกค้า')}</b><span>${esc(o.delivery_address||'จุดส่งสินค้า')}</span></div>
       </div>
       <div class="job-actions">
         ${shop.phone ? `<a href="tel:${esc(shop.phone)}">📞 โทรร้าน</a>` : ''}
         ${cust.phone ? `<a href="tel:${esc(cust.phone)}">📞 โทรลูกค้า</a>` : ''}
-        <a href="${esc(mapsLink(status==='assigned'?o.pickup_latitude:o.delivery_latitude, status==='assigned'?o.pickup_longitude:o.delivery_longitude, status==='assigned'?o.pickup_address:o.delivery_address))}" target="_blank" rel="noopener">🧭 นำทาง</a>
+        <a href="${esc(mapsLink(navLat,navLng,navAddr))}" target="_blank" rel="noopener">🧭 Google Maps</a>
       </div>
       ${next ? `<button class="job-primary" id="advance-btn">${esc(next.label)}</button>` : ''}
     </div>`;
 }
+
 function bindJobCardEvents(o){
   const btn = document.getElementById('advance-btn');
   if(btn) btn.onclick = ()=>advanceOrder(o);
 }
 
 async function acceptJob(orderId){
+  const btn=document.getElementById('accept-'+orderId);
+  if(btn){ btn.disabled=true; btn.textContent='กำลังรับงาน...'; }
   try{
     const token = await getAccessToken();
-    const rows = await sbTable('orders?id=eq.'+encodeURIComponent(orderId), {token});
-    const current = Array.isArray(rows) ? rows[0] : null;
-    if(!current || current.rider_id){ toast('งานนี้มีคนรับไปแล้ว'); refreshData(); return; }
-    await sbTable('orders?id=eq.'+encodeURIComponent(orderId), {method:'PATCH', token, body:{
-      rider_id:S.user.id, status:statusToDb('assigned'), note:noteWithTag(current,'assigned'), updated_at:new Date().toISOString()
+    if(!token) throw new Error('ไม่พบเซสชันเข้าสู่ระบบ');
+    if(!S.riderProfile || !S.riderProfile.id) throw new Error('ไม่พบ rider_profiles.id ของไรเดอร์');
+    const currentRows = await sbTable('orders?id=eq.'+encodeURIComponent(orderId), {token});
+    const current = Array.isArray(currentRows) ? currentRows[0] : null;
+    if(!current){ throw new Error('ไม่พบออเดอร์ในฐานข้อมูล'); }
+    if(current.rider_id){ toast('งานนี้มีไรเดอร์รับไปแล้ว'); refreshData(); return; }
+    const updated = await sbTable('orders?id=eq.'+encodeURIComponent(orderId)+'&rider_id=is.null', {method:'PATCH', token, body:{
+      rider_id:S.riderProfile.id, status:statusToDb('assigned'), note:noteWithTag(current,'assigned'), updated_at:new Date().toISOString()
     }});
+    if(!Array.isArray(updated) || !updated.length){
+      const verify=await sbTable('orders?id=eq.'+encodeURIComponent(orderId)+'&select=id,rider_id,status,order_number', {token});
+      const row=Array.isArray(verify)?verify[0]:null;
+      if(!row || row.rider_id!==S.riderProfile.id) throw new Error('เซิร์ฟเวอร์ไม่ยืนยันการรับงาน');
+    }
     toast('รับงานสำเร็จ 🎉');
-    refreshData();
-  }catch(e){ console.error(e); toast('รับงานไม่สำเร็จ: '+e.message); }
+    await refreshData();
+  }catch(e){
+    console.error('acceptJob failed',e);
+    toast('รับงานไม่สำเร็จ: '+String(e.message||e));
+    if(btn){ btn.disabled=false; btn.textContent='รับงานนี้'; }
+  }
 }
+
 async function advanceOrder(o){
   const status = statusFromRow(o);
   const next = STEP_NEXT[status];
