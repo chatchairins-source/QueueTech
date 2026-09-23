@@ -137,9 +137,6 @@ button{font-family:inherit;}
 .job-distance b{display:block;color:#172033;font-size:13px;margin-top:2px;}
 .job-distance.pickup{border-left:4px solid #16a34a;}
 .job-distance.delivery{border-left:4px solid #dc2626;}
-.map-legend{position:absolute;z-index:900;bottom:118px;left:12px;background:rgba(255,255,255,.95);border:1px solid rgba(20,30,45,.1);border-radius:12px;padding:8px 10px;box-shadow:0 4px 16px rgba(0,0,0,.12);font-size:11px;line-height:1.7;}
-.map-legend .green{color:#15803d;font-weight:800;}
-.map-legend .red{color:#b91c1c;font-weight:800;}
 .job-row .accept{
   align-self:flex-end;background:var(--brand-deep);color:#fff;border:none;border-radius:11px;
   padding:9px 16px;font-weight:700;font-size:13.5px;cursor:pointer;
@@ -163,6 +160,9 @@ button{font-family:inherit;}
 .job-actions a, .job-actions button{
   flex:1;border-radius:12px;border:1px solid var(--paper-line);background:#fff;color:#233045;
   padding:11px 8px;font-size:13px;font-weight:600;text-align:center;text-decoration:none;cursor:pointer;
+}
+.job-actions .chat-icon-btn{
+  flex:0 0 46px;width:46px;min-width:46px;padding:0;font-size:20px;line-height:1;
 }
 .job-primary{
   width:100%;margin-top:12px;padding:15px;border-radius:14px;border:none;background:var(--brand-deep);
@@ -193,6 +193,7 @@ button{font-family:inherit;}
 .summary-total .label{font-size:13px;color:#64748b;}
 .summary-total .amount{font-size:30px;font-weight:800;color:#101826;margin-top:3px;}
 .summary-cash{display:flex;align-items:center;gap:10px;padding:13px;border:1px solid #bbf7d0;background:#f0fdf4;border-radius:14px;color:#166534;font-weight:700;}
+.summary-note{font-size:12.5px;color:#64748b;line-height:1.5;margin-top:9px;text-align:center;}
 .summary-back{width:100%;margin-top:16px;border:0;border-radius:14px;padding:15px;background:var(--brand-deep);color:#fff;font-family:inherit;font-size:15px;font-weight:700;}
 .slide-wrap{position:relative;width:100%;height:52px;margin-top:12px;border-radius:14px;background:#e7ebf2;overflow:hidden;border:1px solid #d8dee8;}
 .slide-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:14px;font-weight:700;pointer-events:none;}
@@ -394,7 +395,7 @@ function renderLogin(err){
         <div class="field"><label>รหัสผ่าน</label><input id="li-pass" type="password" placeholder="รหัสผ่าน"></div>
         <button class="btn btn-brand" id="li-btn">เข้าสู่ระบบ</button>
         <div class="auth-err" id="li-err"></div>
-        <div class="auth-foot">เวอร์ชันทดสอบ • ฟังก์ชันหลักสำหรับไรเดอร์เท่านั้น</div>
+        
       </div>
     </div>`));
   const errBox = document.getElementById('li-err');
@@ -460,7 +461,6 @@ function renderStage(){
   app.appendChild(el(`
     <div class="stage show" id="stage">
       <div id="map"></div>
-<div class="map-legend"><div class="green">● จุดรับ — ร้านค้า</div><div class="red">● จุดส่ง — ลูกค้า</div><div>🛵 ตำแหน่งไรเดอร์</div></div>
       <div class="topbar">
         <div class="who">
           <div class="name">${esc(S.user.name||'ไรเดอร์')}</div>
@@ -699,7 +699,8 @@ function jobCardHTML(o){
   const navLat = status==='assigned' ? o.pickup_latitude : o.delivery_latitude;
   const navLng = status==='assigned' ? o.pickup_longitude : o.delivery_longitude;
   const navAddr = status==='assigned' ? o.pickup_address : o.delivery_address;
-  const showOrderNo = true;
+  /* แสดงเลขออร์เดอร์เฉพาะหลังไรเดอร์รับงานแล้ว */
+  const showOrderNo = !!o.rider_id && ['assigned','picked_up','delivering','arrived','completed'].includes(status);
   return `<div class="sheet-handle"></div>
     <div class="job-card">
       ${showOrderNo ? `<div class="oid">ออเดอร์ ${esc(o.order_number||o.id.slice(0,8))}</div>` : ''}
@@ -719,7 +720,7 @@ function jobCardHTML(o){
       <div class="job-actions">
         ${shop.phone ? `<a href="tel:${esc(shop.phone)}">📞 โทรร้าน</a>` : ''}
         ${cust.phone ? `<a href="tel:${esc(cust.phone)}">📞 โทรลูกค้า</a>` : ''}
-        <button type="button" id="chat-btn">💬</button>
+        <button type="button" class="chat-icon-btn" id="chat-btn" aria-label="แชทกับลูกค้า" title="แชทกับลูกค้า">💬</button>
         <a class="nav-btn" href="${esc(mapsLink(navLat,navLng,navAddr))}" target="_blank" rel="noopener">🧭 นำทาง</a>
       </div>
       ${next && next.to==='completed' ? slideConfirmHTML() : (next ? `<button class="job-primary" id="advance-btn">${esc(next.label)}</button>` : '')}
@@ -781,7 +782,8 @@ function renderPaymentSummary(o){
       <h2>ส่งออเดอร์สำเร็จ</h2>
       <div class="summary-order">ออเดอร์ ${esc(o.order_number||o.id.slice(0,8))}</div>
       <div class="summary-total"><div class="label">ราคาที่ลูกค้าต้องชำระ</div><div class="amount">฿${amount.toLocaleString('th-TH')}</div></div>
-      <div class="summary-cash">💵 เก็บเงินสดจากลูกค้า</div>
+      <div class="summary-cash">💵 <span>เก็บเงินสดจากลูกค้า</span></div>
+      <div class="summary-note">ยอดนี้คือจำนวนเงินที่ลูกค้าต้องชำระให้ไรเดอร์เมื่อรับสินค้า</div>
       <button class="summary-back" id="summary-home">กลับหน้าหลัก Rider</button>
     </div>`;
   screen.classList.add('show');
@@ -910,6 +912,153 @@ function startPolling(){ stopPolling(); S.pollTimer = setInterval(refreshData, P
 function stopPolling(){ if(S.pollTimer) clearInterval(S.pollTimer); S.pollTimer=null; }
 
 boot();
+
+/* ===== QueueTech Rider: direct Supabase open-job alert ===== */
+(function(){
+  let timer=null, alertJobId=null, audioCtx=null;
+
+  function ctx(){
+    try{
+      if(!audioCtx){
+        const AC=window.AudioContext||window.webkitAudioContext;
+        if(!AC) return null;
+        audioCtx=new AC();
+      }
+      return audioCtx;
+    }catch(e){ return null; }
+  }
+
+  function unlock(){
+    try{
+      const c=ctx();
+      if(c && c.state==='suspended') c.resume().catch(()=>{});
+    }catch(e){}
+  }
+
+  function beep(){
+    try{
+      const c=ctx();
+      if(!c) return;
+      if(c.state==='suspended') c.resume().catch(()=>{});
+      const o=c.createOscillator(), g=c.createGain();
+      o.type='sine';
+      o.frequency.value=880;
+      g.gain.setValueAtTime(.0001,c.currentTime);
+      g.gain.exponentialRampToValueAtTime(.22,c.currentTime+.03);
+      g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+.45);
+      o.connect(g); g.connect(c.destination);
+      o.start(); o.stop(c.currentTime+.46);
+    }catch(e){}
+  }
+
+  function vibrate(){
+    try{
+      if(navigator.vibrate) navigator.vibrate([500,180,500,180,800]);
+    }catch(e){}
+  }
+
+  function ensureUI(){
+    let el=document.getElementById('qt-rider-alert');
+    if(el) return el;
+    el=document.createElement('div');
+    el.id='qt-rider-alert';
+    el.setAttribute('role','alert');
+    el.style.cssText=
+      'position:fixed;left:14px;right:14px;top:calc(12px + env(safe-area-inset-top));'+
+      'z-index:9999;display:none;background:#111827;color:#fff;border-radius:18px;'+
+      'padding:14px 16px;box-shadow:0 10px 35px rgba(0,0,0,.28);'+
+      'font-family:inherit;text-align:center;';
+    el.innerHTML='<div style="font-size:16px;font-weight:800">มีงานใหม่สำหรับคุณ</div>'+
+      '<div id="qt-rider-alert-detail" style="font-size:13px;margin-top:4px;opacity:.88">'+
+      'กรุณากดรับงาน</div>';
+    document.body.appendChild(el);
+    return el;
+  }
+
+  function stop(hide){
+    if(timer){ clearInterval(timer); timer=null; }
+    try{ if(navigator.vibrate) navigator.vibrate(0); }catch(e){}
+    if(hide!==false){
+      const el=document.getElementById('qt-rider-alert');
+      if(el) el.style.display='none';
+    }
+    alertJobId=null;
+    window.qtRiderAlertState={active:false,jobId:null};
+  }
+
+  function start(job){
+    if(!job || !job.id) return;
+    const id=String(job.id);
+    if(alertJobId===id && timer) return;
+
+    stop(false);
+    alertJobId=id;
+
+    const el=ensureUI();
+    const d=document.getElementById('qt-rider-alert-detail');
+    if(d){
+      d.textContent='งาน '+(job.order_number||id.slice(0,8))+
+        ' • กดรับงานเพื่อหยุดเสียงและสั่น';
+    }
+    el.style.display='block';
+
+    unlock(); beep(); vibrate();
+    timer=setInterval(function(){ beep(); vibrate(); },2500);
+    window.qtRiderAlertState={active:true,jobId:id};
+  }
+
+  ['click','touchstart','pointerdown'].forEach(function(ev){
+    document.addEventListener(ev,unlock,{passive:true});
+  });
+
+  /*
+   * Direct binding:
+   * refreshData() fills S.openJobs from the Supabase orders query.
+   * Compare the actual order IDs before/after refresh.
+   */
+  const originalRefreshData=window.refreshData;
+  if(typeof originalRefreshData==='function'){
+    window.refreshData=async function(){
+      const before=Array.isArray(window.S && S.openJobs)
+        ? S.openJobs.map(function(x){return x&&x.order?x.order:x;}).filter(Boolean)
+        : [];
+      const beforeIds=new Set(
+        before.map(function(o){return o&&o.id?String(o.id):null;}).filter(Boolean)
+      );
+
+      const result=await originalRefreshData.apply(this,arguments);
+
+      const jobs=Array.isArray(window.S && S.openJobs)
+        ? S.openJobs.map(function(x){return x&&x.order?x.order:x;}).filter(Boolean)
+        : [];
+
+      if(alertJobId && !jobs.some(function(o){
+        return o && String(o.id)===String(alertJobId);
+      })){
+        stop(true);
+      }
+
+      const fresh=jobs.find(function(o){
+        return o && o.id && !beforeIds.has(String(o.id));
+      });
+      if(fresh) start(fresh);
+
+      return result;
+    };
+  }
+
+  const originalAcceptJob=window.acceptJob;
+  if(typeof originalAcceptJob==='function'){
+    window.acceptJob=async function(){
+      stop(true);
+      return await originalAcceptJob.apply(this,arguments);
+    };
+  }
+
+  window.qtStartNewJobAlert=start;
+  window.qtStopNewJobAlert=function(){stop(true);};
+})();
+
 </script>
 </body>
 </html>
