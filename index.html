@@ -718,7 +718,6 @@ function jobCardHTML(o){
         <div class="tx"><b>${esc(cust.name||'ลูกค้า')}</b><span>${esc(o.delivery_address||'จุดส่งสินค้า')}</span></div>
       </div>
       <div class="job-actions">
-        ${shop.phone ? `<a href="tel:${esc(shop.phone)}">📞 โทรร้าน</a>` : ''}
         ${cust.phone ? `<a href="tel:${esc(cust.phone)}">📞 โทรลูกค้า</a>` : ''}
         <button type="button" class="chat-icon-btn" id="chat-btn" aria-label="แชทกับลูกค้า" title="แชทกับลูกค้า">💬</button>
         <a class="nav-btn" href="${esc(mapsLink(navLat,navLng,navAddr))}" target="_blank" rel="noopener">🧭 นำทาง</a>
