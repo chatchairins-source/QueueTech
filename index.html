@@ -13,18 +13,27 @@
   --line:rgba(255,255,255,.10);
   --paper:#f4f6f8;
   --paper-line:#e2e6ea;
-  --on:#22c55e;
-  --on-soft:rgba(34,197,94,.16);
+  --on:#12B981;
+  --on-soft:rgba(18,185,129,.16);
   --off:#64748b;
   --warn:#f5a524;
   --danger:#ef4444;
-  --brand:#2f6fed;
-  --brand-deep:#1d4ed8;
+  --brand:#12B981;
+  --brand-deep:#079669;
   --safe-top:env(safe-area-inset-top,0px);
   --safe-bottom:env(safe-area-inset-bottom,0px);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;margin:0;overscroll-behavior:none;}
+html,body{
+  width:100%;height:100%;
+  height:calc(var(--vh,1vh) * 100);
+  min-height:100dvh;
+  margin:0;padding:0;
+  overflow:hidden;
+  overscroll-behavior:none;
+  touch-action:manipulation;
+  position:fixed;inset:0;
+}
 body{
   font-family:'Prompt',system-ui,sans-serif;
   background:var(--ink);
@@ -32,43 +41,79 @@ body{
   -webkit-font-smoothing:antialiased;
 }
 button{font-family:inherit;}
-#app{position:fixed;inset:0;overflow:hidden;}
+#app{
+  position:fixed;inset:0;width:100%;
+  height:calc(var(--vh,1vh) * 100);
+  height:100dvh;
+  overflow:hidden;
+}
 
 /* ---------- Screens without the map (login / pending) ---------- */
 .screen-center{
   position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
-  padding:28px 20px calc(28px + var(--safe-bottom));
-  background:radial-gradient(circle at 20% -10%, #16223a 0%, var(--ink) 55%);
+  padding:24px 20px calc(24px + var(--safe-bottom));
+  background:var(--paper);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
 }
-.auth-card{width:100%;max-width:360px;color:#fff;}
-.auth-mark{display:flex;align-items:center;gap:10px;margin-bottom:26px;}
-.auth-mark .dot{width:11px;height:11px;border-radius:50%;background:var(--on);box-shadow:0 0 0 5px var(--on-soft);}
-.auth-mark b{font-size:15px;letter-spacing:.2px;color:#dbe4f5;}
-.auth-card h1{font-size:26px;line-height:1.28;margin:0 0 6px;font-weight:700;}
-.auth-card p.sub{margin:0 0 26px;color:#9fb0c9;font-size:14px;line-height:1.6;}
-.field{margin-bottom:14px;}
-.field label{display:block;font-size:12.5px;color:#9fb0c9;margin-bottom:6px;}
-.field input{
-  width:100%;padding:13px 14px;border-radius:13px;border:1px solid rgba(255,255,255,.14);
-  background:rgba(255,255,255,.05);color:#fff;font-size:16px;outline:none;
+.screen-center::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(circle at 10% -8%, rgba(18,185,129,.14), transparent 40%),
+    radial-gradient(circle at 108% 100%, rgba(245,165,36,.12), transparent 38%);
 }
-.field input::placeholder{color:#6d7c93;}
-.field input:focus{border-color:var(--brand);background:rgba(47,111,237,.10);}
-.btn{
-  appearance:none;border:none;cursor:pointer;border-radius:14px;font-weight:700;
-  font-size:15px;padding:15px 18px;display:flex;align-items:center;justify-content:center;gap:8px;
-}
-.btn-brand{background:linear-gradient(135deg,var(--brand),var(--brand-deep));color:#fff;width:100%;margin-top:6px;box-shadow:0 10px 26px rgba(29,78,216,.35);}
-.btn-brand:disabled{opacity:.55;box-shadow:none;}
-.auth-err{margin-top:14px;font-size:13px;color:#fca5a5;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.28);padding:10px 12px;border-radius:10px;line-height:1.5;display:none;}
-.auth-err.show{display:block;}
-.auth-foot{margin-top:22px;text-align:center;font-size:12.5px;color:#5f6f88;}
 
-.pending-card{width:100%;max-width:360px;text-align:center;color:#fff;}
-.pending-icon{font-size:44px;margin-bottom:14px;}
-.pending-card h1{font-size:21px;margin:0 0 8px;}
-.pending-card p{color:#9fb0c9;font-size:14px;line-height:1.7;margin:0 0 22px;}
-.pending-pill{display:inline-block;padding:7px 14px;border-radius:999px;background:rgba(245,165,36,.16);border:1px solid rgba(245,165,36,.4);color:#f5c778;font-size:13px;font-weight:600;margin-bottom:20px;}
+.auth-shell{position:relative;z-index:1;width:100%;max-width:960px;display:grid;grid-template-columns:1fr;background:#fff;border-radius:28px;overflow:hidden;box-shadow:0 30px 70px rgba(13,20,32,.16);}
+.auth-side{position:relative;overflow:hidden;min-height:220px;padding:30px 26px;display:flex;flex-direction:column;justify-content:space-between;gap:22px;color:#fff;background:linear-gradient(160deg,var(--ink) 0%,#0a2b22 68%,var(--brand-deep) 135%);}
+.auth-mark{position:relative;display:flex;align-items:center;gap:9px;}
+.auth-mark .dot{width:10px;height:10px;border-radius:50%;background:var(--on);box-shadow:0 0 0 5px var(--on-soft);flex:none;}
+.auth-mark b{font-size:12.5px;letter-spacing:.14em;color:#eafff6;font-weight:700;}
+.auth-side-copy{position:relative;}
+.auth-side-copy h2{margin:0 0 8px;font-size:21px;line-height:1.4;font-weight:700;}
+.auth-side-copy p{margin:0;font-size:13px;line-height:1.7;color:#bfe6d8;max-width:320px;}
+.auth-stats{position:relative;display:flex;gap:24px;padding-top:18px;border-top:2px dashed rgba(255,255,255,.28);}
+.auth-stats div b{display:block;font-size:19px;font-weight:800;}
+.auth-stats div span{font-size:11px;color:#9fd6c0;}
+
+.auth-main{padding:30px 26px 26px;}
+.auth-card h1{font-size:24px;line-height:1.3;margin:0 0 8px;font-weight:700;color:var(--ink);}
+.auth-card p.sub{margin:0 0 22px;color:#5c6b80;font-size:13.5px;line-height:1.65;}
+.field{margin-bottom:13px;}
+.field label{display:block;font-size:12.5px;color:#586376;margin-bottom:6px;font-weight:600;}
+.field input{
+  width:100%;padding:14px 15px;border-radius:13px;border:1.5px solid var(--paper-line);
+  background:var(--paper);color:var(--ink);font-size:16px;outline:none;
+  transition:border-color .15s ease,background .15s ease;
+}
+.field input::placeholder{color:#97a2b3;}
+.field input:focus{border-color:var(--brand);background:#fff;box-shadow:0 0 0 3px var(--on-soft);}
+.btn{appearance:none;border:none;cursor:pointer;border-radius:14px;font-weight:700;font-size:15px;padding:14px 18px;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .1s ease,opacity .15s ease;}
+.btn:active{transform:scale(.985);}
+.btn-brand{background:linear-gradient(135deg,var(--brand),var(--brand-deep));color:#fff;width:100%;margin-top:4px;box-shadow:0 10px 24px rgba(7,150,105,.28);}
+.btn-brand:disabled{opacity:.55;box-shadow:none;}
+.btn-signup{width:100%;margin-top:10px;background:#fff;color:var(--brand-deep);border:1.5px solid #cdeee1;box-shadow:none;}
+.btn-signup:hover{background:var(--on-soft);}
+.auth-divider{display:flex;align-items:center;gap:10px;margin:20px 0 2px;color:#97a2b3;font-size:12px;}
+.auth-divider::before,.auth-divider::after{content:'';height:1px;flex:1;background:var(--paper-line);}
+.auth-foot{margin-top:18px;text-align:center;font-size:11.5px;color:#8a94a6;line-height:1.6;}
+.auth-err{margin-top:12px;font-size:13px;color:#9f1d1d;background:#fdeaea;border:1px solid #f6c9c9;padding:11px 13px;border-radius:11px;line-height:1.5;display:none;}
+.auth-err.show{display:block;}
+
+@media(min-width:760px){
+  .auth-shell{grid-template-columns:.86fr 1fr;}
+  .auth-side{padding:44px 40px;}
+  .auth-main{padding:52px 56px 44px;display:flex;flex-direction:column;justify-content:center;}
+}
+@media(max-width:759px){
+  .screen-center{align-items:flex-end;padding:0;}
+  .auth-shell{border-radius:24px 24px 0 0;box-shadow:0 -20px 50px rgba(13,20,32,.18);}
+  .auth-side-copy p,.auth-stats{display:none;}
+  .auth-main{padding:26px 22px calc(26px + var(--safe-bottom));}
+}
+
+.pending-card{width:100%;max-width:380px;text-align:center;}
+.pending-icon{width:60px;height:60px;margin:0 auto 18px;border-radius:50%;background:rgba(245,165,36,.14);border:1px solid rgba(245,165,36,.35);display:flex;align-items:center;justify-content:center;font-size:26px;}
+.pending-card h1{font-size:21px;margin:0 0 8px;color:var(--ink);}
+.pending-card p{color:#5c6b80;font-size:14px;line-height:1.7;margin:0 0 22px;}
+.pending-pill{display:inline-block;padding:7px 14px;border-radius:999px;background:rgba(245,165,36,.14);border:1px solid rgba(245,165,36,.35);color:#93630a;font-size:13px;font-weight:700;margin-bottom:20px;}
 
 /* ---------- Main driving screen ---------- */
 .stage{position:fixed;inset:0;display:none;}
@@ -111,7 +156,7 @@ button{font-family:inherit;}
   background:var(--paper);border-radius:22px 22px 0 0;
   box-shadow:0 -12px 30px rgba(0,0,0,.22);
   padding:14px 16px calc(14px + var(--safe-bottom) + 78px);
-  max-height:64vh;overflow-y:auto;
+  max-height:64vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
 }
 .sheet-handle{width:38px;height:4px;border-radius:3px;background:#d3d9df;margin:0 auto 12px;}
 .sheet-title{font-size:16px;font-weight:700;color:#101826;margin:0 0 4px;}
@@ -131,7 +176,12 @@ button{font-family:inherit;}
 .job-row .top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;}
 .job-row .shop{font-weight:700;font-size:14.5px;color:#101826;}
 .job-row .meta{font-size:12.5px;color:#6b7686;}
-.job-row .fee{font-weight:800;color:var(--brand-deep);font-size:15px;white-space:nowrap;}
+ .job-row .fee{font-weight:800;color:var(--brand-deep);font-size:15px;white-space:nowrap;}
+.job-distances{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:2px;}
+.job-distance{background:#f7f9fc;border:1px solid #e7ebf2;border-radius:10px;padding:8px 9px;font-size:12px;color:#5d6878;}
+.job-distance b{display:block;color:#172033;font-size:13px;margin-top:2px;}
+.job-distance.pickup{border-left:4px solid #16a34a;}
+.job-distance.delivery{border-left:4px solid #dc2626;}
 .job-row .accept{
   align-self:flex-end;background:var(--brand-deep);color:#fff;border:none;border-radius:11px;
   padding:9px 16px;font-weight:700;font-size:13.5px;cursor:pointer;
@@ -141,7 +191,7 @@ button{font-family:inherit;}
 .job-card{background:#fff;border-radius:18px;padding:16px;border:1px solid var(--paper-line);}
 .job-card .oid{font-size:12px;color:#8492a6;margin-bottom:6px;}
 .job-card .stage-label{
-  display:inline-flex;align-items:center;gap:6px;background:#eef2ff;color:#3348c9;
+  display:inline-flex;align-items:center;gap:6px;background:rgba(18,185,129,.12);color:#079669;
   font-size:12.5px;font-weight:700;padding:5px 11px;border-radius:999px;margin-bottom:12px;
 }
 .stop{display:flex;gap:10px;margin-bottom:10px;}
@@ -156,11 +206,45 @@ button{font-family:inherit;}
   flex:1;border-radius:12px;border:1px solid var(--paper-line);background:#fff;color:#233045;
   padding:11px 8px;font-size:13px;font-weight:600;text-align:center;text-decoration:none;cursor:pointer;
 }
+.job-actions .chat-icon-btn{
+  flex:0 0 46px;width:46px;min-width:46px;padding:0;font-size:20px;line-height:1;
+}
 .job-primary{
   width:100%;margin-top:12px;padding:15px;border-radius:14px;border:none;background:var(--brand-deep);
   color:#fff;font-weight:700;font-size:15.5px;cursor:pointer;
 }
 .job-primary.done{background:var(--on);}
+
+/* ---------- rider chat / payment summary ---------- */
+.chat-screen,.summary-screen{position:absolute;inset:0;background:var(--paper);z-index:1000;display:none;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:calc(18px + var(--safe-top)) 16px calc(28px + var(--safe-bottom));}
+.chat-screen.show,.summary-screen.show{display:block;}
+.subpage-head{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.back-btn{width:40px;height:40px;border:1px solid var(--paper-line);background:#fff;border-radius:12px;font-size:20px;cursor:pointer;}
+.subpage-title{font-size:18px;font-weight:700;color:#101826;}
+.chat-order{font-size:12.5px;color:#6b7686;margin:-8px 0 12px 50px;}
+.chat-box{background:#fff;border:1px solid var(--paper-line);border-radius:16px;padding:12px;height:calc(100dvh - 210px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:8px;}
+.chat-bubble{max-width:82%;padding:9px 11px;border-radius:14px;font-size:13.5px;line-height:1.5;}
+.chat-bubble.mine{align-self:flex-end;background:rgba(18,185,129,.14);color:#172033;border-bottom-right-radius:5px;}
+.chat-bubble.theirs{align-self:flex-start;background:#f1f5f9;color:#172033;border-bottom-left-radius:5px;}
+.chat-time{font-size:10.5px;color:#7b8798;margin-top:3px;}
+.chat-compose-rider{display:flex;gap:8px;margin-top:10px;}
+.chat-compose-rider input{flex:1;min-width:0;border:1px solid var(--paper-line);background:#fff;border-radius:13px;padding:12px;font-family:inherit;font-size:14px;outline:none;}
+.chat-compose-rider button{border:0;border-radius:13px;background:var(--brand-deep);color:#fff;padding:0 17px;font-weight:700;}
+.summary-card{background:#fff;border:1px solid var(--paper-line);border-radius:20px;padding:20px;margin-top:12px;}
+.summary-ok{text-align:center;font-size:46px;margin-bottom:6px;}
+.summary-card h2{text-align:center;margin:0 0 4px;font-size:21px;}
+.summary-order{text-align:center;color:#6b7686;font-size:13px;margin-bottom:18px;}
+.summary-total{background:#f7f9fc;border-radius:15px;padding:16px;margin:12px 0;}
+.summary-total .label{font-size:13px;color:#64748b;}
+.summary-total .amount{font-size:30px;font-weight:800;color:#101826;margin-top:3px;}
+.summary-cash{display:flex;align-items:center;gap:10px;padding:13px;border:1px solid #bbf7d0;background:#f0fdf4;border-radius:14px;color:#166534;font-weight:700;}
+.summary-note{font-size:12.5px;color:#64748b;line-height:1.5;margin-top:9px;text-align:center;}
+.summary-back{width:100%;margin-top:16px;border:0;border-radius:14px;padding:15px;background:var(--brand-deep);color:#fff;font-family:inherit;font-size:15px;font-weight:700;}
+.slide-wrap{position:relative;width:50%;height:52px;margin:12px 0 0 auto;border-radius:14px;background:#e7ebf2;overflow:hidden;border:1px solid #d8dee8;}
+.slide-wrap::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(18,185,129,.06),transparent);}
+.slide-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:14px;font-weight:700;pointer-events:none;}
+.slide-thumb{position:absolute;left:3px;top:3px;width:46px;height:44px;border-radius:11px;background:var(--brand-deep);color:#fff;border:0;font-size:18px;font-weight:800;cursor:grab;touch-action:none;z-index:2;}
+.slide-wrap.done .slide-thumb{background:var(--on);}
 
 .bottomnav{
   position:absolute;left:0;right:0;bottom:0;z-index:600;background:#fff;border-top:1px solid var(--paper-line);
@@ -174,7 +258,7 @@ button{font-family:inherit;}
 .bottomnav button.active{color:var(--brand-deep);}
 
 .panel-screen{
-  position:absolute;inset:0;background:var(--paper);z-index:400;overflow-y:auto;
+  position:absolute;inset:0;background:var(--paper);z-index:400;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
   padding:calc(18px + var(--safe-top)) 16px calc(96px + var(--safe-bottom));display:none;
 }
 .panel-screen.show{display:block;}
@@ -187,6 +271,20 @@ button{font-family:inherit;}
 .profile-card .prow:first-of-type{border-top:none;margin-top:10px;}
 .btn-logout{width:100%;background:#fff;border:1.5px solid rgba(239,68,68,.4);color:var(--danger);border-radius:14px;padding:14px;font-weight:700;font-size:14.5px;cursor:pointer;}
 
+/* ---------- new order modal alert ---------- */
+.qt-alert-backdrop{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:calc(18px + var(--safe-top)) 16px calc(18px + var(--safe-bottom));background:rgba(3,8,15,.58);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);touch-action:none;overscroll-behavior:contain;}
+.qt-alert-backdrop.show{display:flex;}
+.qt-alert-card{width:min(100%,390px);max-height:calc(100dvh - 36px - var(--safe-top) - var(--safe-bottom));overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;background:#fff;color:#101826;border-radius:24px;padding:22px 18px 18px;box-shadow:0 24px 70px rgba(0,0,0,.38);text-align:center;animation:qtAlertIn .18s ease-out;}
+@keyframes qtAlertIn{from{opacity:0;transform:translateY(10px) scale(.98);}to{opacity:1;transform:translateY(0) scale(1);}}
+.qt-alert-icon{width:64px;height:64px;margin:0 auto 10px;border-radius:20px;display:flex;align-items:center;justify-content:center;background:rgba(18,185,129,.13);font-size:34px;}
+.qt-alert-title{font-size:21px;font-weight:800;line-height:1.3;margin:0;}
+.qt-alert-sub{font-size:13.5px;color:#64748b;line-height:1.55;margin:6px 0 14px;}
+.qt-alert-order{background:#f7f9fc;border:1px solid #e2e8f0;border-radius:15px;padding:12px;text-align:left;margin-bottom:14px;}
+.qt-alert-order b{display:block;font-size:15px;margin-bottom:3px;}
+.qt-alert-order span{display:block;font-size:12.5px;color:#64748b;line-height:1.5;}
+.qt-alert-btn{width:100%;border:0;border-radius:15px;padding:14px 16px;background:linear-gradient(135deg,var(--brand),var(--brand-deep));color:#fff;font-family:inherit;font-size:15.5px;font-weight:800;cursor:pointer;box-shadow:0 9px 22px rgba(7,150,105,.28);}
+.qt-alert-btn:active{transform:scale(.985);}
+
 .toast{
   position:fixed;left:50%;bottom:calc(96px + var(--safe-bottom));transform:translate(-50%,14px);
   background:#101826;color:#fff;padding:11px 18px;border-radius:999px;font-size:13.5px;z-index:900;
@@ -197,6 +295,62 @@ button{font-family:inherit;}
 .spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;animation:spin .7s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .emoji-pin{font-size:26px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35));}
+
+/* ---------- Signup wizard (rider application) ---------- */
+.rider-wizard{width:100%;max-width:900px;margin:0 auto;background:#fff;border-radius:22px;box-shadow:0 24px 60px rgba(13,20,32,.16);overflow:hidden;}
+.rider-topbar{padding:20px 24px 16px;border-bottom:1px solid var(--paper-line);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.rider-brand{font-weight:800;letter-spacing:-.02em;font-size:17px;color:var(--ink);}
+.rider-title{font-size:12.5px;color:#8a94a6;font-weight:600;}
+
+.rider-steps{display:flex;align-items:flex-start;gap:0;padding:16px 20px;background:var(--paper);border-bottom:1px solid var(--paper-line);overflow-x:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
+.rider-step{display:flex;flex-direction:column;align-items:center;gap:7px;min-width:76px;text-align:center;color:#9aa4b3;font-size:11.5px;font-weight:600;flex:none;}
+.rider-step b{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fff;border:1.5px solid var(--paper-line);font-size:13px;color:#8a94a6;}
+.rider-step.active{color:var(--ink);}
+.rider-step.active b{background:var(--ink);border-color:var(--ink);color:#fff;}
+.rider-step.done{color:var(--brand-deep);}
+.rider-step.done b{background:var(--brand);border-color:var(--brand);color:#fff;}
+.rider-steps i{flex:1;max-width:60px;height:0;border-top:2px dashed var(--paper-line);margin-top:15px;}
+
+.rider-grid{padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.rider-panel{background:#fff;border:1px solid var(--paper-line);border-radius:18px;padding:20px;}
+.rider-panel h3{margin:0 0 15px;font-size:15px;font-weight:700;color:var(--ink);}
+.rider-panel label{display:block;font-size:12.5px;font-weight:600;color:#586376;margin:13px 0 6px;}
+.rider-panel input,.rider-panel select{width:100%;padding:12px 13px;border-radius:11px;border:1.5px solid var(--paper-line);background:var(--paper);color:var(--ink);font:inherit;outline:none;transition:border-color .15s ease,background .15s ease;}
+.rider-panel input:focus,.rider-panel select:focus{border-color:var(--brand);background:#fff;box-shadow:0 0 0 3px var(--on-soft);}
+.req{color:#c8492f;font-size:11px;font-weight:700;}
+.rider-note{margin-top:14px;padding:11px 13px;border-radius:11px;background:var(--on-soft);color:var(--brand-deep);font-size:12.5px;line-height:1.6;}
+
+.rider-face-upload{text-align:center;border:1.5px dashed #c8d6ce;border-radius:16px;padding:20px 16px;background:var(--paper);}
+.rider-face-upload img{width:112px;height:112px;border-radius:50%;object-fit:cover;margin:0 auto 14px;border:4px solid #fff;box-shadow:0 6px 18px rgba(13,20,32,.14);display:block;}
+.rider-face-upload small{display:block;margin-top:10px;color:#77839a;line-height:1.6;font-size:12px;}
+
+.rider-file-btn{width:100%!important;margin:0 0 4px!important;}
+.rider-file-input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;}
+.rider-upload-item{border:1px solid var(--paper-line);border-radius:14px;padding:14px;margin:0 0 10px;background:var(--paper);}
+.rider-upload-item:last-child{margin-bottom:0;}
+.rider-upload-item label{margin:0 0 9px;}
+.rider-doc-preview{max-width:100%;max-height:150px;object-fit:contain;border-radius:10px;margin-top:8px;border:1px solid var(--paper-line);}
+
+.rider-docs,.rider-confirm{grid-column:1/-1;}
+.rider-confirm{background:rgba(245,165,36,.08);border-color:rgba(245,165,36,.3);}
+.rider-confirm label{font-size:13px;font-weight:500;display:flex;gap:9px;align-items:flex-start;color:var(--ink);}
+.rider-confirm label input{width:auto;margin:3px 0 0;flex:none;}
+.rider-confirm p{margin:12px 0 0;padding:12px 13px;background:#fff;border-radius:11px;color:#93630a;font-size:12.5px;line-height:1.65;}
+
+.rider-submit{margin:4px 20px 10px;width:calc(100% - 40px);font-size:16px;}
+#rr-back-login{margin:0 20px 24px!important;width:calc(100% - 40px)!important;}
+
+@media(max-width:759px){
+  .rider-grid{grid-template-columns:1fr;padding:16px;gap:12px;}
+  .rider-topbar{padding:16px 16px 12px;}
+  .rider-steps{padding:12px 14px;justify-content:flex-start;}
+  .rider-step{min-width:62px;font-size:10.5px;}
+  .rider-step span{display:none;}
+  .rider-panel{padding:16px;border-radius:16px;}
+  .rider-face-upload img{width:96px;height:96px;}
+  .rider-submit{margin:4px 16px 8px;width:calc(100% - 32px);}
+  #rr-back-login{margin:0 16px 20px!important;width:calc(100% - 32px)!important;}
+}
 </style>
 </head>
 <body>
@@ -218,8 +372,65 @@ const SB = {
   KEY: 'sb_publishable_Vn2Il4jp-iBtzNsGRNY8Lg_Tpvk2Vre'
 };
 const SESSION_KEY = 'qtr_session_v1';
-const NEARBY_RADIUS_KM = 6;
-const POLL_MS = 7000;
+const NEARBY_RADIUS_KM = 2;
+const POLL_MS = 60000;
+
+/* ---------- full-screen lock + responsive resize (all screens, incl. rider page) ---------- */
+(function(){
+  function setVH(){
+    const vh = (window.visualViewport ? window.visualViewport.height : window.innerHeight) * 0.01;
+    document.documentElement.style.setProperty('--vh', vh + 'px');
+  }
+  let resizeRaf = null;
+  function onViewportChange(){
+    setVH();
+    if(resizeRaf) cancelAnimationFrame(resizeRaf);
+    resizeRaf = requestAnimationFrame(()=>{
+      if(window.S && S.map){ try{ S.map.invalidateSize({animate:false}); }catch(e){} }
+    });
+  }
+  setVH();
+  window.addEventListener('resize', onViewportChange);
+  window.addEventListener('orientationchange', onViewportChange);
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', onViewportChange);
+    window.visualViewport.addEventListener('scroll', onViewportChange);
+  }
+  document.addEventListener('DOMContentLoaded', setVH);
+
+  /* hard-stop page drag/bounce: fully lock touch movement unless inside an approved
+     scroll box AND that box actually has overflow content to scroll — and even then,
+     stop the drag dead at the top/bottom edge instead of letting it rubber-band. */
+  const SCROLLABLE_SEL = '.screen-center,.sheet,.chat-box,.chat-screen,.summary-screen,.panel-screen,.rider-steps,.qt-alert-card,.rider-doc-preview,#map';
+  let touchStartX = 0, touchStartY = 0, touchEl = null;
+  document.addEventListener('touchstart', function(e){
+    if(e.touches.length !== 1) return;
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    touchEl = e.target.closest(SCROLLABLE_SEL);
+  }, {passive:true});
+  document.addEventListener('touchmove', function(e){
+    if(e.touches.length !== 1) return;
+    const el = touchEl;
+    if(!el){ e.preventDefault(); return; } // not inside any scroll box at all -> fully locked
+    if(el.id === 'map') return; // let Leaflet handle its own pan/zoom
+    const dx = e.touches[0].clientX - touchStartX;
+    const dy = e.touches[0].clientY - touchStartY;
+    const canScrollY = el.scrollHeight > el.clientHeight + 1;
+    const canScrollX = el.scrollWidth > el.clientWidth + 1;
+    if(canScrollY){
+      const atTop = el.scrollTop <= 0;
+      const atBottom = Math.ceil(el.scrollTop + el.clientHeight) >= el.scrollHeight;
+      if((atTop && dy > 0) || (atBottom && dy < 0)) e.preventDefault();
+    } else if(canScrollX){
+      const atLeft = el.scrollLeft <= 0;
+      const atRight = Math.ceil(el.scrollLeft + el.clientWidth) >= el.scrollWidth;
+      if((atLeft && dx > 0) || (atRight && dx < 0)) e.preventDefault();
+    } else {
+      e.preventDefault(); // nothing to scroll here -> lock it completely, no bounce
+    }
+  }, {passive:false});
+})();
 
 function sbHeaders(token){
   const h = {apikey:SB.KEY, 'Content-Type':'application/json'};
@@ -312,19 +523,73 @@ const STEP_NEXT = { assigned:{to:'picked_up', label:'ถึงร้านแล
 const S = {
   session:null, user:null, riderProfile:null,
   online:false, pos:null, map:null, riderMarker:null, jobMarkers:[],
-  activeOrder:null, openJobs:[], history:[], activeTab:'home', pollTimer:null
+  activeOrder:null, openJobs:[], history:[], activeTab:'home', pollTimer:null, chatOrder:null, chatTimer:null, newJobAlert:null
 };
 
 function el(html){ const t=document.createElement('template'); t.innerHTML=html.trim(); return t.content.firstElementChild; }
 
+/* ---------- ONE ACCOUNT / ONE ACTIVE DEVICE ---------- */
+const DEVICE_ID_KEY='qtr_device_id_v1';
+const SESSION_GUARD_MS=25000;
+let sessionGuardTimer=null;
+function getDeviceId(){
+  try{let id=localStorage.getItem(DEVICE_ID_KEY);if(!id){id=crypto.randomUUID();localStorage.setItem(DEVICE_ID_KEY,id);}return id;}catch(e){return crypto.randomUUID();}
+}
+async function sbRpc(fn,body,token){
+  const r=await fetch(SB.URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:sbHeaders(token),body:JSON.stringify(body)});
+  const data=await r.json().catch(()=>null);
+  if(!r.ok)throw new Error((data&&data.message)||'RPC_ERROR_'+r.status);
+  return data;
+}
+async function claimActiveSession(sessionId,authUserId,token){
+  if(!sessionId||!authUserId||!token)throw new Error('ไม่สามารถยืนยันอุปกรณ์ที่ใช้งานได้');
+  const result=await sbRpc('claim_active_session',{p_session_id:sessionId,p_device_id:getDeviceId()},token);
+  if(Array.isArray(result)&&result[0]&&result[0].success===false)throw new Error('ไม่สามารถเปิด Session นี้ได้');
+  return result;
+}
+async function checkActiveSession(){
+  const s=readSession();
+  if(!s||!s.sessionId||!s.accessToken||!s.authUserId)return true;
+  try{
+    const token=await getAccessToken();
+    const latest=readSession();
+    const result=await sbRpc('check_active_session',{p_session_id:latest.sessionId},token);
+    const ok=result===true || (Array.isArray(result)&&result[0]===true) || (result&&result.check_active_session===true);
+    if(!ok){forceSessionLogout('บัญชีนี้ถูกเข้าสู่ระบบจากอุปกรณ์อื่น');return false;}
+    await sbRpc('touch_active_session',{p_session_id:latest.sessionId},token);
+    return true;
+  }catch(e){
+    console.warn('active session check failed',e);
+    return true;
+  }
+}
+function startSessionGuard(){
+  stopSessionGuard();
+  sessionGuardTimer=setInterval(()=>{if(S.session&&S.session.sessionId)checkActiveSession();},SESSION_GUARD_MS);
+}
+function stopSessionGuard(){if(sessionGuardTimer){clearInterval(sessionGuardTimer);sessionGuardTimer=null;}}
+function forceSessionLogout(msg){
+  stopSessionGuard();stopPolling();
+  try{if(S.watchId)navigator.geolocation.clearWatch(S.watchId);}catch(e){}
+  clearSession();
+  Object.assign(S,{session:null,user:null,riderProfile:null,online:false,activeOrder:null,openJobs:[],history:[]});
+  renderLogin(msg||'เซสชันนี้ถูกยกเลิก');
+}
+window.addEventListener('focus',()=>{if(S.session&&S.session.sessionId)checkActiveSession();});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&S.session&&S.session.sessionId)checkActiveSession();});
+
 /* ---------- boot ---------- */
 function boot(){
   const s = readSession();
-  if(s){ S.session = s; resumeSession(); }
+  if(s){ S.session = s; startSessionGuard(); resumeSession(); }
   else renderLogin();
 }
 async function resumeSession(){
   try{
+    if(S.session&&S.session.sessionId){
+      const ok=await checkActiveSession();
+      if(!ok)return;
+    }
     const token = await getAccessToken();
     const rows = await sbTable('users?select=*&auth_user_id=eq.'+encodeURIComponent(S.session.authUserId), {token});
     const u = Array.isArray(rows) ? rows[0] : null;
@@ -345,26 +610,222 @@ async function loadRiderProfile(){
 
 /* ---------- LOGIN ---------- */
 function renderLogin(err){
-  const app = document.getElementById('app');
-  app.innerHTML = '';
+  const app=document.getElementById('app'); app.innerHTML='';
   app.appendChild(el(`
     <div class="screen-center">
-      <div class="auth-card">
-        <div class="auth-mark"><span class="dot"></span><b>QUEUETECH RIDER</b></div>
-        <h1>เข้าสู่ระบบไรเดอร์</h1>
-        <p class="sub">ใช้เบอร์โทรและรหัสผ่านบัญชีไรเดอร์ของคุณใน QueueTech</p>
-        <div class="field"><label>เบอร์โทรศัพท์</label><input id="li-phone" inputmode="tel" placeholder="08xxxxxxxx"></div>
-        <div class="field"><label>รหัสผ่าน</label><input id="li-pass" type="password" placeholder="รหัสผ่าน"></div>
-        <button class="btn btn-brand" id="li-btn">เข้าสู่ระบบ</button>
-        <div class="auth-err" id="li-err"></div>
-        <div class="auth-foot">เวอร์ชันทดสอบ • ฟังก์ชันหลักสำหรับไรเดอร์เท่านั้น</div>
+      <div class="auth-shell">
+        <div class="auth-side">
+          <div class="auth-mark"><span class="dot"></span><b>QUEUETECH RIDER</b></div>
+          <div class="auth-side-copy">
+            <h2>งานใกล้ตัวคุณ รับได้ทันที</h2>
+            <p>เข้าสู่ระบบเพื่อดูงานรอบตัว รับงาน และจัดการสถานะออนไลน์ของคุณแบบเรียลไทม์</p>
+          </div>
+          <div class="auth-stats">
+            <div><b>${NEARBY_RADIUS_KM} กม.</b><span>รัศมีงานใกล้ตัว</span></div>
+            <div><b>24 ชม.</b><span>รับงานได้ทุกเมื่อ</span></div>
+          </div>
+        </div>
+        <div class="auth-main">
+          <div class="auth-card">
+            <h1>เข้าสู่ระบบไรเดอร์</h1>
+            <p class="sub">กรอกเบอร์โทรและรหัสผ่านที่ใช้สมัคร เพื่อเริ่มรับงานได้ทันที</p>
+            <div class="field"><label>เบอร์โทรศัพท์</label><input id="li-phone" inputmode="tel" autocomplete="username" placeholder="08x xxx xxxx"></div>
+            <div class="field"><label>รหัสผ่าน</label><input id="li-pass" type="password" autocomplete="current-password" placeholder="รหัสผ่านของคุณ"></div>
+            <button class="btn btn-brand" id="li-btn">เข้าสู่ระบบ</button>
+            <div class="auth-err" id="li-err"></div>
+            <div class="auth-divider"><span>ยังไม่มีบัญชี</span></div>
+            <button class="btn btn-signup" id="li-signup">สมัครเป็นไรเดอร์</button>
+            <div class="auth-foot">QueueTech Rider ปลอดภัย เรียบง่าย พร้อมใช้งานทุกวัน</div>
+          </div>
+        </div>
       </div>
     </div>`));
-  const errBox = document.getElementById('li-err');
-  if(err){ errBox.textContent = err; errBox.classList.add('show'); }
-  document.getElementById('li-btn').onclick = doLogin;
-  document.getElementById('li-pass').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+  const errBox=document.getElementById('li-err');
+  if(err){errBox.textContent=err;errBox.classList.add('show');}
+  document.getElementById('li-btn').onclick=doLogin;
+  document.getElementById('li-signup').onclick=renderSignup;
+  document.getElementById('li-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 }
+function renderSignup(){
+  renderRiderRegistration();
+}
+
+function openRiderFilePicker(inputId){
+  const input=document.getElementById(inputId);
+  if(!input) return;
+  try{ sessionStorage.setItem('qt_rider_register_hash', location.hash || '#rider-register'); }catch(e){}
+  input.click();
+}
+async function compressRiderImage(file,maxSize=1400,quality=0.78){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>{
+      const im=new Image();
+      im.onload=()=>{
+        const scale=Math.min(1,maxSize/Math.max(im.width,im.height));
+        const w=Math.max(1,Math.round(im.width*scale)),h=Math.max(1,Math.round(im.height*scale));
+        const c=document.createElement('canvas'); c.width=w; c.height=h;
+        const ctx=c.getContext('2d'); ctx.drawImage(im,0,0,w,h);
+        resolve(c.toDataURL('image/jpeg',quality));
+      };
+      im.onerror=reject; im.src=reader.result;
+    };
+    reader.onerror=reject; reader.readAsDataURL(file);
+  });
+}
+const RIDER_DRAFT_DB='qt_rider_draft_v1';
+function riderDraftOpen(){return new Promise((resolve,reject)=>{const r=indexedDB.open(RIDER_DRAFT_DB,1);r.onupgradeneeded=()=>r.result.createObjectStore('files');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});}
+async function saveRiderDraftFile(id,data,name){try{const db=await riderDraftOpen();await new Promise((res,rej)=>{const tx=db.transaction('files','readwrite');tx.objectStore('files').put({data,name,at:Date.now()},id);tx.oncomplete=res;tx.onerror=()=>rej(tx.error);});db.close();}catch(e){console.warn('draft save failed',e);}}
+async function loadRiderDraftFile(id){try{const db=await riderDraftOpen();const v=await new Promise((res,rej)=>{const tx=db.transaction('files','readonly');const r=tx.objectStore('files').get(id);r.onsuccess=()=>res(r.result||null);r.onerror=()=>rej(r.error);});db.close();return v;}catch(e){return null;}}
+async function clearRiderDraft(){try{const db=await riderDraftOpen();await new Promise((res,rej)=>{const tx=db.transaction('files','readwrite');tx.objectStore('files').clear();tx.oncomplete=res;tx.onerror=()=>rej(tx.error);});db.close();}catch(e){}}
+async function riderFilePreview(inputId,previewId){
+  const input=document.getElementById(inputId),img=document.getElementById(previewId);
+  if(!input||!input.files[0]) return;
+  const file=input.files[0];
+  if(file.size>8*1024*1024){input.value='';toast('ไฟล์ต้องมีขนาดไม่เกิน 8 MB');return;}
+  const nameEl=document.getElementById(inputId+'-name');
+  if(nameEl) nameEl.textContent=file.name||'เลือกไฟล์แล้ว';
+  try{
+    let data='';
+    if(file.type.startsWith('image/')){data=await compressRiderImage(file);if(img){img.src=data;img.style.display='block';}}
+    else data=await readFileAsDataURL(file);
+    await saveRiderDraftFile(inputId,data,file.name||inputId);
+    if(inputId==='rr-photo') try{sessionStorage.setItem('qt_rider_profile_draft',JSON.stringify({data,name:file.name||'profile.jpg',at:Date.now()}));}catch(e){}
+  }catch(err){console.error(err);toast('ไม่สามารถอ่านไฟล์ได้ กรุณาเลือกไฟล์ใหม่');}
+}
+function readFileAsDataURL(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});}
+function riderUploadCard(id,label,required=true,accept='image/*'){
+  return `<div class="rider-upload-item"><label>${label} ${required?'<span class="req">(บังคับ)</span>':''}</label><button type="button" class="btn btn-brand rider-file-btn" onclick="openRiderFilePicker('${id}')">📎 เลือกไฟล์</button><input id="${id}" class="rider-file-input" type="file" accept="${accept}" data-required="${required?'1':'0'}" onchange="riderFilePreview('${id}','${id}-preview'); event.stopPropagation();"><div id="${id}-name" style="font-size:12px;color:#68758a;margin:0 16px 4px">ยังไม่ได้เลือกไฟล์</div><img id="${id}-preview" class="rider-doc-preview" style="display:none"></div>`;
+}
+function riderRegistrationMetadata(user,data,form){
+  return {
+    source:'rider-registration',
+    email:form.email||null,
+    serviceArea:form.area||null,
+    serviceProvince:form.province||null,
+    serviceDistrict:form.district||null,
+    vehicleType:form.vehicle||null,
+    vehiclePlate:form.plate||null,
+    vehicleMake:form.make||null,
+    vehicleModel:form.model||null,
+    profileImage:data['rr-photo']||null,
+    idCardFrontImage:data['rr-id-front']||null,
+    idCardBackImage:data['rr-id-back']||null,
+    driverLicenseImage:data['rr-license']||null,
+    compulsoryInsuranceImage:data['rr-prb']||null,
+    vehiclePhoto:data['rr-vehicle-photo']||null,
+    applicationStatus:'pending',
+    applicationSubmittedAt:Date.now(),
+    available:false,
+    online:false
+  };
+}
+function riderStepGo(step){
+  const all=[...document.querySelectorAll('.rider-panel')];
+  const target=Math.max(0,Math.min(3,step));
+  const groups=[[all[0],all[1]],[all[2],all[3]],[all[4]],[all[5]]];
+  all.forEach(p=>p.style.display='none');
+  (groups[target]||groups[0]).forEach(p=>{if(p)p.style.display='block';});
+  const steps=document.querySelectorAll('.rider-step');steps.forEach((x,i)=>{x.classList.toggle('active',i===target);x.classList.toggle('done',i<target);});
+  window.__qtRiderStep=target;
+  const submit=document.querySelector('.rider-submit');if(submit)submit.textContent=target===3?'ส่งใบสมัคร  →':'ถัดไป  →';
+  const wizard=document.querySelector('.rider-wizard');if(wizard)wizard.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function riderStepNext(){
+  const s=window.__qtRiderStep||0;
+  if(s<3){riderStepGo(s+1);}else{document.querySelector('.rider-submit')?.click();}
+}
+function riderStepBack(){const s=window.__qtRiderStep||0;if(s>0)riderStepGo(s-1);else renderLogin();}
+async function handleRiderRegistration(e){
+  e.preventDefault();
+  const f=id=>document.getElementById(id);
+  const name=String(f('rr-name').value||'').trim(),phone=f('rr-phone').value.trim().replace(/[-\s]/g,''),password=f('rr-password').value;
+  const email=String(f('rr-email').value||'').trim().toLowerCase();
+  const form={email,area:String(f('rr-area').value||'').trim(),province:f('rr-province').value,district:String(f('rr-district').value||'').trim(),vehicle:f('rr-vehicle').value,plate:String(f('rr-plate').value||'').trim(),make:String(f('rr-make').value||'').trim(),model:String(f('rr-model').value||'').trim()};
+  if(!name||!phone||!password){toast('กรุณากรอกข้อมูลส่วนตัวให้ครบ');return false;}
+  if(!/^0[0-9]{9}$/.test(phone)){toast('กรุณากรอกเบอร์โทรศัพท์ 10 หลัก เช่น 0812345678');return false;}
+  if(password.length<6){toast('รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร');return false;}
+  if(!f('rr-province').value||!f('rr-district').value){toast('กรุณาเลือกจังหวัดและอำเภอ/เขต');return false;}
+  if(!form.plate){toast('กรุณากรอกทะเบียนรถ');riderStepGo(1);return false;}
+  const agree=document.querySelector('.rider-confirm input[type=checkbox]');
+  if(!agree||!agree.checked){toast('กรุณายืนยันข้อมูลและข้อตกลงก่อนส่งใบสมัคร');riderStepGo(3);return false;}
+  const files=['rr-photo','rr-id-front','rr-id-back','rr-license','rr-prb','rr-vehicle-photo'];const data={};
+  for(const id of files){const input=f(id);if(input&&input.files&&input.files[0]){const file=input.files[0];data[id]=file.type.startsWith('image/')?await compressRiderImage(file):await readFileAsDataURL(file);}else{const draft=await loadRiderDraftFile(id);if(draft&&draft.data)data[id]=draft.data;}}
+  const requiredDocs=files;const labels={'rr-photo':'รูปถ่ายหน้าตรง','rr-id-front':'บัตรประชาชนด้านหน้า','rr-id-back':'บัตรประชาชนด้านหลัง','rr-license':'ใบขับขี่','rr-prb':'พ.ร.บ. รถ','rr-vehicle-photo':'รูปถ่ายคู่กับรถ'};const missing=requiredDocs.filter(id=>!data[id]);
+  if(missing.length){toast('กรุณาอัปโหลด: '+missing.map(x=>labels[x]).join(', '));return false;}
+  const submitBtn=e.submitter||document.querySelector('.rider-submit');if(submitBtn)submitBtn.disabled=true;
+  try{
+    toast('กำลังสร้างบัญชีและส่งใบสมัคร...');
+    const authEmail=email||authEmailFromPhone(phone);
+    const auth=await sbAuth('signup',{email:authEmail,password,data:{name,phone,role:'rider'}});
+    if(!auth.user||!auth.user.id)throw new Error('สร้างบัญชี Supabase Authentication ไม่สำเร็จ');
+    let session=auth.session;
+    if(!session||!session.access_token){
+      try{session=await sbAuth('token?grant_type=password',{email:authEmail,password});}
+      catch(err){throw new Error(email?'บัญชีถูกสร้างแล้ว แต่ยังไม่ได้ยืนยันอีเมลใน Supabase':'บัญชี Auth ถูกสร้างแล้ว แต่ Supabase ยังไม่อนุญาตให้เข้าสู่ระบบทันที กรุณาปิด Email Confirmation ใน Supabase Authentication Settings แล้วสมัครใหม่');}
+    }
+    if(!session||!session.access_token)throw new Error('ไม่สามารถสร้าง Session ของบัญชีได้');
+    const existing=await sbTable('users?select=id,auth_user_id,role,name,phone,status,created_at&auth_user_id=eq.'+encodeURIComponent(auth.user.id)+'&limit=1',{token:session.access_token});
+    let profile=Array.isArray(existing)&&existing[0]?existing[0]:null;
+    if(!profile){
+      const created=await sbTable('users?select=id,auth_user_id,role,name,phone,status,created_at',{method:'POST',token:session.access_token,body:{auth_user_id:auth.user.id,role:'rider',name,phone,status:'pending'}});
+      profile=Array.isArray(created)&&created[0]?created[0]:created;
+    }
+    if(!profile||!profile.id||String(profile.auth_user_id)!==String(auth.user.id))throw new Error('สร้างข้อมูลสมาชิกใน public.users ไม่สำเร็จ');
+    const metadata=riderRegistrationMetadata(profile,data,form);
+    const riderBody={user_id:profile.id,rider_name:name,phone,vehicle_type:form.vehicle,vehicle_plate:form.plate,address:form.area||null,latitude:null,longitude:null,status:'pending',metadata};
+    const riderRows=await sbTable('rider_profiles?on_conflict=user_id',{method:'POST',token:session.access_token,body:riderBody});
+    if(!riderRows) throw new Error('สร้างโปรไฟล์ไรเดอร์ไม่สำเร็จ');
+    const sessionId=crypto.randomUUID();
+    await claimActiveSession(sessionId,auth.user.id,session.access_token);
+    S.session={authUserId:auth.user.id,accessToken:session.access_token,refreshToken:session.refresh_token||null,expiresAt:auth.expires_at?auth.expires_at*1000:(session.expires_at?session.expires_at*1000:jwtExpiryMs(session.access_token)),sessionId};
+    writeSession(S.session);S.user=profile;S.riderProfile=Array.isArray(riderRows)?riderRows[0]:riderRows;S.online=false;
+    startSessionGuard();
+    await clearRiderDraft();try{sessionStorage.removeItem('qt_rider_profile_draft');sessionStorage.removeItem('qt_rider_register_hash');}catch(err){}
+    toast('ส่งใบสมัครสำเร็จ รอ Admin ตรวจสอบ');
+    renderPending(profile,'ใบสมัครของคุณอยู่ระหว่างตรวจสอบ');
+  }catch(err){
+    console.error('QueueTech rider registration error',err);
+    const m=String(err&&err.message||'');
+    toast(/already registered|User already registered|duplicate key/i.test(m)?'สมัครไม่สำเร็จ: เบอร์หรืออีเมลนี้ถูกใช้สมัครแล้ว':m||'สมัครสมาชิกไม่สำเร็จ');
+  }finally{if(submitBtn)submitBtn.disabled=false;}
+  return false;
+}
+function renderRiderRegistration(){
+  const existing=S.user;
+  if(existing){renderPending(existing,'คุณมีบัญชีไรเดอร์อยู่แล้ว');return;}
+  const app=document.getElementById('app');app.innerHTML='';
+  app.appendChild(el(`
+    <div class="screen-center" style="align-items:flex-start;justify-content:center;padding:16px 12px 30px;">
+      <div class="rider-wizard">
+        <div class="rider-topbar"><div class="rider-brand">QueueTech</div><div class="rider-title">สมัครเป็นไรเดอร์</div></div>
+        <div class="rider-steps"><div class="rider-step active"><b>1</b><span>ข้อมูลส่วนตัว</span></div><i></i><div class="rider-step"><b>2</b><span>ยานพาหนะ</span></div><i></i><div class="rider-step"><b>3</b><span>เอกสาร</span></div><i></i><div class="rider-step"><b>4</b><span>ยืนยัน</span></div></div>
+        <form novalidate onsubmit="return handleRiderRegistration(event)">
+          <div class="rider-grid">
+            <section class="rider-panel"><h3>📷 รูปถ่ายหน้าตรง <span class="req">(บังคับ)</span></h3><div class="rider-face-upload"><img id="rr-photo-preview" style="display:none"><button type="button" class="btn btn-brand rider-file-btn" onclick="openRiderFilePicker('rr-photo')">📷 อัปโหลดรูปภาพ</button><div id="rr-photo-name" style="font-size:12px;color:#68758a;margin-bottom:6px">ยังไม่ได้เลือกรูป</div><input id="rr-photo" class="rider-file-input" type="file" accept="image/*" data-required="1" onchange="riderFilePreview('rr-photo','rr-photo-preview'); event.stopPropagation();"><small>ไฟล์ JPG, PNG ขนาดไม่เกิน 8 MB<br>รูปต้องเป็นหน้าตรง ชัดเจน เห็นใบหน้าเต็ม</small></div></section>
+            <section class="rider-panel"><h3>👤 ข้อมูลส่วนตัว</h3><label>ชื่อ - นามสกุล <span class="req">*</span></label><input required id="rr-name" placeholder="เช่น นายสมชาย ใจดี"><label>เบอร์โทรศัพท์ <span class="req">*</span></label><input required id="rr-phone" inputmode="tel" placeholder="เช่น 081-234-5678"><label>รหัสผ่าน <span class="req">*</span></label><input required id="rr-password" type="password" minlength="6" placeholder="อย่างน้อย 6 ตัวอักษร"><label>อีเมล (ถ้ามี)</label><input id="rr-email" type="email" placeholder="เช่น rider@example.com"></section>
+            <section class="rider-panel"><h3>🚗 ข้อมูลยานพาหนะ</h3><label>ประเภทพาหนะ <span class="req">*</span></label><select required id="rr-vehicle"><option value="motorcycle">🛵 รถจักรยานยนต์</option><option value="car">🚗 รถยนต์</option><option value="bicycle">🚲 จักรยาน</option></select><label>ทะเบียนรถ <span class="req">*</span></label><input required id="rr-plate" placeholder="เช่น กข 1234 นครราชสีมา"><label>ยี่ห้อ (ถ้ามี)</label><input id="rr-make" placeholder="เช่น Honda, Yamaha"><label>รุ่น (ถ้ามี)</label><input id="rr-model" placeholder="เช่น Wave, Click"><div class="rider-note">ระบบไม่บังคับให้ระบุยี่ห้อและรุ่น แต่ต้องระบุทะเบียนรถเพื่อความปลอดภัย</div></section>
+            <section class="rider-panel"><h3>📍 พื้นที่ให้บริการ</h3><label>เลือกจังหวัด <span class="req">*</span></label><select required id="rr-province"><option value="">-- เลือกจังหวัด --</option><option>กรุงเทพมหานคร</option><option>บุรีรัมย์</option><option>นครราชสีมา</option><option>ขอนแก่น</option><option>เชียงใหม่</option><option>ชลบุรี</option><option>อุบลราชธานี</option><option>สุรินทร์</option><option>ศรีสะเกษ</option><option>มหาสารคาม</option><option>ร้อยเอ็ด</option><option>สระบุรี</option><option>ปทุมธานี</option><option>นนทบุรี</option><option>สมุทรปราการ</option><option>ภูเก็ต</option></select><label>เขต/อำเภอ <span class="req">*</span></label><input required id="rr-district" placeholder="เช่น เมืองนครราชสีมา"><label>พื้นที่เพิ่มเติม (ถ้ามี)</label><input id="rr-area" placeholder="เช่น ปากช่อง, โพธิ์กลาง"></section>
+            <section class="rider-panel rider-docs"><h3>📄 เอกสารประกอบการสมัคร</h3>${riderUploadCard('rr-id-front','บัตรประชาชน (ด้านหน้า)',true,'image/*,.pdf')}${riderUploadCard('rr-id-back','บัตรประชาชน (ด้านหลัง)',true,'image/*,.pdf')}${riderUploadCard('rr-license','ใบขับขี่',true,'image/*,.pdf')}${riderUploadCard('rr-prb','พ.ร.บ. รถ',true,'image/*,.pdf')}${riderUploadCard('rr-vehicle-photo','รูปถ่ายคู่กับรถ (ปัจจุบัน)',true,'image/*')}</section>
+            <section class="rider-panel rider-confirm"><h3>☑️ ยืนยันข้อมูลการสมัคร</h3><label><input type="checkbox" required> <span>ข้าพเจ้าขอรับรองว่าข้อมูลที่ให้เป็นความจริง และยินยอมให้ QueueTech ตรวจสอบข้อมูลและเอกสารประกอบการสมัคร</span></label><p>หลังส่งใบสมัคร สถานะจะเป็น <b>รอ Admin ตรวจสอบ</b> และยังไม่สามารถรับงานได้จนกว่าจะได้รับอนุมัติ</p></section>
+          </div>
+          <button class="btn btn-brand rider-submit" type="submit">ส่งใบสมัคร</button>
+          <button class="btn btn-signup" type="button" id="rr-back-login">กลับไปเข้าสู่ระบบ</button>
+        </form>
+      </div>
+    </div>`));
+  document.getElementById('rr-back-login').onclick=()=>renderLogin();
+  window.__qtRiderStep=0;
+  riderStepGo(0);
+  const submit=document.querySelector('.rider-submit');
+  if(submit){submit.type='button';submit.onclick=()=>{if((window.__qtRiderStep||0)<3)riderStepNext();else document.querySelector('form[onsubmit*=handleRiderRegistration]').requestSubmit();};submit.textContent='ถัดไป  →';}
+  const back=document.getElementById('rr-back-login');
+  if(back){back.textContent='← ย้อนกลับ';back.onclick=()=>riderStepBack();}
+
+  try{const draft=JSON.parse(sessionStorage.getItem('qt_rider_profile_draft')||'null');if(draft&&draft.data){const img=document.getElementById('rr-photo-preview'),nameEl=document.getElementById('rr-photo-name');if(img){img.src=draft.data;img.style.display='block';}if(nameEl)nameEl.textContent=draft.name||'เลือกไฟล์แล้ว';}}catch(err){}
+}
+
+
 async function doLogin(){
   const btn = document.getElementById('li-btn');
   const errBox = document.getElementById('li-err');
@@ -379,8 +840,11 @@ async function doLogin(){
     const rows = await sbTable('users?select=*&auth_user_id=eq.'+encodeURIComponent(auth.user.id), {token:auth.access_token});
     const u = Array.isArray(rows) ? rows[0] : null;
     if(!u || u.role!=='rider'){ throw new Error('บัญชีนี้ไม่ใช่บัญชีไรเดอร์'); }
-    S.session = {authUserId:auth.user.id, accessToken:auth.access_token, refreshToken:auth.refresh_token||null, expiresAt:auth.expires_at?auth.expires_at*1000:0};
+    const sessionId=crypto.randomUUID();
+    await claimActiveSession(sessionId,auth.user.id,auth.access_token);
+    S.session = {authUserId:auth.user.id, accessToken:auth.access_token, refreshToken:auth.refresh_token||null, expiresAt:auth.expires_at?auth.expires_at*1000:jwtExpiryMs(auth.access_token), sessionId};
     writeSession(S.session);
+    startSessionGuard();
     S.user = u;
     if(u.status==='suspended'){ renderPending(u,'บัญชีถูกระงับการใช้งาน กรุณาติดต่อผู้ดูแลระบบ'); return; }
     if(u.status!=='active'){ renderPending(u,'ใบสมัครของคุณอยู่ระหว่างตรวจสอบ'); return; }
@@ -409,10 +873,13 @@ function renderPending(u, msg){
     </div>`));
   document.getElementById('pd-logout').onclick = doLogout;
 }
-function doLogout(){
-  clearSession(); stopPolling();
+async function doLogout(){
+  const s=readSession();
+  stopSessionGuard();
+  try{if(s&&s.sessionId&&s.accessToken)await sbRpc('revoke_active_session',{p_session_id:s.sessionId},s.accessToken);}catch(e){console.warn('revoke active session failed',e);}
+  clearSession();stopPolling();
   if(S.watchId) navigator.geolocation.clearWatch(S.watchId);
-  Object.assign(S, {session:null,user:null,riderProfile:null,online:false,activeOrder:null,openJobs:[],history:[]});
+  Object.assign(S,{session:null,user:null,riderProfile:null,online:false,activeOrder:null,openJobs:[],history:[]});
   renderLogin();
 }
 
@@ -470,11 +937,13 @@ function switchTab(tab){
   document.querySelectorAll('.fab-stack .fab').forEach(f=>f.style.display = tab==='home' ? '' : 'none');
   if(tab==='jobs') renderHistoryPanel();
   if(tab==='profile') renderProfilePanel();
+  if(tab==='home' && S.map) requestAnimationFrame(()=>{ try{ S.map.invalidateSize({animate:false}); }catch(e){} });
 }
 
 function initMap(){
   S.map = L.map('map', {zoomControl:false, attributionControl:false}).setView([13.7563,100.5018], 13);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19}).addTo(S.map);
+  requestAnimationFrame(()=>{ try{ S.map.invalidateSize({animate:false}); }catch(e){} });
 }
 function startGeolocation(){
   if(!navigator.geolocation){ toast('อุปกรณ์นี้ไม่รองรับ GPS'); return; }
@@ -508,7 +977,12 @@ async function toggleOnline(){
     const body = {user_id:S.user.id, rider_name:S.user.name||'ไรเดอร์', phone:S.user.phone||null,
       vehicle_type:(S.riderProfile&&S.riderProfile.vehicle_type)||null, vehicle_plate:(S.riderProfile&&S.riderProfile.vehicle_plate)||null,
       latitude:S.pos?S.pos.lat:null, longitude:S.pos?S.pos.lng:null, status:'active', metadata:meta};
-    const rows = await sbTable('rider_profiles?on_conflict=user_id', {method:'POST', token, body});
+    let rows;
+    if(S.riderProfile && S.riderProfile.user_id){
+      rows = await sbTable('rider_profiles?user_id=eq.'+encodeURIComponent(S.user.id), {method:'PATCH', token, body});
+    }else{
+      rows = await sbTable('rider_profiles', {method:'POST', token, body});
+    }
     S.riderProfile = Array.isArray(rows)?rows[0]:rows;
     toast(next ? '🟢 เปิดรับงานแล้ว' : '⚪ ปิดรับงานแล้ว');
     refreshData();
@@ -538,9 +1012,10 @@ function updateStatusUI(){
 async function refreshData(){
   try{
     const token = await getAccessToken();
-    const mine = await sbTable('orders?select=*&order_type=eq.shopping&rider_id=eq.'+encodeURIComponent(S.user.id)+'&status=in.(assigned,picked_up,in_progress)&order=created_at.desc&limit=1', {token});
+    const mine = await sbTable('orders?select=*&order_type=eq.shopping&rider_id=eq.'+encodeURIComponent(S.riderProfile.id)+'&status=in.(assigned,picked_up,in_progress)&order=created_at.desc&limit=1', {token});
     S.activeOrder = Array.isArray(mine) && mine[0] ? mine[0] : null;
 
+    const previousOpenJobIds = new Set((S.openJobs||[]).map(x=>x&&x.order&&x.order.id ? String(x.order.id) : null).filter(Boolean));
     if(S.activeOrder){
       await enrichOrder(S.activeOrder);
       S.openJobs = [];
@@ -548,17 +1023,25 @@ async function refreshData(){
       const open = await sbTable('orders?select=*&order_type=eq.shopping&status=eq.ready&rider_id=is.null&order=created_at.asc&limit=25', {token});
       const list = Array.isArray(open) ? open : [];
       for(const o of list) await enrichOrder(o);
-      S.openJobs = list
+      const candidates = list
         .map(o=>({order:o, distanceKm: haversineKm(S.pos&&S.pos.lat, S.pos&&S.pos.lng, o.pickup_latitude, o.pickup_longitude)}))
-        .filter(x=>x.distanceKm <= NEARBY_RADIUS_KM)
+        .filter(x=>Number.isFinite(x.distanceKm))
         .sort((a,b)=>a.distanceKm-b.distanceKm);
+      const nearby = candidates.filter(x=>x.distanceKm <= NEARBY_RADIUS_KM);
+      // Rider-side fallback: if there is no job within 2 km, keep the nearest open job visible.
+      // Final nearest-Rider assignment must be enforced server-side/RPC to prevent two riders claiming the same fallback job.
+      S.openJobs = nearby.length ? nearby : (candidates.length ? [{...candidates[0], fallback:true}] : []);
     } else {
       S.openJobs = [];
+    }
+    if(window.qtCheckNewJobs){
+      const currentOpenOrders = S.openJobs.map(x=>x.order).filter(Boolean);
+      window.qtCheckNewJobs(previousOpenJobIds, currentOpenOrders);
     }
     if(S.activeTab==='home') renderSheet();
     placeJobMarkers();
 
-    const hist = await sbTable('orders?select=*&order_type=eq.shopping&rider_id=eq.'+encodeURIComponent(S.user.id)+'&status=eq.completed&order=updated_at.desc&limit=30', {token});
+    const hist = await sbTable('orders?select=*&order_type=eq.shopping&rider_id=eq.'+encodeURIComponent(S.riderProfile.id)+'&status=eq.completed&order=updated_at.desc&limit=30', {token});
     S.history = Array.isArray(hist) ? hist : [];
     if(S.activeTab==='jobs') renderHistoryPanel();
   }catch(e){ console.error('refreshData failed', e); }
@@ -577,16 +1060,24 @@ async function enrichOrder(o){
 function placeJobMarkers(){
   S.jobMarkers.forEach(m=>S.map.removeLayer(m)); S.jobMarkers = [];
   const list = S.activeOrder ? [S.activeOrder] : S.openJobs.map(x=>x.order);
+  const bounds = [];
   list.forEach(o=>{
-    if(Number.isFinite(Number(o.pickup_latitude))){
-      const m = L.marker([o.pickup_latitude,o.pickup_longitude], {icon:L.divIcon({html:'<div class="emoji-pin">🏪</div>',className:'',iconSize:[26,26],iconAnchor:[13,13]})}).addTo(S.map);
-      S.jobMarkers.push(m);
+    const plat=Number(o.pickup_latitude), plng=Number(o.pickup_longitude);
+    const dlat=Number(o.delivery_latitude), dlng=Number(o.delivery_longitude);
+    if(Number.isFinite(plat)&&Number.isFinite(plng)){
+      const m=L.marker([plat,plng],{icon:L.divIcon({html:'<div style="width:18px;height:18px;border-radius:50%;background:#16a34a;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>',className:'',iconSize:[24,24],iconAnchor:[12,12]})}).addTo(S.map);
+      m.bindPopup('<b style="color:#15803d">จุดรับ</b><br>'+esc(o.pickup_address||'ร้านค้า'));
+      S.jobMarkers.push(m); bounds.push([plat,plng]);
     }
-    if(S.activeOrder && Number.isFinite(Number(o.delivery_latitude))){
-      const m = L.marker([o.delivery_latitude,o.delivery_longitude], {icon:L.divIcon({html:'<div class="emoji-pin">🏁</div>',className:'',iconSize:[26,26],iconAnchor:[13,13]})}).addTo(S.map);
-      S.jobMarkers.push(m);
+    if(Number.isFinite(dlat)&&Number.isFinite(dlng)){
+      const m=L.marker([dlat,dlng],{icon:L.divIcon({html:'<div style="width:18px;height:18px;border-radius:50%;background:#dc2626;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>',className:'',iconSize:[24,24],iconAnchor:[12,12]})}).addTo(S.map);
+      m.bindPopup('<b style="color:#b91c1c">จุดส่ง</b><br>'+esc(o.delivery_address||'บ้านลูกค้า'));
+      S.jobMarkers.push(m); bounds.push([dlat,dlng]);
     }
   });
+  if(bounds.length && S.activeTab==='home' && !S.pos){
+    try{ S.map.fitBounds(bounds,{padding:[45,45],maxZoom:16}); }catch(e){}
+  }
 }
 
 /* ---------- sheet (home) ---------- */
@@ -606,8 +1097,8 @@ function renderSheet(){
   sheet.innerHTML = `
     <div class="sheet-handle"></div>
     <div class="sheet-title">งานที่รอไรเดอร์ (${S.openJobs.length})</div>
-    <div class="sheet-sub">เรียงจากใกล้ตำแหน่งคุณที่สุด</div>
-    ${S.openJobs.length ? S.openJobs.map(x=>jobRowHTML(x)).join('') : '<div class="empty-note">ยังไม่มีออเดอร์รอไรเดอร์ในระยะใกล้ตอนนี้<br>ระบบจะอัปเดตอัตโนมัติทุกไม่กี่วินาที</div>'}`;
+    <div class="sheet-sub">ค้นหางานในรัศมี 2 กม. ก่อน และถ้าไม่มีงานใกล้เคียงจะแสดงงานที่ใกล้ที่สุด</div>
+    ${S.openJobs.length ? S.openJobs.map(x=>jobRowHTML(x)).join('') : '<div class="empty-note">ยังไม่มีออเดอร์รอไรเดอร์ตอนนี้<br>ระบบจะอัปเดตอัตโนมัติทุกไม่กี่วินาที</div>'}`;
   S.openJobs.forEach(x=>{
     const b = document.getElementById('accept-'+x.order.id);
     if(b) b.onclick = ()=>acceptJob(x.order.id);
@@ -616,56 +1107,226 @@ function renderSheet(){
 function jobRowHTML(x){
   const o = x.order;
   const shopName = o._shop ? o._shop.shop_name : 'ร้านค้า';
+  const pickupKm = Number.isFinite(Number(x.distanceKm)) ? Number(x.distanceKm) : haversineKm(S.pos&&S.pos.lat,S.pos&&S.pos.lng,o.pickup_latitude,o.pickup_longitude);
+  const deliveryKm = haversineKm(o.pickup_latitude,o.pickup_longitude,o.delivery_latitude,o.delivery_longitude);
   return `<div class="job-row">
     <div class="top">
-      <div><div class="shop">${esc(shopName)}</div><div class="meta">ห่างจากคุณ ${x.distanceKm.toFixed(1)} กม. • ${(o.pickup_address? esc(o.pickup_address): '')}</div></div>
+      <div><div class="shop">${esc(shopName)}</div><div class="meta">งานรอรับ</div></div>
       <div class="fee">฿${Number(o.delivery_fee||0)}</div>
     </div>
-    <button class="accept" id="accept-${o.id}">รับงานนี้</button>
+    <div class="job-distances">
+      <div class="job-distance pickup">🟢 จุดรับจากคุณ<b>${Number.isFinite(pickupKm)?pickupKm.toFixed(1)+' กม.':'ไม่มีพิกัด'}</b></div>
+      <div class="job-distance delivery">🔴 จุดรับ → จุดส่ง<b>${Number.isFinite(deliveryKm)?deliveryKm.toFixed(1)+' กม.':'ไม่มีพิกัด'}</b></div>
+    </div>
+    <div class="meta">📍 ${esc(o.pickup_address||'ไม่มีที่อยู่จุดรับ')}<br>🏠 ${esc(o.delivery_address||'ไม่มีที่อยู่จุดส่ง')}</div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap">
+      <a class="accept" style="text-decoration:none;display:inline-block" href="${esc(mapsLink(o.pickup_latitude,o.pickup_longitude,o.pickup_address))}" target="_blank" rel="noopener">🧭 นำทางไปร้าน</a>
+      <button class="accept" id="accept-${o.id}">รับงานนี้</button>
+    </div>
   </div>`;
 }
+
 function jobCardHTML(o){
   const status = statusFromRow(o);
   const shop = o._shop || {}; const cust = o._customer || {};
   const next = STEP_NEXT[status];
+  const riderToShop = haversineKm(S.pos&&S.pos.lat,S.pos&&S.pos.lng,o.pickup_latitude,o.pickup_longitude);
+  const shopToCustomer = haversineKm(o.pickup_latitude,o.pickup_longitude,o.delivery_latitude,o.delivery_longitude);
+  const navLat = status==='assigned' ? o.pickup_latitude : o.delivery_latitude;
+  const navLng = status==='assigned' ? o.pickup_longitude : o.delivery_longitude;
+  const navAddr = status==='assigned' ? o.pickup_address : o.delivery_address;
+  /* แสดงเลขออร์เดอร์เฉพาะหลังไรเดอร์รับงานแล้ว */
+  const showOrderNo = !!o.rider_id && ['assigned','picked_up','delivering','arrived','completed'].includes(status);
   return `<div class="sheet-handle"></div>
     <div class="job-card">
-      <div class="oid">ออเดอร์ ${esc(o.order_number||o.id.slice(0,8))}</div>
+      ${showOrderNo ? `<div class="oid">ออเดอร์ ${esc(o.order_number||o.id.slice(0,8))}</div>` : ''}
       <div class="stage-label">${esc(STEP_LABEL[status]||status)}</div>
+      <div class="job-distances">
+        <div class="job-distance pickup">🟢 ไรเดอร์ → จุดรับ<b>${Number.isFinite(riderToShop)?riderToShop.toFixed(1)+' กม.':'ไม่มีพิกัด'}</b></div>
+        <div class="job-distance delivery">🔴 จุดรับ → จุดส่ง<b>${Number.isFinite(shopToCustomer)?shopToCustomer.toFixed(1)+' กม.':'ไม่มีพิกัด'}</b></div>
+      </div>
       <div class="stop">
-        <div class="mk"><i></i><div class="ln"></div></div>
+        <div class="mk"><i style="background:#16a34a"></i><div class="ln"></div></div>
         <div class="tx"><b>${esc(shop.shop_name||'ร้านค้า')}</b><span>${esc(o.pickup_address||'จุดรับสินค้า')}</span></div>
       </div>
       <div class="stop">
-        <div class="mk"><i style="background:var(--on)"></i></div>
+        <div class="mk"><i style="background:#dc2626"></i></div>
         <div class="tx"><b>${esc(cust.name||'ลูกค้า')}</b><span>${esc(o.delivery_address||'จุดส่งสินค้า')}</span></div>
       </div>
       <div class="job-actions">
-        ${shop.phone ? `<a href="tel:${esc(shop.phone)}">📞 โทรร้าน</a>` : ''}
         ${cust.phone ? `<a href="tel:${esc(cust.phone)}">📞 โทรลูกค้า</a>` : ''}
-        <a href="${esc(mapsLink(status==='assigned'?o.pickup_latitude:o.delivery_latitude, status==='assigned'?o.pickup_longitude:o.delivery_longitude, status==='assigned'?o.pickup_address:o.delivery_address))}" target="_blank" rel="noopener">🧭 นำทาง</a>
+        <button type="button" class="chat-icon-btn" id="chat-btn" aria-label="แชทกับลูกค้า" title="แชทกับลูกค้า">💬</button>
+        <a class="nav-btn" href="${esc(mapsLink(navLat,navLng,navAddr))}" target="_blank" rel="noopener">🧭 นำทาง</a>
       </div>
-      ${next ? `<button class="job-primary" id="advance-btn">${esc(next.label)}</button>` : ''}
+      ${next && next.to==='completed' ? slideConfirmHTML() : (next ? `<button class="job-primary" id="advance-btn">${esc(next.label)}</button>` : '')}
     </div>`;
 }
+
+function slideConfirmHTML(){
+  return `<div class="slide-wrap" id="delivery-slide" aria-label="เลื่อนเพื่อยืนยันส่งสำเร็จ">
+    <div class="slide-label">เลื่อนเพื่อยืนยันส่งสำเร็จ</div>
+    <button class="slide-thumb" id="delivery-slide-thumb" type="button">›</button>
+  </div>`;
+}
+
 function bindJobCardEvents(o){
   const btn = document.getElementById('advance-btn');
   if(btn) btn.onclick = ()=>advanceOrder(o);
+  const chatBtn = document.getElementById('chat-btn');
+  if(chatBtn) chatBtn.onclick = ()=>openChat(o);
+  const slide = document.getElementById('delivery-slide');
+  const thumb = document.getElementById('delivery-slide-thumb');
+  if(slide && thumb) bindDeliverySlide(slide,thumb,()=>showPaymentBeforeFinish(o));
+}
+
+function bindDeliverySlide(track,thumb,onDone){
+  let startX=0,current=0,drag=false,finished=false;
+  const max=()=>Math.max(0,track.clientWidth-thumb.offsetWidth-6);
+  const move=x=>{ current=Math.max(0,Math.min(max(),x-startX)); thumb.style.transform=`translateX(${current}px)`; };
+  const end=()=>{ if(!drag||finished)return; drag=false; if(current>=max()*0.82){ finished=true; current=max(); thumb.style.transform=`translateX(${current}px)`; track.classList.add('done'); thumb.textContent='✓'; onDone(); } else { current=0; thumb.style.transform='translateX(0)'; } };
+  thumb.addEventListener('pointerdown',e=>{ if(finished)return; drag=true; startX=e.clientX-current; thumb.setPointerCapture?.(e.pointerId); });
+  thumb.addEventListener('pointermove',e=>{ if(drag)move(e.clientX); });
+  thumb.addEventListener('pointerup',end);
+  thumb.addEventListener('pointercancel',end);
+}
+
+async function showPaymentBeforeFinish(o){
+  try{
+    stopPolling();
+    const token=await getAccessToken();
+    const rows=await sbTable('orders?id=eq.'+encodeURIComponent(o.id)+'&select=*',{token});
+    const current=Array.isArray(rows)&&rows[0]?rows[0]:o;
+    renderPaymentSummary(current,false);
+  }catch(e){
+    console.error(e);
+    startPolling();
+    toast('ไม่สามารถแสดงยอดเงินได้: '+e.message);
+  }
+}
+
+async function finishOrder(o){
+  const btn=document.getElementById('finish-order-btn');
+  if(btn){btn.disabled=true;btn.textContent='กำลังจบงาน...';}
+  try{
+    const token=await getAccessToken();
+    const updated=await sbTable('orders?id=eq.'+encodeURIComponent(o.id),{method:'PATCH',token,body:{status:'completed',note:noteWithTag(o,'completed'),updated_at:new Date().toISOString()}});
+    let finalOrder=Array.isArray(updated)&&updated[0]?updated[0]:null;
+    if(!finalOrder){
+      const rows=await sbTable('orders?id=eq.'+encodeURIComponent(o.id)+'&select=*',{token});
+      finalOrder=Array.isArray(rows)?rows[0]:null;
+    }
+    if(!finalOrder) finalOrder=o;
+    renderPaymentSummary(finalOrder,true);
+  }catch(e){
+    console.error(e);
+    if(btn){btn.disabled=false;btn.textContent='จบงาน';}
+    toast('จบงานไม่สำเร็จ: '+e.message);
+  }
+}
+
+function renderPaymentSummary(o,completed=false){
+  const stage=document.querySelector('.stage');
+  if(stage) stage.style.display='none';
+  let screen=document.getElementById('summary-screen');
+  if(!screen){ screen=document.createElement('div'); screen.id='summary-screen'; screen.className='summary-screen'; document.getElementById('app').appendChild(screen); }
+  const amount=Number(o.total_amount||0);
+  screen.innerHTML=`<div class="subpage-head"><button class="back-btn" id="summary-back">‹</button><div class="subpage-title">${completed?'ส่งออเดอร์สำเร็จ':'ตรวจสอบยอดก่อนจบงาน'}</div></div>
+    <div class="summary-card">
+      <div class="summary-ok">${completed?'✓':'💵'}</div>
+      <h2>${completed?'ส่งออเดอร์สำเร็จ':'ยอดเงินที่ต้องเก็บจากลูกค้า'}</h2>
+      <div class="summary-order">ออเดอร์ ${esc(o.order_number||o.id.slice(0,8))}</div>
+      <div class="summary-total"><div class="label">ราคาที่ลูกค้าต้องชำระ</div><div class="amount">฿${amount.toLocaleString('th-TH')}</div></div>
+      <div class="summary-cash">💵 <span>เก็บเงินสดจากลูกค้า</span></div>
+      <div class="summary-note">${completed?'ออเดอร์นี้ถูกปิดงานเรียบร้อยแล้ว':'ตรวจสอบยอดเงินให้ถูกต้องก่อน แล้วกด “จบงาน”'}</div>
+      ${completed ? `<button class="summary-back" id="summary-home">กลับหน้าหลัก Rider</button>` : `<button class="summary-back" id="finish-order-btn">จบงาน</button>`}
+    </div>`;
+  screen.classList.add('show');
+  if(completed){
+    const back=()=>{ screen.classList.remove('show'); if(stage){stage.style.display='block';} S.activeOrder=null; refreshData(); startPolling(); };
+    document.getElementById('summary-back').onclick=back;
+    document.getElementById('summary-home').onclick=back;
+  }else{
+    document.getElementById('summary-back').onclick=()=>{screen.classList.remove('show');if(stage){stage.style.display='block';}renderSheet();startPolling();};
+    document.getElementById('finish-order-btn').onclick=()=>finishOrder(o);
+  }
+}
+
+function closeChat(){
+  if(S.chatTimer) clearInterval(S.chatTimer); S.chatTimer=null; S.chatOrder=null;
+  const screen=document.getElementById('chat-screen'); if(screen) screen.classList.remove('show');
+  const stage=document.querySelector('.stage'); if(stage) stage.style.display='block';
+  renderSheet();
+}
+
+async function loadChatMessages(orderId){
+  try{
+    const token=await getAccessToken();
+    const rows=await sbTable('order_chat_messages?select=*&order_id=eq.'+encodeURIComponent(orderId)+'&order=created_at.asc',{token});
+    return Array.isArray(rows)?rows:[];
+  }catch(e){ console.error('chat load failed',e); return []; }
+}
+
+function renderChatMessages(rows){
+  const box=document.getElementById('chat-box'); if(!box)return;
+  box.innerHTML=rows.length?rows.map(m=>`<div class="chat-bubble ${String(m.sender_id)===String(S.user.id)?'mine':'theirs'}"><div>${esc(m.message||'')}</div><div class="chat-time">${new Date(m.created_at).toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})}</div></div>`).join(''):'<div class="empty-note">ยังไม่มีข้อความ เริ่มแชทกับลูกค้าได้เลย</div>';
+  box.scrollTop=box.scrollHeight;
+}
+
+async function openChat(o){
+  S.chatOrder=o;
+  const stage=document.querySelector('.stage'); if(stage) stage.style.display='none';
+  let screen=document.getElementById('chat-screen');
+  if(!screen){ screen=document.createElement('div'); screen.id='chat-screen'; screen.className='chat-screen'; document.getElementById('app').appendChild(screen); }
+  const cust=o._customer||{};
+  screen.innerHTML=`<div class="subpage-head"><button class="back-btn" id="chat-back">‹</button><div class="subpage-title">แชทกับลูกค้า</div></div>
+    <div class="chat-order">ออเดอร์ ${esc(o.order_number||o.id.slice(0,8))} • ${esc(cust.name||'ลูกค้า')}</div>
+    <div class="chat-box" id="chat-box"><div class="empty-note">กำลังโหลดข้อความ...</div></div>
+    <form class="chat-compose-rider" id="chat-form"><input id="chat-input" maxlength="500" autocomplete="off" placeholder="พิมพ์ข้อความถึงลูกค้า..." required><button type="submit">ส่ง</button></form>`;
+  screen.classList.add('show');
+  document.getElementById('chat-back').onclick=closeChat;
+  document.getElementById('chat-form').onsubmit=async e=>{e.preventDefault(); await sendRiderChat(o);};
+  renderChatMessages(await loadChatMessages(o.id));
+  if(S.chatTimer)clearInterval(S.chatTimer);
+  S.chatTimer=setInterval(async()=>{if(S.chatOrder?.id===o.id)renderChatMessages(await loadChatMessages(o.id));},4000);
+}
+
+async function sendRiderChat(o){
+  const input=document.getElementById('chat-input'); const message=(input?.value||'').trim(); if(!message)return;
+  try{
+    const token=await getAccessToken();
+    await sbTable('order_chat_messages',{method:'POST',token,body:{order_id:o.id,sender_id:S.user.id,message}});
+    input.value=''; renderChatMessages(await loadChatMessages(o.id));
+  }catch(e){ console.error(e); toast('ส่งข้อความไม่สำเร็จ: '+e.message); }
 }
 
 async function acceptJob(orderId){
+  const btn=document.getElementById('accept-'+orderId);
+  if(btn){ btn.disabled=true; btn.textContent='กำลังรับงาน...'; }
   try{
     const token = await getAccessToken();
-    const rows = await sbTable('orders?id=eq.'+encodeURIComponent(orderId), {token});
-    const current = Array.isArray(rows) ? rows[0] : null;
-    if(!current || current.rider_id){ toast('งานนี้มีคนรับไปแล้ว'); refreshData(); return; }
-    await sbTable('orders?id=eq.'+encodeURIComponent(orderId), {method:'PATCH', token, body:{
-      rider_id:S.user.id, status:statusToDb('assigned'), note:noteWithTag(current,'assigned'), updated_at:new Date().toISOString()
+    if(!token) throw new Error('ไม่พบเซสชันเข้าสู่ระบบ');
+    if(!S.riderProfile || !S.riderProfile.id) throw new Error('ไม่พบ rider_profiles.id ของไรเดอร์');
+    const currentRows = await sbTable('orders?id=eq.'+encodeURIComponent(orderId), {token});
+    const current = Array.isArray(currentRows) ? currentRows[0] : null;
+    if(!current){ throw new Error('ไม่พบออเดอร์ในฐานข้อมูล'); }
+    if(current.rider_id){ toast('งานนี้มีไรเดอร์รับไปแล้ว'); refreshData(); return; }
+    const updated = await sbTable('orders?id=eq.'+encodeURIComponent(orderId)+'&rider_id=is.null', {method:'PATCH', token, body:{
+      rider_id:S.riderProfile.id, status:statusToDb('assigned'), note:noteWithTag(current,'assigned'), updated_at:new Date().toISOString()
     }});
+    if(!Array.isArray(updated) || !updated.length){
+      const verify=await sbTable('orders?id=eq.'+encodeURIComponent(orderId)+'&select=id,rider_id,status,order_number', {token});
+      const row=Array.isArray(verify)?verify[0]:null;
+      if(!row || row.rider_id!==S.riderProfile.id) throw new Error('เซิร์ฟเวอร์ไม่ยืนยันการรับงาน');
+    }
     toast('รับงานสำเร็จ 🎉');
-    refreshData();
-  }catch(e){ console.error(e); toast('รับงานไม่สำเร็จ: '+e.message); }
+    await refreshData();
+  }catch(e){
+    console.error('acceptJob failed',e);
+    toast('รับงานไม่สำเร็จ: '+String(e.message||e));
+    if(btn){ btn.disabled=false; btn.textContent='รับงานนี้'; }
+  }
 }
+
 async function advanceOrder(o){
   const status = statusFromRow(o);
   const next = STEP_NEXT[status];
@@ -710,6 +1371,38 @@ function startPolling(){ stopPolling(); S.pollTimer = setInterval(refreshData, P
 function stopPolling(){ if(S.pollTimer) clearInterval(S.pollTimer); S.pollTimer=null; }
 
 boot();
+
+/* ===== QueueTech Rider: new-order alert ===== */
+(function(){
+  let audioCtx=null, repeatTimer=null, alertJobId=null, alertJob=null, alertBusy=false;
+  function ctx(){try{if(!audioCtx){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;audioCtx=new AC();}return audioCtx;}catch(e){return null;}}
+  function unlockAudio(){try{const c=ctx();if(c&&c.state==='suspended')c.resume().catch(()=>{});}catch(e){}}
+  function beep(){try{const c=ctx();if(!c)return;if(c.state==='suspended')c.resume().catch(()=>{});const now=c.currentTime;[880,1175].forEach((freq,i)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=freq;g.gain.setValueAtTime(.0001,now+i*.13);g.gain.exponentialRampToValueAtTime(.20,now+i*.13+.025);g.gain.exponentialRampToValueAtTime(.0001,now+i*.13+.30);o.connect(g);g.connect(c.destination);o.start(now+i*.13);o.stop(now+i*.13+.31);});}catch(e){}}
+  function speak(){try{if(!('speechSynthesis'in window))return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance('มีออเดอร์ใหม่เข้ามา กรุณาตรวจสอบและรับออเดอร์');u.lang='th-TH';u.rate=.92;u.pitch=1;u.volume=1;window.speechSynthesis.speak(u);}catch(e){}}
+  function vibrate(){try{if(navigator.vibrate)navigator.vibrate([450,180,450,180,750]);}catch(e){}}
+  function ensureUI(){
+    let el=document.getElementById('qt-new-order-alert');if(el)return el;
+    el=document.createElement('div');el.id='qt-new-order-alert';el.className='qt-alert-backdrop';el.setAttribute('role','alertdialog');el.setAttribute('aria-modal','true');
+    el.innerHTML='<div class="qt-alert-card"><div class="qt-alert-icon">🔔</div><div class="qt-alert-title">มีออเดอร์ใหม่</div><div class="qt-alert-sub">มีงานใหม่เข้ามาสำหรับไรเดอร์</div><div class="qt-alert-order"><b id="qt-alert-order-no">ออเดอร์ใหม่</b><span id="qt-alert-order-detail">กรุณากดรับทราบเพื่อดูรายละเอียดออเดอร์</span></div><button type="button" class="qt-alert-btn" id="qt-alert-ack">รับทราบ</button></div>';
+    document.body.appendChild(el);document.getElementById('qt-alert-ack').addEventListener('click',acknowledge);return el;
+  }
+  function show(job){
+    if(!job||!job.id)return;const id=String(job.id);if(alertJobId===id)return;alertJobId=id;alertJob=job;const el=ensureUI();
+    const no=document.getElementById('qt-alert-order-no'),detail=document.getElementById('qt-alert-order-detail');
+    if(no)no.textContent='ออเดอร์ '+(job.order_number||id.slice(0,8));
+    if(detail){const shop=(job._shop&&job._shop.shop_name)||'ร้านค้า';detail.textContent=shop+' • '+(job.pickup_address||'จุดรับสินค้า');}
+    el.classList.add('show');document.body.style.overflow='hidden';unlockAudio();beep();speak();vibrate();
+    clearInterval(repeatTimer);repeatTimer=setInterval(()=>{if(alertJobId){beep();speak();vibrate();}},7000);S.newJobAlert={active:true,jobId:id};
+  }
+  function acknowledge(){
+    if(alertBusy)return;alertBusy=true;clearInterval(repeatTimer);repeatTimer=null;try{if(navigator.vibrate)navigator.vibrate(0);}catch(e){}try{if('speechSynthesis'in window)window.speechSynthesis.cancel();}catch(e){}
+    alertJobId=null;alertJob=null;S.newJobAlert={active:false,jobId:null};const el=document.getElementById('qt-new-order-alert');if(el)el.classList.remove('show');document.body.style.overflow='';alertBusy=false;
+  }
+  function checkNewJobs(previousIds,jobs){if(!S.online||S.activeOrder)return;const fresh=jobs.find(o=>o&&o.id&&!previousIds.has(String(o.id)));if(fresh)show(fresh);}
+  ['click','touchstart','pointerdown'].forEach(ev=>document.addEventListener(ev,unlockAudio,{passive:true}));
+  window.qtStartNewJobAlert=show;window.qtCheckNewJobs=checkNewJobs;window.qtStopNewJobAlert=function(){clearInterval(repeatTimer);repeatTimer=null;try{if(navigator.vibrate)navigator.vibrate(0);}catch(e){}try{if('speechSynthesis'in window)window.speechSynthesis.cancel();}catch(e){}alertJobId=null;alertJob=null;const el=document.getElementById('qt-new-order-alert');if(el)el.classList.remove('show');document.body.style.overflow='';S.newJobAlert={active:false,jobId:null};};
+})();
+
 </script>
 </body>
 </html>
