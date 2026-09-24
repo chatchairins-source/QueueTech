@@ -277,6 +277,35 @@ button{font-family:inherit;}
 /* QueueTech Rider registration flow */
 .rider-wizard{margin:-16px -12px 40px;background:#fff}.rider-topbar{background:#0b69d1;color:#fff;text-align:center;padding:18px 16px 20px}.rider-brand{font-size:30px;font-weight:800}.rider-title{font-size:28px;font-weight:800}.rider-steps{display:flex;align-items:flex-start;justify-content:center;gap:0;padding:18px 12px 12px;background:#fff}.rider-step{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:90px;text-align:center;color:#738095;font-size:12px}.rider-step b{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#e6ebf2;font-size:18px}.rider-step.active{color:#1769c2;font-weight:700}.rider-step.active b{background:#1769c2;color:#fff}.rider-steps i{height:2px;background:#d9dee7;flex:1;max-width:90px;margin-top:19px}.rider-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:14px}.rider-panel{border:1px solid #dce5ef;border-radius:14px;background:#fff;overflow:hidden;box-shadow:0 2px 8px rgba(20,50,90,.05)}.rider-panel h3{margin:0;padding:12px 16px;background:#edf5ff;color:#173c69;font-size:18px}.rider-panel label{display:block;margin:12px 16px 6px;font-weight:700;color:#33445d}.rider-panel input,.rider-panel select{margin:0 16px;width:calc(100% - 32px);box-sizing:border-box}.req{color:#d33;font-weight:600}.rider-face-upload{text-align:center;padding:16px}.rider-face-upload img{width:230px;height:230px;object-fit:cover;border-radius:12px;margin:0 auto 12px;background:#eef2f7}.rider-face-upload label{display:block;margin:0 auto 8px;width:max-content}.rider-face-upload input{display:none}
 .rider-file-btn{display:inline-block;margin:0 auto 8px;width:auto;cursor:pointer}.rider-file-input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.rider-face-upload small{display:block;color:#77839a;line-height:1.6}.rider-note{margin:12px 16px;padding:10px;border-radius:10px;background:#eef6ff;color:#426080;font-size:13px}.rider-docs{grid-column:1 / -1}.rider-upload-item{padding:0 0 12px}.rider-upload-item input{padding:8px}.rider-doc-preview{max-width:180px;max-height:110px;object-fit:contain;margin:8px 16px;border-radius:8px;border:1px solid #d7e0eb}.rider-confirm{grid-column:1 / -1}.rider-confirm label{font-weight:500;display:flex;gap:8px;align-items:flex-start}.rider-confirm label input{width:auto;margin:2px 0}.rider-confirm p{margin:10px 16px 16px;padding:12px;background:#fff7df;border-radius:10px;color:#765b00}.rider-submit{margin:0 14px 24px;width:calc(100% - 28px);font-size:20px;padding:15px}@media(max-width:760px){.rider-grid{grid-template-columns:1fr}.rider-docs,.rider-confirm{grid-column:auto}.rider-step{min-width:70px;font-size:10px}.rider-step b{width:34px;height:34px}.rider-steps i{margin-top:16px}.rider-face-upload img{width:200px;height:200px}}
+
+/* ===== QueueTech Premium / Apple-inspired UI ===== */
+:root{
+  --qt-black:#0b0d10;--qt-white:#fff;--qt-gray:#f5f5f7;--qt-text:#111318;
+  --qt-muted:#6e7076;--qt-line:#e5e5e7;--qt-green:#12a873;--qt-green2:#0b8f62;
+}
+body{background:#f5f5f7;color:var(--qt-text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",Inter,"Noto Sans Thai",Prompt,system-ui,sans-serif;}
+.screen-center{background:radial-gradient(circle at 15% 15%,#e9fff7 0,transparent 30%),radial-gradient(circle at 85% 85%,#e8edf3 0,transparent 32%),#f5f5f7;}
+.screen-center::before{display:none}
+.auth-card{max-width:1080px;padding:0;border:1px solid rgba(0,0,0,.07);border-radius:32px;background:rgba(255,255,255,.88);color:#111;box-shadow:0 35px 90px rgba(0,0,0,.12);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);overflow:hidden;display:grid;grid-template-columns:1.05fr .95fr;min-height:640px;}
+.auth-card:before{content:'QUEUE';grid-column:1;grid-row:1;display:flex;align-items:flex-end;padding:42px;font-size:clamp(80px,11vw,150px);font-weight:800;letter-spacing:-.08em;color:#fff;position:relative;background:radial-gradient(circle at 70% 25%,rgba(42,255,184,.26),transparent 30%),linear-gradient(145deg,#08110f,#0e2b23 58%,#07100d);}
+.auth-card>*:not(.auth-mark){grid-column:2}
+.auth-card .auth-mark{grid-column:1;grid-row:1;align-self:start;z-index:2;margin:0;padding:42px;color:#fff;}
+.auth-mark .dot{background:#fff;box-shadow:0 0 0 5px rgba(255,255,255,.12)}
+.auth-mark b{color:#fff;font-size:14px;letter-spacing:.14em}
+.auth-card h1{grid-row:1;align-self:start;margin:105px 52px 0;font-size:38px;letter-spacing:-.04em;line-height:1.15;font-weight:750;z-index:3}
+.auth-card p.sub{grid-row:1;align-self:start;margin:164px 52px 0;color:#777b82;font-size:15px;line-height:1.65;max-width:400px;z-index:3}
+.auth-card .field:nth-of-type(1){margin-top:225px}.auth-card .field{margin-left:52px;margin-right:52px}.field label{color:#50535a;font-size:13px;font-weight:600}.field input{background:#f5f5f7;color:#111;border:1px solid #dedee2;border-radius:13px;padding:15px 16px;box-shadow:inset 0 1px 1px rgba(0,0,0,.02)}.field input::placeholder{color:#a2a4aa}.field input:focus{background:#fff;border-color:#0d9d70;box-shadow:0 0 0 4px rgba(18,168,115,.12)}
+.auth-card .btn-brand{grid-column:2;margin:6px 52px 0;width:auto;background:#111;color:#fff;box-shadow:0 8px 20px rgba(0,0,0,.16);border-radius:13px}.auth-card .btn-brand:hover{background:#222}.auth-divider{grid-column:2;margin:18px 52px 8px;color:#9a9ca1}.auth-card .btn-signup{grid-column:2;margin:0 52px;width:auto;background:#fff;color:#111;border:1px solid #d9d9dd;border-radius:13px}.auth-card .btn-signup:hover{background:#f5f5f7}.auth-err{grid-column:2;margin:12px 52px 0;color:#c92d2d;background:#fff2f2;border-radius:12px;padding:10px 12px;display:none;font-size:13px}.auth-err.show{display:block}.auth-foot{grid-column:2;margin:20px 52px 32px;color:#9a9ca1}
+/* registration */
+.rider-wizard{max-width:1080px;margin:0 auto;background:rgba(255,255,255,.92);border:1px solid rgba(0,0,0,.06);border-radius:28px;box-shadow:0 25px 80px rgba(0,0,0,.10);overflow:hidden;color:#111;}
+.rider-topbar{height:82px;padding:0 30px;border-bottom:1px solid var(--qt-line);display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.86);position:sticky;top:0;z-index:10}.rider-brand{font-weight:800;letter-spacing:-.03em;font-size:20px}.rider-title{font-size:14px;color:#777b82}
+.rider-steps{display:flex;align-items:center;justify-content:center;gap:10px;padding:22px 24px;background:#fafafa;border-bottom:1px solid #eee}.rider-step{display:flex;align-items:center;gap:8px;color:#a0a1a6;font-size:13px;font-weight:600}.rider-step b{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#e7e7e9;color:#777}.rider-step.active,.rider-step.done{color:#111}.rider-step.active b,.rider-step.done b{background:#111;color:#fff}.rider-steps i{height:1px;width:54px;background:#ddd}
+.rider-grid{padding:30px;display:grid;grid-template-columns:1fr 1fr;gap:18px}.rider-panel{background:#fff;border:1px solid #e5e5e7;border-radius:20px;padding:22px;box-shadow:0 3px 12px rgba(0,0,0,.025)}.rider-panel h3{font-size:17px;margin:0 0 18px;letter-spacing:-.02em}.rider-panel label{font-size:12.5px;font-weight:600;color:#555;display:block;margin:13px 0 7px}.rider-panel input,.rider-panel select{width:100%;padding:13px 14px;border-radius:12px;border:1px solid #dedee2;background:#f7f7f8;color:#111;font:inherit;outline:none}.rider-panel input:focus,.rider-panel select:focus{background:#fff;border-color:#111;box-shadow:0 0 0 3px rgba(0,0,0,.07)}.rider-face-upload{text-align:center;border:1px dashed #d3d4d7;border-radius:18px;padding:18px;background:#fafafa}.rider-face-upload img{width:118px;height:118px;border-radius:50%;object-fit:cover;margin:0 auto 12px;border:5px solid #fff;box-shadow:0 8px 24px rgba(0,0,0,.12)}.rider-upload-item{border:1px solid #e8e8ea;border-radius:15px;padding:13px;margin:9px 0;background:#fafafa}.rider-upload-item label{margin:0 0 8px}.rider-file-btn{width:100%!important;background:#fff!important;color:#111!important;border:1px solid #ddd!important;box-shadow:none!important;padding:11px!important}.rider-doc-preview{max-width:100%;max-height:180px;object-fit:contain;border-radius:10px;margin-top:8px}.rider-note{font-size:12px;color:#777;padding:10px 12px;background:#f5f5f7;border-radius:10px;margin-top:12px}.rider-confirm{grid-column:1/-1;background:#f7faf8;border-color:#dcefe7}.rider-confirm p{font-size:13px;color:#70747a;line-height:1.7}.rider-submit{width:calc(100% - 60px)!important;margin:0 30px 12px!important;background:#111!important;color:#fff!important;box-shadow:0 10px 24px rgba(0,0,0,.15)!important}.rider-submit:hover{background:#222!important}
+.screen-center:has(.rider-wizard){align-items:flex-start;padding:18px 14px 35px;overflow:auto}.screen-center:has(.rider-wizard) .rider-wizard{width:100%}
+.req{color:#d14343;font-size:11px}.rider-file-input{display:none!important}
+@media(max-width:760px){
+ .auth-card{display:block;min-height:0;max-width:430px;border-radius:26px}.auth-card:before{height:165px;display:flex;padding:22px;font-size:82px}.auth-card .auth-mark{position:absolute;top:0;left:0;padding:24px}.auth-card h1{margin:0;padding:30px 26px 0;font-size:30px}.auth-card p.sub{margin:8px 26px 22px}.auth-card .field,.auth-card .field:nth-of-type(1){margin:0 26px 13px}.auth-card .btn-brand,.auth-card .btn-signup{margin-left:26px;margin-right:26px;width:calc(100% - 52px)}.auth-divider{margin-left:26px;margin-right:26px}.auth-err{margin-left:26px;margin-right:26px}.auth-foot{margin-left:26px;margin-right:26px;margin-bottom:24px}.rider-topbar{height:68px;padding:0 18px}.rider-steps{justify-content:flex-start;overflow:auto;padding:14px 18px}.rider-step span{display:none}.rider-steps i{width:24px;flex:0 0 24px}.rider-grid{grid-template-columns:1fr;padding:16px}.rider-confirm{grid-column:auto}.rider-submit{width:calc(100% - 32px)!important;margin:0 16px 10px!important}.screen-center:has(.rider-wizard){padding:0 0 24px}.rider-wizard{border-radius:0;box-shadow:none;border-left:0;border-right:0}.rider-panel{padding:18px;border-radius:17px}.rider-title{font-size:12px}
+}
 </style>
 </head>
 <body>
@@ -479,30 +508,28 @@ async function loadRiderProfile(){
 
 /* ---------- LOGIN ---------- */
 function renderLogin(err){
-  const app = document.getElementById('app');
-  app.innerHTML = '';
+  const app=document.getElementById('app'); app.innerHTML='';
   app.appendChild(el(`
     <div class="screen-center">
       <div class="auth-card">
         <div class="auth-mark"><span class="dot"></span><b>QUEUETECH RIDER</b></div>
-        <h1>เข้าสู่ระบบไรเดอร์</h1>
-        <p class="sub">ใช้เบอร์โทรและรหัสผ่านบัญชีไรเดอร์ของคุณใน QueueTech</p>
-        <div class="field"><label>เบอร์โทรศัพท์</label><input id="li-phone" inputmode="tel" autocomplete="username" placeholder="08xxxxxxxx"></div>
-        <div class="field"><label>รหัสผ่าน</label><input id="li-pass" type="password" autocomplete="current-password" placeholder="รหัสผ่าน"></div>
+        <h1>พร้อมออกวิ่ง<br>เมื่อคุณพร้อม</h1>
+        <p class="sub">เข้าสู่ระบบเพื่อดูงาน รับงาน และจัดการสถานะไรเดอร์ของคุณอย่างง่ายดาย</p>
+        <div class="field"><label>เบอร์โทรศัพท์</label><input id="li-phone" inputmode="tel" autocomplete="username" placeholder="08x xxx xxxx"></div>
+        <div class="field"><label>รหัสผ่าน</label><input id="li-pass" type="password" autocomplete="current-password" placeholder="รหัสผ่านของคุณ"></div>
         <button class="btn btn-brand" id="li-btn">เข้าสู่ระบบ</button>
-        <div class="auth-divider"><span>หรือ</span></div>
-        <button class="btn btn-signup" id="li-signup">สมัครสมาชิกไรเดอร์ <span>→</span></button>
+        <div class="auth-divider"><span>ยังไม่มีบัญชี?</span></div>
+        <button class="btn btn-signup" id="li-signup">สมัครเป็นไรเดอร์ <span>→</span></button>
         <div class="auth-err" id="li-err"></div>
-        <div class="auth-foot">QueueTech Rider • ระบบจัดการงานรับ-ส่งออเดอร์</div>
+        <div class="auth-foot">QueueTech Rider · ปลอดภัย · เรียบง่าย · พร้อมใช้งาน</div>
       </div>
     </div>`));
-  const errBox = document.getElementById('li-err');
-  if(err){ errBox.textContent = err; errBox.classList.add('show'); }
-  document.getElementById('li-btn').onclick = doLogin;
-  document.getElementById('li-signup').onclick = renderSignup;
-  document.getElementById('li-pass').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+  const errBox=document.getElementById('li-err');
+  if(err){errBox.textContent=err;errBox.classList.add('show');}
+  document.getElementById('li-btn').onclick=doLogin;
+  document.getElementById('li-signup').onclick=renderSignup;
+  document.getElementById('li-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 }
-
 function renderSignup(){
   renderRiderRegistration();
 }
@@ -577,6 +604,22 @@ function riderRegistrationMetadata(user,data,form){
     online:false
   };
 }
+function riderStepGo(step){
+  const all=[...document.querySelectorAll('.rider-panel')];
+  const target=Math.max(0,Math.min(3,step));
+  const groups=[[all[0],all[1]],[all[2],all[3]],[all[4]],[all[5]]];
+  all.forEach(p=>p.style.display='none');
+  (groups[target]||groups[0]).forEach(p=>{if(p)p.style.display='block';});
+  const steps=document.querySelectorAll('.rider-step');steps.forEach((x,i)=>{x.classList.toggle('active',i===target);x.classList.toggle('done',i<target);});
+  window.__qtRiderStep=target;
+  const submit=document.querySelector('.rider-submit');if(submit)submit.textContent=target===3?'ส่งใบสมัคร  →':'ถัดไป  →';
+  const wizard=document.querySelector('.rider-wizard');if(wizard)wizard.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function riderStepNext(){
+  const s=window.__qtRiderStep||0;
+  if(s<3){riderStepGo(s+1);}else{document.querySelector('.rider-submit')?.click();}
+}
+function riderStepBack(){const s=window.__qtRiderStep||0;if(s>0)riderStepGo(s-1);else renderLogin();}
 async function handleRiderRegistration(e){
   e.preventDefault();
   const f=id=>document.getElementById(id);
@@ -587,7 +630,9 @@ async function handleRiderRegistration(e){
   if(!/^0[0-9]{9}$/.test(phone)){toast('กรุณากรอกเบอร์โทรศัพท์ 10 หลัก เช่น 0812345678');return false;}
   if(password.length<6){toast('รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร');return false;}
   if(!f('rr-province').value||!f('rr-district').value){toast('กรุณาเลือกจังหวัดและอำเภอ/เขต');return false;}
-  if(!form.plate){toast('กรุณากรอกทะเบียนรถ');return false;}
+  if(!form.plate){toast('กรุณากรอกทะเบียนรถ');riderStepGo(1);return false;}
+  const agree=document.querySelector('.rider-confirm input[type=checkbox]');
+  if(!agree||!agree.checked){toast('กรุณายืนยันข้อมูลและข้อตกลงก่อนส่งใบสมัคร');riderStepGo(3);return false;}
   const files=['rr-photo','rr-id-front','rr-id-back','rr-license','rr-prb','rr-vehicle-photo'];const data={};
   for(const id of files){const input=f(id);if(input&&input.files&&input.files[0]){const file=input.files[0];data[id]=file.type.startsWith('image/')?await compressRiderImage(file):await readFileAsDataURL(file);}else{const draft=await loadRiderDraftFile(id);if(draft&&draft.data)data[id]=draft.data;}}
   const requiredDocs=files;const labels={'rr-photo':'รูปถ่ายหน้าตรง','rr-id-front':'บัตรประชาชนด้านหน้า','rr-id-back':'บัตรประชาชนด้านหลัง','rr-license':'ใบขับขี่','rr-prb':'พ.ร.บ. รถ','rr-vehicle-photo':'รูปถ่ายคู่กับรถ'};const missing=requiredDocs.filter(id=>!data[id]);
@@ -640,7 +685,7 @@ function renderRiderRegistration(){
         <div class="rider-wizard">
           <div class="rider-topbar"><div class="rider-brand">QueueTech</div><div class="rider-title">สมัครไรเดอร์</div></div>
           <div class="rider-steps"><div class="rider-step active"><b>1</b><span>ข้อมูลส่วนตัว</span></div><i></i><div class="rider-step"><b>2</b><span>ข้อมูลยานพาหนะ</span></div><i></i><div class="rider-step"><b>3</b><span>เอกสารประกอบ</span></div><i></i><div class="rider-step"><b>4</b><span>ยืนยันการสมัคร</span></div></div>
-          <form onsubmit="return handleRiderRegistration(event)">
+          <form novalidate onsubmit="return handleRiderRegistration(event)">
             <div class="rider-grid">
               <section class="rider-panel"><h3>📷 รูปถ่ายหน้าตรง <span class="req">(บังคับ)</span></h3><div class="rider-face-upload"><img id="rr-photo-preview" style="display:none"><button type="button" class="btn btn-brand rider-file-btn" onclick="openRiderFilePicker('rr-photo')">📷 อัปโหลดรูปภาพ</button><input id="rr-photo" class="rider-file-input" type="file" accept="image/*" data-required="1" onchange="riderFilePreview('rr-photo','rr-photo-preview'); event.stopPropagation();"><div id="rr-photo-name" style="font-size:12px;color:#68758a;margin-bottom:6px">ยังไม่ได้เลือกรูป</div><small>ไฟล์ JPG, PNG ขนาดไม่เกิน 8 MB<br>รูปต้องเป็นหน้าตรง ชัดเจน เห็นใบหน้าเต็ม</small></div></section>
               <section class="rider-panel"><h3>👤 ข้อมูลส่วนตัว</h3><label>ชื่อ - นามสกุล <span class="req">*</span></label><input required id="rr-name" placeholder="เช่น นายสมชาย ใจดี"><label>เบอร์โทรศัพท์ <span class="req">*</span></label><input required id="rr-phone" inputmode="tel" placeholder="เช่น 081-234-5678"><label>รหัสผ่าน <span class="req">*</span></label><input required id="rr-password" type="password" minlength="6" placeholder="อย่างน้อย 6 ตัวอักษร"><label>อีเมล (ถ้ามี)</label><input id="rr-email" type="email" placeholder="เช่น rider@example.com"></section>
@@ -656,6 +701,13 @@ function renderRiderRegistration(){
       </div>
     </div>`));
   document.getElementById('rr-back-login').onclick=()=>renderLogin();
+  window.__qtRiderStep=0;
+  riderStepGo(0);
+  const submit=document.querySelector('.rider-submit');
+  if(submit){submit.type='button';submit.onclick=()=>{if((window.__qtRiderStep||0)<3)riderStepNext();else document.querySelector('form[onsubmit*=handleRiderRegistration]').requestSubmit();};submit.textContent='ถัดไป  →';}
+  const back=document.getElementById('rr-back-login');
+  if(back){back.textContent='← ย้อนกลับ';back.onclick=()=>riderStepBack();}
+
   try{const draft=JSON.parse(sessionStorage.getItem('qt_rider_profile_draft')||'null');if(draft&&draft.data){const img=document.getElementById('rr-photo-preview'),nameEl=document.getElementById('rr-photo-name');if(img){img.src=draft.data;img.style.display='block';}if(nameEl)nameEl.textContent=draft.name||'เลือกไฟล์แล้ว';}}catch(err){}
 }
 
