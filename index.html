@@ -37,32 +37,55 @@ button{font-family:inherit;}
 /* ---------- Screens without the map (login / pending) ---------- */
 .screen-center{
   position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
-  padding:28px 20px calc(28px + var(--safe-bottom));
-  background:radial-gradient(circle at 20% -10%, #0f3f35 0%, #071f1a 55%, #061914 100%);
+  padding:24px 20px calc(24px + var(--safe-bottom));
+  background:#06131b url('./assets/login-background.svg') center/cover no-repeat;overflow:auto;
 }
-.auth-card{width:100%;max-width:360px;color:#fff;}
-.auth-mark{display:flex;align-items:center;gap:10px;margin-bottom:26px;}
+.screen-center::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,rgba(3,10,16,.22),rgba(3,10,16,.55) 48%,rgba(3,10,16,.78));
+  pointer-events:none;
+}
+.auth-card{
+  position:relative;z-index:1;width:100%;max-width:390px;color:#fff;
+  padding:30px 28px 26px;border:1px solid rgba(255,255,255,.14);border-radius:26px;
+  background:rgba(8,18,27,.72);box-shadow:0 28px 80px rgba(0,0,0,.42);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+}
+.auth-mark{display:flex;align-items:center;gap:10px;margin-bottom:22px;}
 .auth-mark .dot{width:11px;height:11px;border-radius:50%;background:var(--on);box-shadow:0 0 0 5px var(--on-soft);}
-.auth-mark b{font-size:15px;letter-spacing:.2px;color:#dbe4f5;}
-.auth-card h1{font-size:26px;line-height:1.28;margin:0 0 6px;font-weight:700;}
-.auth-card p.sub{margin:0 0 26px;color:#9fb0c9;font-size:14px;line-height:1.6;}
-.field{margin-bottom:14px;}
-.field label{display:block;font-size:12.5px;color:#9fb0c9;margin-bottom:6px;}
+.auth-mark b{font-size:15px;letter-spacing:.2px;color:#e5fff7;}
+.auth-card h1{font-size:27px;line-height:1.28;margin:0 0 6px;font-weight:700;}
+.auth-card p.sub{margin:0 0 22px;color:#a9bacd;font-size:13.5px;line-height:1.6;}
+.field{margin-bottom:13px;}
+.field label{display:block;font-size:12.5px;color:#b2c1d1;margin-bottom:6px;}
 .field input{
-  width:100%;padding:13px 14px;border-radius:13px;border:1px solid rgba(255,255,255,.14);
-  background:rgba(255,255,255,.05);color:#fff;font-size:16px;outline:none;
+  width:100%;padding:14px;border-radius:13px;border:1px solid rgba(255,255,255,.15);
+  background:rgba(255,255,255,.07);color:#fff;font-size:16px;outline:none;
 }
-.field input::placeholder{color:#6d7c93;}
-.field input:focus{border-color:var(--brand);background:rgba(18,185,129,.10);}
+.field input::placeholder{color:#738399;}
+.field input:focus{border-color:var(--brand);background:rgba(18,185,129,.10);box-shadow:0 0 0 3px rgba(18,185,129,.10);}
 .btn{
   appearance:none;border:none;cursor:pointer;border-radius:14px;font-weight:700;
-  font-size:15px;padding:15px 18px;display:flex;align-items:center;justify-content:center;gap:8px;
+  font-size:15px;padding:14px 18px;display:flex;align-items:center;justify-content:center;gap:8px;
 }
-.btn-brand{background:linear-gradient(135deg,var(--brand),var(--brand-deep));color:#fff;width:100%;margin-top:6px;box-shadow:0 10px 26px rgba(7,150,105,.35);}
+.btn-brand{background:linear-gradient(135deg,var(--brand),var(--brand-deep));color:#fff;width:100%;margin-top:5px;box-shadow:0 10px 26px rgba(7,150,105,.35);}
 .btn-brand:disabled{opacity:.55;box-shadow:none;}
+.btn-signup{
+  width:100%;margin-top:10px;background:rgba(255,255,255,.06);color:#e9fff9;
+  border:1px solid rgba(18,185,129,.62);box-shadow:none;
+}
+.btn-signup:hover{background:rgba(18,185,129,.12);}
+.auth-divider{display:flex;align-items:center;gap:10px;margin:18px 0 8px;color:#738399;font-size:12px;}
+.auth-divider::before,.auth-divider::after{content:'';height:1px;flex:1;background:rgba(255,255,255,.10);}
+.auth-foot{margin-top:17px;text-align:center;font-size:11.5px;color:#718197;line-height:1.5;}
 .auth-err{margin-top:14px;font-size:13px;color:#fca5a5;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.28);padding:10px 12px;border-radius:10px;line-height:1.5;display:none;}
 .auth-err.show{display:block;}
-.auth-foot{margin-top:22px;text-align:center;font-size:12.5px;color:#5f6f88;}
+@media(max-width:640px){
+  .screen-center{align-items:flex-end;padding:18px 12px calc(12px + var(--safe-bottom));}
+  .screen-center::before{background:linear-gradient(180deg,rgba(3,10,16,.08),rgba(3,10,16,.58) 38%,rgba(3,10,16,.90) 100%);}
+  .auth-card{max-width:430px;padding:25px 21px 21px;border-radius:24px;}
+  .auth-card h1{font-size:24px;}
+}
 
 .pending-card{width:100%;max-width:360px;text-align:center;color:#fff;}
 .pending-icon{font-size:44px;margin-bottom:14px;}
@@ -250,6 +273,10 @@ button{font-family:inherit;}
 .spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;animation:spin .7s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .emoji-pin{font-size:26px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35));}
+
+/* QueueTech Rider registration flow */
+.rider-wizard{margin:-16px -12px 40px;background:#fff}.rider-topbar{background:#0b69d1;color:#fff;text-align:center;padding:18px 16px 20px}.rider-brand{font-size:30px;font-weight:800}.rider-title{font-size:28px;font-weight:800}.rider-steps{display:flex;align-items:flex-start;justify-content:center;gap:0;padding:18px 12px 12px;background:#fff}.rider-step{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:90px;text-align:center;color:#738095;font-size:12px}.rider-step b{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#e6ebf2;font-size:18px}.rider-step.active{color:#1769c2;font-weight:700}.rider-step.active b{background:#1769c2;color:#fff}.rider-steps i{height:2px;background:#d9dee7;flex:1;max-width:90px;margin-top:19px}.rider-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:14px}.rider-panel{border:1px solid #dce5ef;border-radius:14px;background:#fff;overflow:hidden;box-shadow:0 2px 8px rgba(20,50,90,.05)}.rider-panel h3{margin:0;padding:12px 16px;background:#edf5ff;color:#173c69;font-size:18px}.rider-panel label{display:block;margin:12px 16px 6px;font-weight:700;color:#33445d}.rider-panel input,.rider-panel select{margin:0 16px;width:calc(100% - 32px);box-sizing:border-box}.req{color:#d33;font-weight:600}.rider-face-upload{text-align:center;padding:16px}.rider-face-upload img{width:230px;height:230px;object-fit:cover;border-radius:12px;margin:0 auto 12px;background:#eef2f7}.rider-face-upload label{display:block;margin:0 auto 8px;width:max-content}.rider-face-upload input{display:none}
+.rider-file-btn{display:inline-block;margin:0 auto 8px;width:auto;cursor:pointer}.rider-file-input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.rider-face-upload small{display:block;color:#77839a;line-height:1.6}.rider-note{margin:12px 16px;padding:10px;border-radius:10px;background:#eef6ff;color:#426080;font-size:13px}.rider-docs{grid-column:1 / -1}.rider-upload-item{padding:0 0 12px}.rider-upload-item input{padding:8px}.rider-doc-preview{max-width:180px;max-height:110px;object-fit:contain;margin:8px 16px;border-radius:8px;border:1px solid #d7e0eb}.rider-confirm{grid-column:1 / -1}.rider-confirm label{font-weight:500;display:flex;gap:8px;align-items:flex-start}.rider-confirm label input{width:auto;margin:2px 0}.rider-confirm p{margin:10px 16px 16px;padding:12px;background:#fff7df;border-radius:10px;color:#765b00}.rider-submit{margin:0 14px 24px;width:calc(100% - 28px);font-size:20px;padding:15px}@media(max-width:760px){.rider-grid{grid-template-columns:1fr}.rider-docs,.rider-confirm{grid-column:auto}.rider-step{min-width:70px;font-size:10px}.rider-step b{width:34px;height:34px}.rider-steps i{margin-top:16px}.rider-face-upload img{width:200px;height:200px}}
 </style>
 </head>
 <body>
@@ -370,14 +397,68 @@ const S = {
 
 function el(html){ const t=document.createElement('template'); t.innerHTML=html.trim(); return t.content.firstElementChild; }
 
+/* ---------- ONE ACCOUNT / ONE ACTIVE DEVICE ---------- */
+const DEVICE_ID_KEY='qtr_device_id_v1';
+const SESSION_GUARD_MS=25000;
+let sessionGuardTimer=null;
+function getDeviceId(){
+  try{let id=localStorage.getItem(DEVICE_ID_KEY);if(!id){id=crypto.randomUUID();localStorage.setItem(DEVICE_ID_KEY,id);}return id;}catch(e){return crypto.randomUUID();}
+}
+async function sbRpc(fn,body,token){
+  const r=await fetch(SB.URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:sbHeaders(token),body:JSON.stringify(body)});
+  const data=await r.json().catch(()=>null);
+  if(!r.ok)throw new Error((data&&data.message)||'RPC_ERROR_'+r.status);
+  return data;
+}
+async function claimActiveSession(sessionId,authUserId,token){
+  if(!sessionId||!authUserId||!token)throw new Error('ไม่สามารถยืนยันอุปกรณ์ที่ใช้งานได้');
+  const result=await sbRpc('claim_active_session',{p_session_id:sessionId,p_device_id:getDeviceId()},token);
+  if(Array.isArray(result)&&result[0]&&result[0].success===false)throw new Error('ไม่สามารถเปิด Session นี้ได้');
+  return result;
+}
+async function checkActiveSession(){
+  const s=readSession();
+  if(!s||!s.sessionId||!s.accessToken||!s.authUserId)return true;
+  try{
+    const token=await getAccessToken();
+    const latest=readSession();
+    const result=await sbRpc('check_active_session',{p_session_id:latest.sessionId},token);
+    const ok=result===true || (Array.isArray(result)&&result[0]===true) || (result&&result.check_active_session===true);
+    if(!ok){forceSessionLogout('บัญชีนี้ถูกเข้าสู่ระบบจากอุปกรณ์อื่น');return false;}
+    await sbRpc('touch_active_session',{p_session_id:latest.sessionId},token);
+    return true;
+  }catch(e){
+    console.warn('active session check failed',e);
+    return true;
+  }
+}
+function startSessionGuard(){
+  stopSessionGuard();
+  sessionGuardTimer=setInterval(()=>{if(S.session&&S.session.sessionId)checkActiveSession();},SESSION_GUARD_MS);
+}
+function stopSessionGuard(){if(sessionGuardTimer){clearInterval(sessionGuardTimer);sessionGuardTimer=null;}}
+function forceSessionLogout(msg){
+  stopSessionGuard();stopPolling();
+  try{if(S.watchId)navigator.geolocation.clearWatch(S.watchId);}catch(e){}
+  clearSession();
+  Object.assign(S,{session:null,user:null,riderProfile:null,online:false,activeOrder:null,openJobs:[],history:[]});
+  renderLogin(msg||'เซสชันนี้ถูกยกเลิก');
+}
+window.addEventListener('focus',()=>{if(S.session&&S.session.sessionId)checkActiveSession();});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&S.session&&S.session.sessionId)checkActiveSession();});
+
 /* ---------- boot ---------- */
 function boot(){
   const s = readSession();
-  if(s){ S.session = s; resumeSession(); }
+  if(s){ S.session = s; startSessionGuard(); resumeSession(); }
   else renderLogin();
 }
 async function resumeSession(){
   try{
+    if(S.session&&S.session.sessionId){
+      const ok=await checkActiveSession();
+      if(!ok)return;
+    }
     const token = await getAccessToken();
     const rows = await sbTable('users?select=*&auth_user_id=eq.'+encodeURIComponent(S.session.authUserId), {token});
     const u = Array.isArray(rows) ? rows[0] : null;
@@ -406,18 +487,179 @@ function renderLogin(err){
         <div class="auth-mark"><span class="dot"></span><b>QUEUETECH RIDER</b></div>
         <h1>เข้าสู่ระบบไรเดอร์</h1>
         <p class="sub">ใช้เบอร์โทรและรหัสผ่านบัญชีไรเดอร์ของคุณใน QueueTech</p>
-        <div class="field"><label>เบอร์โทรศัพท์</label><input id="li-phone" inputmode="tel" placeholder="08xxxxxxxx"></div>
-        <div class="field"><label>รหัสผ่าน</label><input id="li-pass" type="password" placeholder="รหัสผ่าน"></div>
+        <div class="field"><label>เบอร์โทรศัพท์</label><input id="li-phone" inputmode="tel" autocomplete="username" placeholder="08xxxxxxxx"></div>
+        <div class="field"><label>รหัสผ่าน</label><input id="li-pass" type="password" autocomplete="current-password" placeholder="รหัสผ่าน"></div>
         <button class="btn btn-brand" id="li-btn">เข้าสู่ระบบ</button>
+        <div class="auth-divider"><span>หรือ</span></div>
+        <button class="btn btn-signup" id="li-signup">สมัครสมาชิกไรเดอร์ <span>→</span></button>
         <div class="auth-err" id="li-err"></div>
-        
+        <div class="auth-foot">QueueTech Rider • ระบบจัดการงานรับ-ส่งออเดอร์</div>
       </div>
     </div>`));
   const errBox = document.getElementById('li-err');
   if(err){ errBox.textContent = err; errBox.classList.add('show'); }
   document.getElementById('li-btn').onclick = doLogin;
+  document.getElementById('li-signup').onclick = renderSignup;
   document.getElementById('li-pass').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
 }
+
+function renderSignup(){
+  renderRiderRegistration();
+}
+
+function openRiderFilePicker(inputId){
+  const input=document.getElementById(inputId);
+  if(!input) return;
+  try{ sessionStorage.setItem('qt_rider_register_hash', location.hash || '#rider-register'); }catch(e){}
+  input.click();
+}
+async function compressRiderImage(file,maxSize=1400,quality=0.78){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>{
+      const im=new Image();
+      im.onload=()=>{
+        const scale=Math.min(1,maxSize/Math.max(im.width,im.height));
+        const w=Math.max(1,Math.round(im.width*scale)),h=Math.max(1,Math.round(im.height*scale));
+        const c=document.createElement('canvas'); c.width=w; c.height=h;
+        const ctx=c.getContext('2d'); ctx.drawImage(im,0,0,w,h);
+        resolve(c.toDataURL('image/jpeg',quality));
+      };
+      im.onerror=reject; im.src=reader.result;
+    };
+    reader.onerror=reject; reader.readAsDataURL(file);
+  });
+}
+const RIDER_DRAFT_DB='qt_rider_draft_v1';
+function riderDraftOpen(){return new Promise((resolve,reject)=>{const r=indexedDB.open(RIDER_DRAFT_DB,1);r.onupgradeneeded=()=>r.result.createObjectStore('files');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});}
+async function saveRiderDraftFile(id,data,name){try{const db=await riderDraftOpen();await new Promise((res,rej)=>{const tx=db.transaction('files','readwrite');tx.objectStore('files').put({data,name,at:Date.now()},id);tx.oncomplete=res;tx.onerror=()=>rej(tx.error);});db.close();}catch(e){console.warn('draft save failed',e);}}
+async function loadRiderDraftFile(id){try{const db=await riderDraftOpen();const v=await new Promise((res,rej)=>{const tx=db.transaction('files','readonly');const r=tx.objectStore('files').get(id);r.onsuccess=()=>res(r.result||null);r.onerror=()=>rej(r.error);});db.close();return v;}catch(e){return null;}}
+async function clearRiderDraft(){try{const db=await riderDraftOpen();await new Promise((res,rej)=>{const tx=db.transaction('files','readwrite');tx.objectStore('files').clear();tx.oncomplete=res;tx.onerror=()=>rej(tx.error);});db.close();}catch(e){}}
+async function riderFilePreview(inputId,previewId){
+  const input=document.getElementById(inputId),img=document.getElementById(previewId);
+  if(!input||!input.files[0]) return;
+  const file=input.files[0];
+  if(file.size>8*1024*1024){input.value='';toast('ไฟล์ต้องมีขนาดไม่เกิน 8 MB');return;}
+  const nameEl=document.getElementById(inputId+'-name');
+  if(nameEl) nameEl.textContent=file.name||'เลือกไฟล์แล้ว';
+  try{
+    let data='';
+    if(file.type.startsWith('image/')){data=await compressRiderImage(file);if(img){img.src=data;img.style.display='block';}}
+    else data=await readFileAsDataURL(file);
+    await saveRiderDraftFile(inputId,data,file.name||inputId);
+    if(inputId==='rr-photo') try{sessionStorage.setItem('qt_rider_profile_draft',JSON.stringify({data,name:file.name||'profile.jpg',at:Date.now()}));}catch(e){}
+  }catch(err){console.error(err);toast('ไม่สามารถอ่านไฟล์ได้ กรุณาเลือกไฟล์ใหม่');}
+}
+function readFileAsDataURL(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});}
+function riderUploadCard(id,label,required=true,accept='image/*'){
+  return `<div class="rider-upload-item"><label>${label} ${required?'<span class="req">(บังคับ)</span>':''}</label><button type="button" class="btn btn-brand rider-file-btn" onclick="openRiderFilePicker('${id}')">📎 เลือกไฟล์</button><input id="${id}" class="rider-file-input" type="file" accept="${accept}" data-required="${required?'1':'0'}" onchange="riderFilePreview('${id}','${id}-preview'); event.stopPropagation();"><div id="${id}-name" style="font-size:12px;color:#68758a;margin:0 16px 4px">ยังไม่ได้เลือกไฟล์</div><img id="${id}-preview" class="rider-doc-preview" style="display:none"></div>`;
+}
+function riderRegistrationMetadata(user,data,form){
+  return {
+    source:'rider-registration',
+    email:form.email||null,
+    serviceArea:form.area||null,
+    serviceProvince:form.province||null,
+    serviceDistrict:form.district||null,
+    vehicleType:form.vehicle||null,
+    vehiclePlate:form.plate||null,
+    vehicleMake:form.make||null,
+    vehicleModel:form.model||null,
+    profileImage:data['rr-photo']||null,
+    idCardFrontImage:data['rr-id-front']||null,
+    idCardBackImage:data['rr-id-back']||null,
+    driverLicenseImage:data['rr-license']||null,
+    compulsoryInsuranceImage:data['rr-prb']||null,
+    vehiclePhoto:data['rr-vehicle-photo']||null,
+    applicationStatus:'pending',
+    applicationSubmittedAt:Date.now(),
+    available:false,
+    online:false
+  };
+}
+async function handleRiderRegistration(e){
+  e.preventDefault();
+  const f=id=>document.getElementById(id);
+  const name=String(f('rr-name').value||'').trim(),phone=f('rr-phone').value.trim().replace(/[-\s]/g,''),password=f('rr-password').value;
+  const email=String(f('rr-email').value||'').trim().toLowerCase();
+  const form={email,area:String(f('rr-area').value||'').trim(),province:f('rr-province').value,district:String(f('rr-district').value||'').trim(),vehicle:f('rr-vehicle').value,plate:String(f('rr-plate').value||'').trim(),make:String(f('rr-make').value||'').trim(),model:String(f('rr-model').value||'').trim()};
+  if(!name||!phone||!password){toast('กรุณากรอกข้อมูลส่วนตัวให้ครบ');return false;}
+  if(!/^0[0-9]{9}$/.test(phone)){toast('กรุณากรอกเบอร์โทรศัพท์ 10 หลัก เช่น 0812345678');return false;}
+  if(password.length<6){toast('รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร');return false;}
+  if(!f('rr-province').value||!f('rr-district').value){toast('กรุณาเลือกจังหวัดและอำเภอ/เขต');return false;}
+  if(!form.plate){toast('กรุณากรอกทะเบียนรถ');return false;}
+  const files=['rr-photo','rr-id-front','rr-id-back','rr-license','rr-prb','rr-vehicle-photo'];const data={};
+  for(const id of files){const input=f(id);if(input&&input.files&&input.files[0]){const file=input.files[0];data[id]=file.type.startsWith('image/')?await compressRiderImage(file):await readFileAsDataURL(file);}else{const draft=await loadRiderDraftFile(id);if(draft&&draft.data)data[id]=draft.data;}}
+  const requiredDocs=files;const labels={'rr-photo':'รูปถ่ายหน้าตรง','rr-id-front':'บัตรประชาชนด้านหน้า','rr-id-back':'บัตรประชาชนด้านหลัง','rr-license':'ใบขับขี่','rr-prb':'พ.ร.บ. รถ','rr-vehicle-photo':'รูปถ่ายคู่กับรถ'};const missing=requiredDocs.filter(id=>!data[id]);
+  if(missing.length){toast('กรุณาอัปโหลด: '+missing.map(x=>labels[x]).join(', '));return false;}
+  const submitBtn=e.submitter||document.querySelector('.rider-submit');if(submitBtn)submitBtn.disabled=true;
+  try{
+    toast('กำลังสร้างบัญชีและส่งใบสมัคร...');
+    const authEmail=email||authEmailFromPhone(phone);
+    const auth=await sbAuth('signup',{email:authEmail,password,data:{name,phone,role:'rider'}});
+    if(!auth.user||!auth.user.id)throw new Error('สร้างบัญชี Supabase Authentication ไม่สำเร็จ');
+    let session=auth.session;
+    if(!session||!session.access_token){
+      try{session=await sbAuth('token?grant_type=password',{email:authEmail,password});}
+      catch(err){throw new Error(email?'บัญชีถูกสร้างแล้ว แต่ยังไม่ได้ยืนยันอีเมลใน Supabase':'บัญชี Auth ถูกสร้างแล้ว แต่ Supabase ยังไม่อนุญาตให้เข้าสู่ระบบทันที กรุณาปิด Email Confirmation ใน Supabase Authentication Settings แล้วสมัครใหม่');}
+    }
+    if(!session||!session.access_token)throw new Error('ไม่สามารถสร้าง Session ของบัญชีได้');
+    const existing=await sbTable('users?select=id,auth_user_id,role,name,phone,status,created_at&auth_user_id=eq.'+encodeURIComponent(auth.user.id)+'&limit=1',{token:session.access_token});
+    let profile=Array.isArray(existing)&&existing[0]?existing[0]:null;
+    if(!profile){
+      const created=await sbTable('users?select=id,auth_user_id,role,name,phone,status,created_at',{method:'POST',token:session.access_token,body:{auth_user_id:auth.user.id,role:'rider',name,phone,status:'pending'}});
+      profile=Array.isArray(created)&&created[0]?created[0]:created;
+    }
+    if(!profile||!profile.id||String(profile.auth_user_id)!==String(auth.user.id))throw new Error('สร้างข้อมูลสมาชิกใน public.users ไม่สำเร็จ');
+    const metadata=riderRegistrationMetadata(profile,data,form);
+    const riderBody={user_id:profile.id,rider_name:name,phone,vehicle_type:form.vehicle,vehicle_plate:form.plate,address:form.area||null,latitude:null,longitude:null,status:'pending',metadata};
+    const riderRows=await sbTable('rider_profiles?on_conflict=user_id',{method:'POST',token:session.access_token,body:riderBody});
+    if(!riderRows) throw new Error('สร้างโปรไฟล์ไรเดอร์ไม่สำเร็จ');
+    const sessionId=crypto.randomUUID();
+    await claimActiveSession(sessionId,auth.user.id,session.access_token);
+    S.session={authUserId:auth.user.id,accessToken:session.access_token,refreshToken:session.refresh_token||null,expiresAt:auth.expires_at?auth.expires_at*1000:(session.expires_at?session.expires_at*1000:jwtExpiryMs(session.access_token)),sessionId};
+    writeSession(S.session);S.user=profile;S.riderProfile=Array.isArray(riderRows)?riderRows[0]:riderRows;S.online=false;
+    startSessionGuard();
+    await clearRiderDraft();try{sessionStorage.removeItem('qt_rider_profile_draft');sessionStorage.removeItem('qt_rider_register_hash');}catch(err){}
+    toast('ส่งใบสมัครสำเร็จ รอ Admin ตรวจสอบ');
+    renderPending(profile,'ใบสมัครของคุณอยู่ระหว่างตรวจสอบ');
+  }catch(err){
+    console.error('QueueTech rider registration error',err);
+    const m=String(err&&err.message||'');
+    toast(/already registered|User already registered|duplicate key/i.test(m)?'สมัครไม่สำเร็จ: เบอร์หรืออีเมลนี้ถูกใช้สมัครแล้ว':m||'สมัครสมาชิกไม่สำเร็จ');
+  }finally{if(submitBtn)submitBtn.disabled=false;}
+  return false;
+}
+function renderRiderRegistration(){
+  const existing=S.user;
+  if(existing){renderPending(existing,'คุณมีบัญชีไรเดอร์อยู่แล้ว');return;}
+  const app=document.getElementById('app');app.innerHTML='';
+  app.appendChild(el(`
+    <div class="screen-center" style="align-items:flex-start;justify-content:center;padding:12px 10px 30px;">
+      <div style="width:100%;max-width:900px;background:#fff;color:#172033;border-radius:18px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.18);margin:0 auto;">
+        <div class="rider-wizard">
+          <div class="rider-topbar"><div class="rider-brand">QueueTech</div><div class="rider-title">สมัครไรเดอร์</div></div>
+          <div class="rider-steps"><div class="rider-step active"><b>1</b><span>ข้อมูลส่วนตัว</span></div><i></i><div class="rider-step"><b>2</b><span>ข้อมูลยานพาหนะ</span></div><i></i><div class="rider-step"><b>3</b><span>เอกสารประกอบ</span></div><i></i><div class="rider-step"><b>4</b><span>ยืนยันการสมัคร</span></div></div>
+          <form onsubmit="return handleRiderRegistration(event)">
+            <div class="rider-grid">
+              <section class="rider-panel"><h3>📷 รูปถ่ายหน้าตรง <span class="req">(บังคับ)</span></h3><div class="rider-face-upload"><img id="rr-photo-preview" style="display:none"><button type="button" class="btn btn-brand rider-file-btn" onclick="openRiderFilePicker('rr-photo')">📷 อัปโหลดรูปภาพ</button><input id="rr-photo" class="rider-file-input" type="file" accept="image/*" data-required="1" onchange="riderFilePreview('rr-photo','rr-photo-preview'); event.stopPropagation();"><div id="rr-photo-name" style="font-size:12px;color:#68758a;margin-bottom:6px">ยังไม่ได้เลือกรูป</div><small>ไฟล์ JPG, PNG ขนาดไม่เกิน 8 MB<br>รูปต้องเป็นหน้าตรง ชัดเจน เห็นใบหน้าเต็ม</small></div></section>
+              <section class="rider-panel"><h3>👤 ข้อมูลส่วนตัว</h3><label>ชื่อ - นามสกุล <span class="req">*</span></label><input required id="rr-name" placeholder="เช่น นายสมชาย ใจดี"><label>เบอร์โทรศัพท์ <span class="req">*</span></label><input required id="rr-phone" inputmode="tel" placeholder="เช่น 081-234-5678"><label>รหัสผ่าน <span class="req">*</span></label><input required id="rr-password" type="password" minlength="6" placeholder="อย่างน้อย 6 ตัวอักษร"><label>อีเมล (ถ้ามี)</label><input id="rr-email" type="email" placeholder="เช่น rider@example.com"></section>
+              <section class="rider-panel"><h3>🚗 ข้อมูลยานพาหนะ</h3><label>ประเภทพาหนะ <span class="req">*</span></label><select required id="rr-vehicle"><option value="motorcycle">🛵 รถจักรยานยนต์</option><option value="car">🚗 รถยนต์</option><option value="bicycle">🚲 จักรยาน</option></select><label>ทะเบียนรถ <span class="req">*</span></label><input required id="rr-plate" placeholder="เช่น กข 1234 นครราชสีมา"><label>ยี่ห้อ (ถ้ามี)</label><input id="rr-make" placeholder="เช่น Honda, Yamaha"><label>รุ่น (ถ้ามี)</label><input id="rr-model" placeholder="เช่น Wave, Click"><div class="rider-note">ℹ️ ระบบไม่บังคับให้ระบุยี่ห้อและรุ่น แต่ต้องระบุทะเบียนรถเพื่อความปลอดภัย</div></section>
+              <section class="rider-panel"><h3>📍 พื้นที่ให้บริการ</h3><label>เลือกจังหวัด <span class="req">*</span></label><select required id="rr-province"><option value="">-- เลือกจังหวัด --</option><option>กรุงเทพมหานคร</option><option>บุรีรัมย์</option><option>นครราชสีมา</option><option>ขอนแก่น</option><option>เชียงใหม่</option><option>ชลบุรี</option><option>อุบลราชธานี</option><option>สุรินทร์</option><option>ศรีสะเกษ</option><option>มหาสารคาม</option><option>ร้อยเอ็ด</option><option>สระบุรี</option><option>ปทุมธานี</option><option>นนทบุรี</option><option>สมุทรปราการ</option><option>ภูเก็ต</option></select><label>เขต/อำเภอ <span class="req">*</span></label><input required id="rr-district" placeholder="เช่น เมืองนครราชสีมา"><label>พื้นที่เพิ่มเติม (ถ้ามี)</label><input id="rr-area" placeholder="เช่น ปากช่อง, โพธิ์กลาง"></section>
+              <section class="rider-panel rider-docs"><h3>📄 เอกสารประกอบการสมัคร</h3>${riderUploadCard('rr-id-front','บัตรประชาชน (ด้านหน้า)',true,'image/*,.pdf')}${riderUploadCard('rr-id-back','บัตรประชาชน (ด้านหลัง)',true,'image/*,.pdf')}${riderUploadCard('rr-license','ใบขับขี่',true,'image/*,.pdf')}${riderUploadCard('rr-prb','พ.ร.บ. รถ',true,'image/*,.pdf')}${riderUploadCard('rr-vehicle-photo','รูปถ่ายคู่กับรถ (ปัจจุบัน)',true,'image/*')}</section>
+              <section class="rider-panel rider-confirm"><h3>☑️ ยืนยันข้อมูลการสมัคร</h3><label><input type="checkbox" required> <span>ข้าพเจ้าขอรับรองว่าข้อมูลที่ให้เป็นความจริง และยินยอมให้ QueueTech ตรวจสอบข้อมูลและเอกสารประกอบการสมัคร</span></label><p>หลังส่งใบสมัคร สถานะจะเป็น <b>⏳ รอ Admin ตรวจสอบ</b> และยังไม่สามารถรับงานได้จนกว่าจะได้รับอนุมัติ</p></section>
+            </div>
+            <button class="btn btn-brand rider-submit" type="submit">📨 ส่งใบสมัคร</button>
+            <button class="btn btn-signup" type="button" style="margin:0 14px 24px;width:calc(100% - 28px)" id="rr-back-login">← กลับเข้าสู่ระบบ</button>
+          </form>
+        </div>
+      </div>
+    </div>`));
+  document.getElementById('rr-back-login').onclick=()=>renderLogin();
+  try{const draft=JSON.parse(sessionStorage.getItem('qt_rider_profile_draft')||'null');if(draft&&draft.data){const img=document.getElementById('rr-photo-preview'),nameEl=document.getElementById('rr-photo-name');if(img){img.src=draft.data;img.style.display='block';}if(nameEl)nameEl.textContent=draft.name||'เลือกไฟล์แล้ว';}}catch(err){}
+}
+
+
 async function doLogin(){
   const btn = document.getElementById('li-btn');
   const errBox = document.getElementById('li-err');
@@ -432,8 +674,11 @@ async function doLogin(){
     const rows = await sbTable('users?select=*&auth_user_id=eq.'+encodeURIComponent(auth.user.id), {token:auth.access_token});
     const u = Array.isArray(rows) ? rows[0] : null;
     if(!u || u.role!=='rider'){ throw new Error('บัญชีนี้ไม่ใช่บัญชีไรเดอร์'); }
-    S.session = {authUserId:auth.user.id, accessToken:auth.access_token, refreshToken:auth.refresh_token||null, expiresAt:auth.expires_at?auth.expires_at*1000:0};
+    const sessionId=crypto.randomUUID();
+    await claimActiveSession(sessionId,auth.user.id,auth.access_token);
+    S.session = {authUserId:auth.user.id, accessToken:auth.access_token, refreshToken:auth.refresh_token||null, expiresAt:auth.expires_at?auth.expires_at*1000:jwtExpiryMs(auth.access_token), sessionId};
     writeSession(S.session);
+    startSessionGuard();
     S.user = u;
     if(u.status==='suspended'){ renderPending(u,'บัญชีถูกระงับการใช้งาน กรุณาติดต่อผู้ดูแลระบบ'); return; }
     if(u.status!=='active'){ renderPending(u,'ใบสมัครของคุณอยู่ระหว่างตรวจสอบ'); return; }
@@ -462,10 +707,13 @@ function renderPending(u, msg){
     </div>`));
   document.getElementById('pd-logout').onclick = doLogout;
 }
-function doLogout(){
-  clearSession(); stopPolling();
+async function doLogout(){
+  const s=readSession();
+  stopSessionGuard();
+  try{if(s&&s.sessionId&&s.accessToken)await sbRpc('revoke_active_session',{p_session_id:s.sessionId},s.accessToken);}catch(e){console.warn('revoke active session failed',e);}
+  clearSession();stopPolling();
   if(S.watchId) navigator.geolocation.clearWatch(S.watchId);
-  Object.assign(S, {session:null,user:null,riderProfile:null,online:false,activeOrder:null,openJobs:[],history:[]});
+  Object.assign(S,{session:null,user:null,riderProfile:null,online:false,activeOrder:null,openJobs:[],history:[]});
   renderLogin();
 }
 
