@@ -195,7 +195,8 @@ button{font-family:inherit;}
 .summary-cash{display:flex;align-items:center;gap:10px;padding:13px;border:1px solid #bbf7d0;background:#f0fdf4;border-radius:14px;color:#166534;font-weight:700;}
 .summary-note{font-size:12.5px;color:#64748b;line-height:1.5;margin-top:9px;text-align:center;}
 .summary-back{width:100%;margin-top:16px;border:0;border-radius:14px;padding:15px;background:var(--brand-deep);color:#fff;font-family:inherit;font-size:15px;font-weight:700;}
-.slide-wrap{position:relative;width:100%;height:52px;margin-top:12px;border-radius:14px;background:#e7ebf2;overflow:hidden;border:1px solid #d8dee8;}
+.slide-wrap{position:relative;width:50%;height:52px;margin:12px 0 0 auto;border-radius:14px;background:#e7ebf2;overflow:hidden;border:1px solid #d8dee8;}
+.slide-wrap::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(18,185,129,.06),transparent);}
 .slide-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:14px;font-weight:700;pointer-events:none;}
 .slide-thumb{position:absolute;left:3px;top:3px;width:46px;height:44px;border-radius:11px;background:var(--brand-deep);color:#fff;border:0;font-size:18px;font-weight:800;cursor:grab;touch-action:none;z-index:2;}
 .slide-wrap.done .slide-thumb{background:var(--on);}
@@ -759,7 +760,7 @@ function bindJobCardEvents(o){
   if(chatBtn) chatBtn.onclick = ()=>openChat(o);
   const slide = document.getElementById('delivery-slide');
   const thumb = document.getElementById('delivery-slide-thumb');
-  if(slide && thumb) bindDeliverySlide(slide,thumb,()=>completeAndShowSummary(o));
+  if(slide && thumb) bindDeliverySlide(slide,thumb,()=>showPaymentBeforeFinish(o));
 }
 
 function bindDeliverySlide(track,thumb,onDone){
@@ -773,7 +774,23 @@ function bindDeliverySlide(track,thumb,onDone){
   thumb.addEventListener('pointercancel',end);
 }
 
-async function completeAndShowSummary(o){
+async function showPaymentBeforeFinish(o){
+  try{
+    stopPolling();
+    const token=await getAccessToken();
+    const rows=await sbTable('orders?id=eq.'+encodeURIComponent(o.id)+'&select=*',{token});
+    const current=Array.isArray(rows)&&rows[0]?rows[0]:o;
+    renderPaymentSummary(current,false);
+  }catch(e){
+    console.error(e);
+    startPolling();
+    toast('ไม่สามารถแสดงยอดเงินได้: '+e.message);
+  }
+}
+
+async function finishOrder(o){
+  const btn=document.getElementById('finish-order-btn');
+  if(btn){btn.disabled=true;btn.textContent='กำลังจบงาน...';}
   try{
     const token=await getAccessToken();
     const updated=await sbTable('orders?id=eq.'+encodeURIComponent(o.id),{method:'PATCH',token,body:{status:'completed',note:noteWithTag(o,'completed'),updated_at:new Date().toISOString()}});
@@ -783,31 +800,39 @@ async function completeAndShowSummary(o){
       finalOrder=Array.isArray(rows)?rows[0]:null;
     }
     if(!finalOrder) finalOrder=o;
-    stopPolling();
-    renderPaymentSummary(finalOrder);
-  }catch(e){ console.error(e); toast('ยืนยันส่งสำเร็จไม่สำเร็จ: '+e.message); }
+    renderPaymentSummary(finalOrder,true);
+  }catch(e){
+    console.error(e);
+    if(btn){btn.disabled=false;btn.textContent='จบงาน';}
+    toast('จบงานไม่สำเร็จ: '+e.message);
+  }
 }
 
-function renderPaymentSummary(o){
+function renderPaymentSummary(o,completed=false){
   const stage=document.querySelector('.stage');
   if(stage) stage.style.display='none';
   let screen=document.getElementById('summary-screen');
   if(!screen){ screen=document.createElement('div'); screen.id='summary-screen'; screen.className='summary-screen'; document.getElementById('app').appendChild(screen); }
   const amount=Number(o.total_amount||0);
-  screen.innerHTML=`<div class="subpage-head"><button class="back-btn" id="summary-back">‹</button><div class="subpage-title">สรุปการส่งออเดอร์</div></div>
+  screen.innerHTML=`<div class="subpage-head"><button class="back-btn" id="summary-back">‹</button><div class="subpage-title">${completed?'ส่งออเดอร์สำเร็จ':'ตรวจสอบยอดก่อนจบงาน'}</div></div>
     <div class="summary-card">
-      <div class="summary-ok">✓</div>
-      <h2>ส่งออเดอร์สำเร็จ</h2>
+      <div class="summary-ok">${completed?'✓':'💵'}</div>
+      <h2>${completed?'ส่งออเดอร์สำเร็จ':'ยอดเงินที่ต้องเก็บจากลูกค้า'}</h2>
       <div class="summary-order">ออเดอร์ ${esc(o.order_number||o.id.slice(0,8))}</div>
       <div class="summary-total"><div class="label">ราคาที่ลูกค้าต้องชำระ</div><div class="amount">฿${amount.toLocaleString('th-TH')}</div></div>
       <div class="summary-cash">💵 <span>เก็บเงินสดจากลูกค้า</span></div>
-      <div class="summary-note">ยอดนี้คือจำนวนเงินที่ลูกค้าต้องชำระให้ไรเดอร์เมื่อรับสินค้า</div>
-      <button class="summary-back" id="summary-home">กลับหน้าหลัก Rider</button>
+      <div class="summary-note">${completed?'ออเดอร์นี้ถูกปิดงานเรียบร้อยแล้ว':'ตรวจสอบยอดเงินให้ถูกต้องก่อน แล้วกด “จบงาน”'}</div>
+      ${completed ? `<button class="summary-back" id="summary-home">กลับหน้าหลัก Rider</button>` : `<button class="summary-back" id="finish-order-btn">จบงาน</button>`}
     </div>`;
   screen.classList.add('show');
-  const back=()=>{ screen.classList.remove('show'); if(stage){stage.style.display='block';} S.activeOrder=null; refreshData(); startPolling(); };
-  document.getElementById('summary-back').onclick=back;
-  document.getElementById('summary-home').onclick=back;
+  if(completed){
+    const back=()=>{ screen.classList.remove('show'); if(stage){stage.style.display='block';} S.activeOrder=null; refreshData(); startPolling(); };
+    document.getElementById('summary-back').onclick=back;
+    document.getElementById('summary-home').onclick=back;
+  }else{
+    document.getElementById('summary-back').onclick=()=>{screen.classList.remove('show');if(stage){stage.style.display='block';}renderSheet();startPolling();};
+    document.getElementById('finish-order-btn').onclick=()=>finishOrder(o);
+  }
 }
 
 function closeChat(){
