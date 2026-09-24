@@ -24,7 +24,7 @@
   --safe-bottom:env(safe-area-inset-bottom,0px);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;margin:0;overscroll-behavior:none;}
+html,body{width:100%;height:100%;min-height:100dvh;margin:0;overscroll-behavior:none;touch-action:manipulation;}
 body{
   font-family:'Prompt',system-ui,sans-serif;
   background:var(--ink);
@@ -32,7 +32,7 @@ body{
   -webkit-font-smoothing:antialiased;
 }
 button{font-family:inherit;}
-#app{position:fixed;inset:0;overflow:hidden;}
+#app{position:fixed;inset:0;width:100%;height:100dvh;overflow:hidden;}
 
 /* ---------- Screens without the map (login / pending) ---------- */
 .screen-center{
@@ -225,6 +225,20 @@ button{font-family:inherit;}
 .profile-card .prow:first-of-type{border-top:none;margin-top:10px;}
 .btn-logout{width:100%;background:#fff;border:1.5px solid rgba(239,68,68,.4);color:var(--danger);border-radius:14px;padding:14px;font-weight:700;font-size:14.5px;cursor:pointer;}
 
+/* ---------- new order modal alert ---------- */
+.qt-alert-backdrop{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:calc(18px + var(--safe-top)) 16px calc(18px + var(--safe-bottom));background:rgba(3,8,15,.58);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);touch-action:none;overscroll-behavior:contain;}
+.qt-alert-backdrop.show{display:flex;}
+.qt-alert-card{width:min(100%,390px);max-height:calc(100dvh - 36px - var(--safe-top) - var(--safe-bottom));overflow:auto;background:#fff;color:#101826;border-radius:24px;padding:22px 18px 18px;box-shadow:0 24px 70px rgba(0,0,0,.38);text-align:center;animation:qtAlertIn .18s ease-out;}
+@keyframes qtAlertIn{from{opacity:0;transform:translateY(10px) scale(.98);}to{opacity:1;transform:translateY(0) scale(1);}}
+.qt-alert-icon{width:64px;height:64px;margin:0 auto 10px;border-radius:20px;display:flex;align-items:center;justify-content:center;background:rgba(18,185,129,.13);font-size:34px;}
+.qt-alert-title{font-size:21px;font-weight:800;line-height:1.3;margin:0;}
+.qt-alert-sub{font-size:13.5px;color:#64748b;line-height:1.55;margin:6px 0 14px;}
+.qt-alert-order{background:#f7f9fc;border:1px solid #e2e8f0;border-radius:15px;padding:12px;text-align:left;margin-bottom:14px;}
+.qt-alert-order b{display:block;font-size:15px;margin-bottom:3px;}
+.qt-alert-order span{display:block;font-size:12.5px;color:#64748b;line-height:1.5;}
+.qt-alert-btn{width:100%;border:0;border-radius:15px;padding:14px 16px;background:linear-gradient(135deg,var(--brand),var(--brand-deep));color:#fff;font-family:inherit;font-size:15.5px;font-weight:800;cursor:pointer;box-shadow:0 9px 22px rgba(7,150,105,.28);}
+.qt-alert-btn:active{transform:scale(.985);}
+
 .toast{
   position:fixed;left:50%;bottom:calc(96px + var(--safe-bottom));transform:translate(-50%,14px);
   background:#101826;color:#fff;padding:11px 18px;border-radius:999px;font-size:13.5px;z-index:900;
@@ -257,7 +271,7 @@ const SB = {
 };
 const SESSION_KEY = 'qtr_session_v1';
 const NEARBY_RADIUS_KM = 2;
-const POLL_MS = 7000;
+const POLL_MS = 60000;
 
 function sbHeaders(token){
   const h = {apikey:SB.KEY, 'Content-Type':'application/json'};
@@ -350,7 +364,7 @@ const STEP_NEXT = { assigned:{to:'picked_up', label:'ถึงร้านแล
 const S = {
   session:null, user:null, riderProfile:null,
   online:false, pos:null, map:null, riderMarker:null, jobMarkers:[],
-  activeOrder:null, openJobs:[], history:[], activeTab:'home', pollTimer:null, chatOrder:null, chatTimer:null
+  activeOrder:null, openJobs:[], history:[], activeTab:'home', pollTimer:null, chatOrder:null, chatTimer:null, newJobAlert:null
 };
 
 function el(html){ const t=document.createElement('template'); t.innerHTML=html.trim(); return t.content.firstElementChild; }
@@ -584,6 +598,7 @@ async function refreshData(){
     const mine = await sbTable('orders?select=*&order_type=eq.shopping&rider_id=eq.'+encodeURIComponent(S.riderProfile.id)+'&status=in.(assigned,picked_up,in_progress)&order=created_at.desc&limit=1', {token});
     S.activeOrder = Array.isArray(mine) && mine[0] ? mine[0] : null;
 
+    const previousOpenJobIds = new Set((S.openJobs||[]).map(x=>x&&x.order&&x.order.id ? String(x.order.id) : null).filter(Boolean));
     if(S.activeOrder){
       await enrichOrder(S.activeOrder);
       S.openJobs = [];
@@ -601,6 +616,10 @@ async function refreshData(){
       S.openJobs = nearby.length ? nearby : (candidates.length ? [{...candidates[0], fallback:true}] : []);
     } else {
       S.openJobs = [];
+    }
+    if(window.qtCheckNewJobs){
+      const currentOpenOrders = S.openJobs.map(x=>x.order).filter(Boolean);
+      window.qtCheckNewJobs(previousOpenJobIds, currentOpenOrders);
     }
     if(S.activeTab==='home') renderSheet();
     placeJobMarkers();
@@ -912,150 +931,35 @@ function stopPolling(){ if(S.pollTimer) clearInterval(S.pollTimer); S.pollTimer=
 
 boot();
 
-/* ===== QueueTech Rider: direct Supabase open-job alert ===== */
+/* ===== QueueTech Rider: new-order alert ===== */
 (function(){
-  let timer=null, alertJobId=null, audioCtx=null;
-
-  function ctx(){
-    try{
-      if(!audioCtx){
-        const AC=window.AudioContext||window.webkitAudioContext;
-        if(!AC) return null;
-        audioCtx=new AC();
-      }
-      return audioCtx;
-    }catch(e){ return null; }
-  }
-
-  function unlock(){
-    try{
-      const c=ctx();
-      if(c && c.state==='suspended') c.resume().catch(()=>{});
-    }catch(e){}
-  }
-
-  function beep(){
-    try{
-      const c=ctx();
-      if(!c) return;
-      if(c.state==='suspended') c.resume().catch(()=>{});
-      const o=c.createOscillator(), g=c.createGain();
-      o.type='sine';
-      o.frequency.value=880;
-      g.gain.setValueAtTime(.0001,c.currentTime);
-      g.gain.exponentialRampToValueAtTime(.22,c.currentTime+.03);
-      g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+.45);
-      o.connect(g); g.connect(c.destination);
-      o.start(); o.stop(c.currentTime+.46);
-    }catch(e){}
-  }
-
-  function vibrate(){
-    try{
-      if(navigator.vibrate) navigator.vibrate([500,180,500,180,800]);
-    }catch(e){}
-  }
-
+  let audioCtx=null, repeatTimer=null, alertJobId=null, alertJob=null, alertBusy=false;
+  function ctx(){try{if(!audioCtx){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;audioCtx=new AC();}return audioCtx;}catch(e){return null;}}
+  function unlockAudio(){try{const c=ctx();if(c&&c.state==='suspended')c.resume().catch(()=>{});}catch(e){}}
+  function beep(){try{const c=ctx();if(!c)return;if(c.state==='suspended')c.resume().catch(()=>{});const now=c.currentTime;[880,1175].forEach((freq,i)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=freq;g.gain.setValueAtTime(.0001,now+i*.13);g.gain.exponentialRampToValueAtTime(.20,now+i*.13+.025);g.gain.exponentialRampToValueAtTime(.0001,now+i*.13+.30);o.connect(g);g.connect(c.destination);o.start(now+i*.13);o.stop(now+i*.13+.31);});}catch(e){}}
+  function speak(){try{if(!('speechSynthesis'in window))return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance('มีออเดอร์ใหม่เข้ามา กรุณาตรวจสอบและรับออเดอร์');u.lang='th-TH';u.rate=.92;u.pitch=1;u.volume=1;window.speechSynthesis.speak(u);}catch(e){}}
+  function vibrate(){try{if(navigator.vibrate)navigator.vibrate([450,180,450,180,750]);}catch(e){}}
   function ensureUI(){
-    let el=document.getElementById('qt-rider-alert');
-    if(el) return el;
-    el=document.createElement('div');
-    el.id='qt-rider-alert';
-    el.setAttribute('role','alert');
-    el.style.cssText=
-      'position:fixed;left:14px;right:14px;top:calc(12px + env(safe-area-inset-top));'+
-      'z-index:9999;display:none;background:#111827;color:#fff;border-radius:18px;'+
-      'padding:14px 16px;box-shadow:0 10px 35px rgba(0,0,0,.28);'+
-      'font-family:inherit;text-align:center;';
-    el.innerHTML='<div style="font-size:16px;font-weight:800">มีงานใหม่สำหรับคุณ</div>'+
-      '<div id="qt-rider-alert-detail" style="font-size:13px;margin-top:4px;opacity:.88">'+
-      'กรุณากดรับงาน</div>';
-    document.body.appendChild(el);
-    return el;
+    let el=document.getElementById('qt-new-order-alert');if(el)return el;
+    el=document.createElement('div');el.id='qt-new-order-alert';el.className='qt-alert-backdrop';el.setAttribute('role','alertdialog');el.setAttribute('aria-modal','true');
+    el.innerHTML='<div class="qt-alert-card"><div class="qt-alert-icon">🔔</div><div class="qt-alert-title">มีออเดอร์ใหม่</div><div class="qt-alert-sub">มีงานใหม่เข้ามาสำหรับไรเดอร์</div><div class="qt-alert-order"><b id="qt-alert-order-no">ออเดอร์ใหม่</b><span id="qt-alert-order-detail">กรุณากดรับทราบเพื่อดูรายละเอียดออเดอร์</span></div><button type="button" class="qt-alert-btn" id="qt-alert-ack">รับทราบ</button></div>';
+    document.body.appendChild(el);document.getElementById('qt-alert-ack').addEventListener('click',acknowledge);return el;
   }
-
-  function stop(hide){
-    if(timer){ clearInterval(timer); timer=null; }
-    try{ if(navigator.vibrate) navigator.vibrate(0); }catch(e){}
-    if(hide!==false){
-      const el=document.getElementById('qt-rider-alert');
-      if(el) el.style.display='none';
-    }
-    alertJobId=null;
-    window.qtRiderAlertState={active:false,jobId:null};
+  function show(job){
+    if(!job||!job.id)return;const id=String(job.id);if(alertJobId===id)return;alertJobId=id;alertJob=job;const el=ensureUI();
+    const no=document.getElementById('qt-alert-order-no'),detail=document.getElementById('qt-alert-order-detail');
+    if(no)no.textContent='ออเดอร์ '+(job.order_number||id.slice(0,8));
+    if(detail){const shop=(job._shop&&job._shop.shop_name)||'ร้านค้า';detail.textContent=shop+' • '+(job.pickup_address||'จุดรับสินค้า');}
+    el.classList.add('show');document.body.style.overflow='hidden';unlockAudio();beep();speak();vibrate();
+    clearInterval(repeatTimer);repeatTimer=setInterval(()=>{if(alertJobId){beep();speak();vibrate();}},7000);S.newJobAlert={active:true,jobId:id};
   }
-
-  function start(job){
-    if(!job || !job.id) return;
-    const id=String(job.id);
-    if(alertJobId===id && timer) return;
-
-    stop(false);
-    alertJobId=id;
-
-    const el=ensureUI();
-    const d=document.getElementById('qt-rider-alert-detail');
-    if(d){
-      d.textContent='งาน '+(job.order_number||id.slice(0,8))+
-        ' • กดรับงานเพื่อหยุดเสียงและสั่น';
-    }
-    el.style.display='block';
-
-    unlock(); beep(); vibrate();
-    timer=setInterval(function(){ beep(); vibrate(); },2500);
-    window.qtRiderAlertState={active:true,jobId:id};
+  function acknowledge(){
+    if(alertBusy)return;alertBusy=true;clearInterval(repeatTimer);repeatTimer=null;try{if(navigator.vibrate)navigator.vibrate(0);}catch(e){}try{if('speechSynthesis'in window)window.speechSynthesis.cancel();}catch(e){}
+    alertJobId=null;alertJob=null;S.newJobAlert={active:false,jobId:null};const el=document.getElementById('qt-new-order-alert');if(el)el.classList.remove('show');document.body.style.overflow='';alertBusy=false;
   }
-
-  ['click','touchstart','pointerdown'].forEach(function(ev){
-    document.addEventListener(ev,unlock,{passive:true});
-  });
-
-  /*
-   * Direct binding:
-   * refreshData() fills S.openJobs from the Supabase orders query.
-   * Compare the actual order IDs before/after refresh.
-   */
-  const originalRefreshData=window.refreshData;
-  if(typeof originalRefreshData==='function'){
-    window.refreshData=async function(){
-      const before=Array.isArray(window.S && S.openJobs)
-        ? S.openJobs.map(function(x){return x&&x.order?x.order:x;}).filter(Boolean)
-        : [];
-      const beforeIds=new Set(
-        before.map(function(o){return o&&o.id?String(o.id):null;}).filter(Boolean)
-      );
-
-      const result=await originalRefreshData.apply(this,arguments);
-
-      const jobs=Array.isArray(window.S && S.openJobs)
-        ? S.openJobs.map(function(x){return x&&x.order?x.order:x;}).filter(Boolean)
-        : [];
-
-      if(alertJobId && !jobs.some(function(o){
-        return o && String(o.id)===String(alertJobId);
-      })){
-        stop(true);
-      }
-
-      const fresh=jobs.find(function(o){
-        return o && o.id && !beforeIds.has(String(o.id));
-      });
-      if(fresh) start(fresh);
-
-      return result;
-    };
-  }
-
-  const originalAcceptJob=window.acceptJob;
-  if(typeof originalAcceptJob==='function'){
-    window.acceptJob=async function(){
-      stop(true);
-      return await originalAcceptJob.apply(this,arguments);
-    };
-  }
-
-  window.qtStartNewJobAlert=start;
-  window.qtStopNewJobAlert=function(){stop(true);};
+  function checkNewJobs(previousIds,jobs){if(!S.online||S.activeOrder)return;const fresh=jobs.find(o=>o&&o.id&&!previousIds.has(String(o.id)));if(fresh)show(fresh);}
+  ['click','touchstart','pointerdown'].forEach(ev=>document.addEventListener(ev,unlockAudio,{passive:true}));
+  window.qtStartNewJobAlert=show;window.qtCheckNewJobs=checkNewJobs;window.qtStopNewJobAlert=function(){clearInterval(repeatTimer);repeatTimer=null;try{if(navigator.vibrate)navigator.vibrate(0);}catch(e){}try{if('speechSynthesis'in window)window.speechSynthesis.cancel();}catch(e){}alertJobId=null;alertJob=null;const el=document.getElementById('qt-new-order-alert');if(el)el.classList.remove('show');document.body.style.overflow='';S.newJobAlert={active:false,jobId:null};};
 })();
 
 </script>
