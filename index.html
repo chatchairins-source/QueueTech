@@ -33,6 +33,42 @@ svg{display:block}.ico{width:20px;height:20px;fill:none;stroke:currentColor;stro
 .qt-message{position:fixed;z-index:9000;left:12px;right:12px;top:calc(8px + var(--safeT));transform:translateY(-140%);opacity:0;transition:.25s;padding:10px 12px;border-radius:17px;background:rgba(17,31,27,.95);color:white;box-shadow:0 14px 40px #0004;display:flex;align-items:center;gap:9px}.qt-message.show{transform:none;opacity:1}.qt-message i{width:30px;height:30px;border-radius:10px;background:var(--mint);display:grid;place-items:center;font-style:normal}.qt-message b{font-size:11px}.qt-message small{display:block;max-width:72vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#cbd8d3;font-size:9px;margin-top:2px}
 @media(max-height:650px){.qt-sheet{max-height:34dvh}.qt-actions button,.qt-actions a{height:42px}.qt-top{top:calc(6px + var(--safeT))}}
 @media(orientation:landscape) and (max-height:500px){.qt-nav{left:auto;right:5px;top:50%;bottom:auto;transform:translateY(-50%);width:54px;height:270px;grid-template-columns:1fr;grid-template-rows:repeat(5,1fr)}.qt-sheet{right:68px;bottom:7px;max-height:58dvh}.qt-top{right:68px}.qt-panel{padding-right:68px;padding-bottom:10px}}
+
+/* v11 — same card/content, proportionally smaller so the full card fits */
+.qt-sheet{
+  padding:8px 9px!important;
+  max-height:36dvh!important;
+}
+.qt-handle{
+  width:28px!important;height:3px!important;
+  margin:0 auto 5px!important;
+}
+.qt-jobhead{gap:8px!important}
+.qt-shop{font-size:14.5px!important;line-height:1.2!important}
+.qt-order{font-size:8px!important;margin-top:1px!important;line-height:1.2!important}
+.qt-fee{font-size:15px!important;line-height:1.1!important}
+.qt-fee small{font-size:7px!important;margin-top:2px!important}
+.qt-metrics{gap:4px!important;margin:5px 0!important}
+.qt-metric{
+  padding:5px 6px!important;
+  border-radius:11px!important;
+  min-height:0!important;
+}
+.qt-metric span{font-size:7.5px!important;line-height:1.1!important}
+.qt-metric b{font-size:10.5px!important;line-height:1.15!important;margin-top:2px!important}
+.qt-address{
+  font-size:8.8px!important;
+  line-height:1.25!important;
+  padding:4px 0!important;
+}
+.qt-actions{gap:5px!important;margin-top:5px!important;grid-template-columns:39px 39px minmax(0,1fr)!important}
+.qt-actions button,.qt-actions a{
+  height:39px!important;
+  border-radius:12px!important;
+}
+.qt-actions .ico{width:17px!important;height:17px!important}
+.qt-primary{font-size:11.5px!important}
+
 </style></head><body>
 <div id="app"></div><div id="toast" class="toast"></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -1197,6 +1233,14 @@ boot();
   window.qtStartNewJobAlert=show;window.qtCheckNewJobs=checkNewJobs;window.qtStopNewJobAlert=function(){clearInterval(repeatTimer);repeatTimer=null;try{if(navigator.vibrate)navigator.vibrate(0);}catch(e){}try{if('speechSynthesis'in window)window.speechSynthesis.cancel();}catch(e){}alertJobId=null;alertJob=null;const el=document.getElementById('qt-new-order-alert');if(el)el.classList.remove('show');document.body.style.overflow='';S.newJobAlert={active:false,jobId:null};};
 })();
 
+
+function qtShortOrder(o){
+  const raw=String((o&&o.order_number)||(o&&o.id)||'')
+    .replace(/^QT[-_\s]*/i,'')
+    .replace(/[^A-Za-z0-9]/g,'');
+  return 'QT-' + (raw.slice(-4)||'----').toUpperCase();
+}
+
 const QTICON={'home': '<svg class="ico" viewBox="0 0 24 24"><path d="M3.5 11 12 4l8.5 7v8a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 19Z"/><path d="M9 20v-6h6v6"/></svg>', 'jobs': '<svg class="ico" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4M16 3v4M8 11h8M8 15h5"/></svg>', 'chat': '<svg class="ico" viewBox="0 0 24 24"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-9l-5 3v-3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"/><path d="M8 11h.01M12 11h.01M16 11h.01"/></svg>', 'earn': '<svg class="ico" viewBox="0 0 24 24"><path d="M4 18V9M10 18V5M16 18v-7M22 18H2"/></svg>', 'user': '<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/></svg>', 'loc': '<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>', 'phone': '<svg class="ico" viewBox="0 0 24 24"><path d="M7 3 4.5 5.5c0 7.7 6.3 14 14 14L21 17l-4-3-2 2c-3.1-1.2-5.8-3.9-7-7l2-2Z"/></svg>', 'arrow': '<svg class="ico" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg>', 'back': '<svg class="ico" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></svg>'};
 let qtUnread=0,qtLastMsg=null,qtMsgTimer=null;
 function qtNavHTML(){
@@ -1259,7 +1303,7 @@ function jobCardHTML(o,x){
  const fee=riderEarning(o);const active=!!S.activeOrder;
  const targetShop=st==='assigned';const nav=mapsLink(targetShop?o.pickup_latitude:o.delivery_latitude,targetShop?o.pickup_longitude:o.delivery_longitude,targetShop?o.pickup_address:o.delivery_address);
  const next=STEP_NEXT[st];
- return `<div class="qt-handle"></div><div class="qt-jobhead"><div><div class="qt-shop">${esc(shop.shop_name||'งานจัดส่ง')}</div><div class="qt-order">${active?esc(STEP_LABEL[st]||'งานที่กำลังทำ'):'งานใหม่'} · #${esc(o.order_number||String(o.id).slice(0,8))}</div></div><div class="qt-fee">฿${Number(fee||0).toLocaleString('th-TH')}<small>รายได้งานนี้</small></div></div>
+ return `<div class="qt-handle"></div><div class="qt-jobhead"><div><div class="qt-shop">${esc(shop.shop_name||'งานจัดส่ง')}</div><div class="qt-order">${active?esc(STEP_LABEL[st]||'งานที่กำลังทำ'):'งานใหม่'} · #${esc(qtShortOrder(o))}</div></div><div class="qt-fee">฿${Number(fee||0).toLocaleString('th-TH')}<small>รายได้งานนี้</small></div></div>
  <div class="qt-metrics"><div class="qt-metric"><span>ถึงร้าน</span><b>${Number.isFinite(km)?km.toFixed(1):'-'} กม.</b></div><div class="qt-metric"><span>ระยะส่ง</span><b>${Number.isFinite(delivery)?delivery.toFixed(1):'-'} กม.</b></div><div class="qt-metric"><span>ยอดออเดอร์</span><b>฿${Number(o.total_amount||0).toLocaleString('th-TH')}</b></div></div>
  <div class="qt-address">${esc(targetShop?(o.pickup_address||shop.address||'จุดรับสินค้า'):(o.delivery_address||'จุดส่งสินค้า'))}</div>
  <div class="qt-actions"><a class="qt-ghost" href="${nav}" target="_blank" rel="noopener" aria-label="นำทาง">${QTICON.loc}</a><button class="qt-ghost" id="chat-${o.id}" aria-label="แชต">${QTICON.chat}</button>${active?`<button class="qt-primary" id="next-${o.id}">${next?esc(next.label):'ตรวจสอบงาน'}</button>`:`<button class="qt-primary" id="accept-${o.id}">รับงานนี้</button>`}</div>`;
@@ -1271,11 +1315,11 @@ function bindJobCardEvents(o){
 }
 function renderHistoryPanel(){
  const p=document.getElementById('panel-jobs');if(!p)return;
- p.innerHTML=`<div class="qt-panelhead"><h1>งานของฉัน</h1><small>${S.history.length} งาน</small></div><div class="qt-list">${S.history.length?S.history.map(o=>`<div class="qt-row"><div class="qt-rowtop"><div><b>#${esc(o.order_number||String(o.id).slice(0,8))}</b><br><small>${new Date(o.updated_at||o.created_at).toLocaleString('th-TH')}</small></div><b>฿${Number(riderEarning(o)||0).toLocaleString('th-TH')}</b></div></div>`).join(''):'<div class="qt-empty">ยังไม่มีประวัติงาน</div>'}</div>`;
+ p.innerHTML=`<div class="qt-panelhead"><h1>งานของฉัน</h1><small>${S.history.length} งาน</small></div><div class="qt-list">${S.history.length?S.history.map(o=>`<div class="qt-row"><div class="qt-rowtop"><div><b>#${esc(qtShortOrder(o))}</b><br><small>${new Date(o.updated_at||o.created_at).toLocaleString('th-TH')}</small></div><b>฿${Number(riderEarning(o)||0).toLocaleString('th-TH')}</b></div></div>`).join(''):'<div class="qt-empty">ยังไม่มีประวัติงาน</div>'}</div>`;
 }
 function qtRenderEarnings(){
  const p=document.getElementById('panel-earn');if(!p)return;const total=(S.history||[]).reduce((a,o)=>a+Number(riderEarning(o)||0),0);
- p.innerHTML=`<div class="qt-panelhead"><h1>รายได้</h1><small>สรุปจากงานที่เสร็จแล้ว</small></div><div class="qt-profilehero"><small>รายได้สะสม</small><h2 style="font-size:38px;margin:8px 0">฿${total.toLocaleString('th-TH')}</h2><p>${S.history.length} งานที่จัดส่งสำเร็จ</p></div><div class="qt-list" style="margin-top:12px">${(S.history||[]).slice(0,30).map(o=>`<div class="qt-row"><div class="qt-rowtop"><div><b>${esc(o.order_number||'ออเดอร์')}</b><br><small>${new Date(o.updated_at||o.created_at).toLocaleDateString('th-TH')}</small></div><b>+฿${Number(riderEarning(o)||0).toLocaleString('th-TH')}</b></div></div>`).join('')}</div>`;
+ p.innerHTML=`<div class="qt-panelhead"><h1>รายได้</h1><small>สรุปจากงานที่เสร็จแล้ว</small></div><div class="qt-profilehero"><small>รายได้สะสม</small><h2 style="font-size:38px;margin:8px 0">฿${total.toLocaleString('th-TH')}</h2><p>${S.history.length} งานที่จัดส่งสำเร็จ</p></div><div class="qt-list" style="margin-top:12px">${(S.history||[]).slice(0,30).map(o=>`<div class="qt-row"><div class="qt-rowtop"><div><b>${esc(qtShortOrder(o))}</b><br><small>${new Date(o.updated_at||o.created_at).toLocaleDateString('th-TH')}</small></div><b>+฿${Number(riderEarning(o)||0).toLocaleString('th-TH')}</b></div></div>`).join('')}</div>`;
 }
 function renderProfilePanel(){
  const p=document.getElementById('panel-profile');if(!p)return;const name=S.user?.name||'Rider',phone=S.user?.phone||'';
@@ -1293,7 +1337,7 @@ function closeChat(){
 async function openChat(o){
  S.chatOrder=o;const stage=document.querySelector('.stage');if(stage)stage.style.display='none';
  let screen=document.createElement('section');screen.id='chat-screen';screen.className='qt-chatpage show';document.getElementById('app').appendChild(screen);
- const cust=o._customer||{};screen.innerHTML=`<header class="qt-subhead"><button class="qt-back" id="chat-back" aria-label="ย้อนกลับ">${QTICON.back}</button><div class="qt-subtitle"><b>${esc(cust.name||'ลูกค้า')}</b><small>ออเดอร์ #${esc(o.order_number||String(o.id).slice(0,8))}</small></div><div></div></header><div class="chat-box" id="chat-box"><div class="empty-note">กำลังโหลดข้อความ...</div></div>${quickMessagesHTML()}<form class="chat-compose-rider" id="chat-form"><button class="photo-btn" type="button" id="chat-photo" aria-label="ส่งรูป"></button><input type="file" id="chat-photo-input" accept="image/*" hidden><input id="chat-input" maxlength="500" autocomplete="off" placeholder="ข้อความ..." required><button type="submit" aria-label="ส่ง">↑</button></form>`;
+ const cust=o._customer||{};screen.innerHTML=`<header class="qt-subhead"><button class="qt-back" id="chat-back" aria-label="ย้อนกลับ">${QTICON.back}</button><div class="qt-subtitle"><b>${esc(cust.name||'ลูกค้า')}</b><small>ออเดอร์ #${esc(qtShortOrder(o))}</small></div><div></div></header><div class="chat-box" id="chat-box"><div class="empty-note">กำลังโหลดข้อความ...</div></div>${quickMessagesHTML()}<form class="chat-compose-rider" id="chat-form"><button class="photo-btn" type="button" id="chat-photo" aria-label="ส่งรูป"></button><input type="file" id="chat-photo-input" accept="image/*" hidden><input id="chat-input" maxlength="500" autocomplete="off" placeholder="ข้อความ..." required><button type="submit" aria-label="ส่ง">↑</button></form>`;
  document.getElementById('chat-back').onclick=closeChat;
  document.getElementById('chat-form').onsubmit=async e=>{e.preventDefault();await sendRiderChat(o)};
  document.getElementById('chat-photo').onclick=()=>document.getElementById('chat-photo-input').click();
@@ -1304,7 +1348,7 @@ async function openChat(o){
 function renderPaymentSummary(o,completed=false){
  const stage=document.querySelector('.stage');if(stage)stage.style.display='none';
  let s=document.getElementById('summary-screen');if(s)s.remove();s=document.createElement('section');s.id='summary-screen';s.className='qt-summary show';document.getElementById('app').appendChild(s);
- s.innerHTML=`<button class="qt-back qt-summaryback" id="summary-back">${QTICON.back}</button><div class="qt-summarycard"><div class="qt-check">${completed?'✓':'฿'}</div><h2>${completed?'ส่งสำเร็จ':'ตรวจสอบยอดก่อนจบงาน'}</h2><p class="qt-sub">#${esc(o.order_number||String(o.id).slice(0,8))}</p><div class="qt-total">฿${Number(o.total_amount||0).toLocaleString('th-TH')}</div><p class="qt-sub">${completed?'งานนี้ถูกปิดเรียบร้อยแล้ว':'ตรวจสอบยอดกับลูกค้าก่อนยืนยันจบงาน'}</p>${completed?'<button class="qt-primary" id="summary-home">กลับหน้าหลัก</button>':'<button class="qt-primary" id="finish-order-btn">ยืนยันส่งสำเร็จ</button>'}</div>`;
+ s.innerHTML=`<button class="qt-back qt-summaryback" id="summary-back">${QTICON.back}</button><div class="qt-summarycard"><div class="qt-check">${completed?'✓':'฿'}</div><h2>${completed?'ส่งสำเร็จ':'ตรวจสอบยอดก่อนจบงาน'}</h2><p class="qt-sub">#${esc(qtShortOrder(o))}</p><div class="qt-total">฿${Number(o.total_amount||0).toLocaleString('th-TH')}</div><p class="qt-sub">${completed?'งานนี้ถูกปิดเรียบร้อยแล้ว':'ตรวจสอบยอดกับลูกค้าก่อนยืนยันจบงาน'}</p>${completed?'<button class="qt-primary" id="summary-home">กลับหน้าหลัก</button>':'<button class="qt-primary" id="finish-order-btn">ยืนยันส่งสำเร็จ</button>'}</div>`;
  const back=()=>{s.remove();if(stage)stage.style.display='block';renderSheet();startPolling()};
  document.getElementById('summary-back').onclick=back;
  if(completed)document.getElementById('summary-home').onclick=()=>{S.activeOrder=null;back();refreshData()};
