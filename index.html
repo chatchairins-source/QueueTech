@@ -69,6 +69,29 @@ svg{display:block}.ico{width:20px;height:20px;fill:none;stroke:currentColor;stro
 .qt-actions .ico{width:17px!important;height:17px!important}
 .qt-primary{font-size:11.5px!important}
 
+
+/* v12 — clear header + unobstructed scrolling + daily dashboard */
+.qt-top{left:auto!important;right:12px!important;justify-content:flex-end!important}
+.qt-brand{display:none!important}
+.qt-status{width:46px!important;height:30px!important;padding:0!important;border:0!important;border-radius:16px!important;background:#e5484d!important;display:grid!important;place-items:center!important}
+.qt-status.on{background:#18b875!important}
+.qt-status span{display:none!important}
+.qt-switch{width:16px!important;height:16px!important;padding:0!important;border:0!important;border-radius:50%!important;background:#fff!important}
+.qt-switch:after{display:none!important}
+.qt-panel{padding-bottom:calc(96px + var(--safeB))!important;scroll-padding-bottom:calc(96px + var(--safeB))!important;-webkit-overflow-scrolling:touch!important}
+.qt-list{padding-bottom:16px!important}
+.qt-panelhead{padding-right:52px!important}
+.qt-todaygrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:10px 0 13px}
+.qt-todaystat{padding:10px 8px;border:1px solid var(--line);border-radius:16px;background:#fff;min-width:0}
+.qt-todaystat span{display:block;font-size:8px;color:var(--muted)}
+.qt-todaystat b{display:block;margin-top:3px;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qt-daycard{padding:13px;border:1px solid var(--line);border-radius:19px;background:#fff;box-shadow:0 8px 24px rgba(18,55,45,.05)}
+.qt-dayhead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.qt-dayhead b{font-size:13px}.qt-dayhead strong{font-size:16px;color:#087d53}
+.qt-daymeta{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;font-size:9px;color:var(--muted)}
+.qt-dayorders{display:grid;gap:5px;margin-top:9px;padding-top:8px;border-top:1px solid var(--line)}
+.qt-dayorder{display:flex;justify-content:space-between;gap:8px;font-size:9.5px}.qt-dayorder span:last-child{font-weight:800}
+
 </style></head><body>
 <div id="app"></div><div id="toast" class="toast"></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -1317,9 +1340,47 @@ function renderHistoryPanel(){
  const p=document.getElementById('panel-jobs');if(!p)return;
  p.innerHTML=`<div class="qt-panelhead"><h1>งานของฉัน</h1><small>${S.history.length} งาน</small></div><div class="qt-list">${S.history.length?S.history.map(o=>`<div class="qt-row"><div class="qt-rowtop"><div><b>#${esc(qtShortOrder(o))}</b><br><small>${new Date(o.updated_at||o.created_at).toLocaleString('th-TH')}</small></div><b>฿${Number(riderEarning(o)||0).toLocaleString('th-TH')}</b></div></div>`).join(''):'<div class="qt-empty">ยังไม่มีประวัติงาน</div>'}</div>`;
 }
+
+function qtDateKey(v){
+ const d=new Date(v);if(!Number.isFinite(d.getTime()))return '';
+ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function qtDayName(key){
+ const d=new Date(key+'T12:00:00'),now=new Date();
+ if(key===qtDateKey(now))return 'วันนี้';
+ const y=new Date();y.setDate(y.getDate()-1);if(key===qtDateKey(y))return 'เมื่อวาน';
+ return d.toLocaleDateString('th-TH',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+}
+function qtWorkDuration(rows){
+ let mins=0;
+ for(const o of rows){
+  const a=new Date(o.created_at),b=new Date(o.updated_at||o.created_at);
+  if(Number.isFinite(a.getTime())&&Number.isFinite(b.getTime())&&b>=a)mins+=(b-a)/60000;
+ }
+ const h=Math.floor(mins/60),m=Math.round(mins%60);
+ return h?`${h} ชม. ${m} นาที`:`${m} นาที`;
+}
+function qtGroups(){
+ const g={};for(const o of (S.history||[])){const k=qtDateKey(o.updated_at||o.created_at);if(k)(g[k]||(g[k]=[])).push(o)}
+ return Object.entries(g).sort((a,b)=>b[0].localeCompare(a[0]));
+}
+
 function qtRenderEarnings(){
- const p=document.getElementById('panel-earn');if(!p)return;const total=(S.history||[]).reduce((a,o)=>a+Number(riderEarning(o)||0),0);
- p.innerHTML=`<div class="qt-panelhead"><h1>รายได้</h1><small>สรุปจากงานที่เสร็จแล้ว</small></div><div class="qt-profilehero"><small>รายได้สะสม</small><h2 style="font-size:38px;margin:8px 0">฿${total.toLocaleString('th-TH')}</h2><p>${S.history.length} งานที่จัดส่งสำเร็จ</p></div><div class="qt-list" style="margin-top:12px">${(S.history||[]).slice(0,30).map(o=>`<div class="qt-row"><div class="qt-rowtop"><div><b>${esc(qtShortOrder(o))}</b><br><small>${new Date(o.updated_at||o.created_at).toLocaleDateString('th-TH')}</small></div><b>+฿${Number(riderEarning(o)||0).toLocaleString('th-TH')}</b></div></div>`).join('')}</div>`;
+ const p=document.getElementById('panel-earn');if(!p)return;
+ const groups=qtGroups(),todayKey=qtDateKey(new Date()),today=(groups.find(([k])=>k===todayKey)||['',[]])[1];
+ const todayIncome=today.reduce((a,o)=>a+Number(riderEarning(o)||0),0);
+ const total=(S.history||[]).reduce((a,o)=>a+Number(riderEarning(o)||0),0);
+ p.innerHTML=`<div class="qt-panelhead"><h1>รายได้</h1></div>
+ <div class="qt-profilehero"><small>รายได้วันนี้</small><h2 style="font-size:38px;margin:8px 0">฿${todayIncome.toLocaleString('th-TH')}</h2><p>${today.length} งานวันนี้ · รายได้สะสม ฿${total.toLocaleString('th-TH')}</p></div>
+ <div class="qt-todaygrid">
+  <div class="qt-todaystat"><span>จำนวนงาน</span><b>${today.length} งาน</b></div>
+  <div class="qt-todaystat"><span>เวลาทำงาน</span><b>${qtWorkDuration(today)}</b></div>
+  <div class="qt-todaystat"><span>รายได้วันนี้</span><b>฿${todayIncome.toLocaleString('th-TH')}</b></div>
+ </div>
+ <div class="qt-list">${groups.length?groups.map(([key,rows])=>{
+  const income=rows.reduce((a,o)=>a+Number(riderEarning(o)||0),0);
+  return `<div class="qt-daycard"><div class="qt-dayhead"><div><b>${qtDayName(key)}</b><div class="qt-daymeta"><span>${rows.length} งาน</span><span>ทำงาน ${qtWorkDuration(rows)}</span></div></div><strong>฿${income.toLocaleString('th-TH')}</strong></div><div class="qt-dayorders">${rows.map(o=>`<div class="qt-dayorder"><span>${esc(qtShortOrder(o))}</span><span>+฿${Number(riderEarning(o)||0).toLocaleString('th-TH')}</span></div>`).join('')}</div></div>`;
+ }).join(''):'<div class="qt-empty">ยังไม่มีรายได้</div>'}</div>`;
 }
 function renderProfilePanel(){
  const p=document.getElementById('panel-profile');if(!p)return;const name=S.user?.name||'Rider',phone=S.user?.phone||'';
