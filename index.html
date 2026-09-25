@@ -456,6 +456,71 @@ html,body,#app{width:100%;height:100%;min-height:100dvh;overflow:hidden}
   .rider-grid{padding-bottom:calc(16px + env(safe-area-inset-bottom))}
 }
 
+
+/* ===== QueueTech Rider Premium Home + AI v3 ===== */
+:root{--qt-ink:#102d26;--qt-muted:#71817c;--qt-mint:#12b886;--qt-mint2:#46d5aa;--qt-surface:rgba(248,253,251,.94);--qt-line:#deebe6}
+.topbar{
+  left:14px;right:14px;top:calc(12px + var(--safe-top));padding:0;background:none;
+  align-items:center;
+}
+.who{
+  min-width:0;background:rgba(249,253,251,.90);color:var(--qt-ink);
+  border:1px solid rgba(255,255,255,.8);border-radius:20px;padding:11px 14px;
+  box-shadow:0 10px 30px rgba(21,73,59,.10);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)
+}
+.who .name{font-size:15px;font-weight:800}.who .plate{font-size:11.5px;color:#73837e}
+.status-pill{
+  background:rgba(249,253,251,.92);border:1px solid #dcebe6;color:var(--qt-ink);
+  box-shadow:0 10px 30px rgba(21,73,59,.10);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)
+}
+.fab-stack{top:calc(102px + var(--safe-top));right:16px}.fab{background:rgba(249,253,251,.94);box-shadow:0 10px 28px rgba(20,73,59,.13);color:#08795d}
+.sheet{
+  background:linear-gradient(180deg,rgba(248,253,251,.97),rgba(242,250,247,.99));
+  border:1px solid rgba(255,255,255,.86);border-bottom:0;
+  box-shadow:0 -14px 40px rgba(23,76,62,.12);border-radius:30px 30px 0 0;
+}
+.sheet-handle{width:46px;height:5px;background:#c5dcd5;margin-bottom:16px}
+.sheet-title{font-size:19px;color:var(--qt-ink);font-weight:800;letter-spacing:-.2px}
+.sheet-sub{color:#75857f;font-size:12.8px}
+.empty-note{color:#85938f;background:rgba(255,255,255,.56);border:1px dashed #d7e6e1;border-radius:18px;margin-top:12px}
+.bottomnav{
+  left:12px;right:12px;bottom:calc(10px + var(--safe-bottom));border:1px solid rgba(219,235,229,.9);
+  border-radius:22px;padding:6px;background:rgba(249,253,251,.94);
+  box-shadow:0 10px 30px rgba(19,69,56,.12);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)
+}
+.bottomnav button{position:relative;border-radius:17px;padding:7px 2px 6px;color:#82908c;gap:4px}
+.bottomnav button.active{background:#e8f8f2;color:#08795d}.bottomnav button span.ic{height:22px;display:flex;align-items:center}
+.qt-icon{width:21px;height:21px;display:block;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.panel-screen{background:linear-gradient(180deg,#f3fbf8 0%,#fbfdfc 58%,#f5faf8 100%)}
+.ai-shell{max-width:640px;margin:0 auto}.ai-head{display:flex;align-items:center;justify-content:space-between;margin:2px 0 16px}
+.ai-head h2{margin:0;font-size:22px;color:var(--qt-ink)}.ai-badge{font-size:11px;font-weight:800;color:#08795d;background:#e4f8f1;padding:7px 10px;border-radius:999px}
+.ai-hero{background:linear-gradient(145deg,#0f8f6c,#16b887 58%,#54d8b1);border-radius:26px;padding:20px;color:#fff;box-shadow:0 18px 38px rgba(14,139,105,.18);overflow:hidden;position:relative}
+.ai-hero:after{content:'';position:absolute;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.10);right:-55px;top:-55px}
+.ai-orb{width:48px;height:48px;border-radius:16px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.ai-hero h3{margin:0 0 6px;font-size:19px}.ai-hero p{margin:0;line-height:1.6;font-size:13px;opacity:.93;max-width:90%}
+.ai-quick{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.ai-quick button{border:1px solid var(--qt-line);background:rgba(255,255,255,.86);border-radius:17px;padding:13px;text-align:left;color:var(--qt-ink);font:inherit;font-size:12.5px;font-weight:700;box-shadow:0 5px 18px rgba(22,73,60,.04)}
+.ai-chat{background:rgba(255,255,255,.84);border:1px solid var(--qt-line);border-radius:22px;padding:12px;margin-top:10px;box-shadow:0 8px 26px rgba(22,73,60,.05)}
+.ai-messages{min-height:170px;max-height:34dvh;overflow:auto;display:flex;flex-direction:column;gap:8px;padding:3px}
+.ai-msg{max-width:86%;padding:10px 12px;border-radius:16px;font-size:13px;line-height:1.55}.ai-msg.bot{background:#eef7f4;color:#29433b;align-self:flex-start;border-bottom-left-radius:6px}.ai-msg.me{background:#0ea97d;color:#fff;align-self:flex-end;border-bottom-right-radius:6px}
+.ai-compose{display:flex;gap:8px;margin-top:10px}.ai-compose input{flex:1;min-width:0;border:1px solid #dceae5;border-radius:16px;background:#f7fbfa;padding:12px 13px;font:inherit;outline:none}.ai-compose button{width:45px;border:0;border-radius:15px;background:#0ea97d;color:#fff;font-size:18px}
+.ai-connect{margin-top:9px;font-size:11px;color:#84928e;text-align:center}.ai-connect b{color:#08795d}
+@media(max-height:700px){.bottomnav{bottom:calc(5px + var(--safe-bottom))}.sheet{max-height:58dvh}.ai-messages{min-height:120px;max-height:28dvh}}
+
+
+/* ===== QueueTech Rider v4 Final polish ===== */
+:root{--v4-bg:#f3faf7;--v4-card:rgba(250,253,252,.94);--v4-ink:#17362e;--v4-muted:#74857f}
+body{background:var(--v4-bg);overscroll-behavior:none}
+#qt-netbar{position:fixed;z-index:99999;top:0;left:50%;transform:translate(-50%,-120%);transition:.25s;
+background:#17362e;color:#fff;border-radius:0 0 14px 14px;padding:7px 14px;font-size:11px;font-weight:800;box-shadow:0 8px 24px #17362e22}
+#qt-netbar.show{transform:translate(-50%,0)}
+.v4-version{font-size:10px;color:#91a09b;text-align:center;margin-top:9px;letter-spacing:.3px}
+.panel-head{font-size:22px!important;color:var(--v4-ink);font-weight:850!important;letter-spacing:-.4px}
+.hist-row,.profile-card,.earn-summary{border-color:#e3eee9!important;box-shadow:0 8px 24px rgba(28,75,62,.05)!important}
+.profile-avatar{background:linear-gradient(145deg,#e3f8f0,#f8fcfa)!important;color:#0a8d69!important;border:1px solid #d9eee7!important}
+.v4-avatar-svg{width:40px;height:40px;stroke:currentColor;fill:none;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round}
+@media(max-width:360px){.bottomnav button{font-size:9.5px}.topbar{left:9px;right:9px}.who{padding:9px 11px}.status-pill{padding:7px 8px}.sheet{border-radius:24px 24px 0 0}}
+
 </style>
 </head>
 <body>
@@ -478,6 +543,7 @@ const SB = {
 };
 const SESSION_KEY = 'qtr_session_v1';
 const NEARBY_RADIUS_KM = 2;
+const APP_VERSION='4.0.0';
 const POLL_MS = 60000;
 
 /* ---------- full-screen lock + responsive resize (all screens, incl. rider page) ---------- */
@@ -741,7 +807,7 @@ function renderLogin(err){
             <div class="auth-err" id="li-err"></div>
             <div class="auth-divider"><span>ยังไม่มีบัญชี</span></div>
             <button class="btn btn-signup" id="li-signup">สมัครเป็นไรเดอร์</button>
-            <div class="auth-foot">QueueTech Rider ปลอดภัย เรียบง่าย พร้อมใช้งานทุกวัน</div>
+            <div class="v4-version">QueueTech Rider • v4.0</div><div class="auth-foot">QueueTech Rider ปลอดภัย เรียบง่าย พร้อมใช้งานทุกวัน</div>
           </div>
         </div>
       </div>
@@ -970,7 +1036,7 @@ function renderPending(u, msg){
   app.appendChild(el(`
     <div class="screen-center">
       <div class="pending-card">
-        <div class="pending-icon">⏳</div>
+        <div class="pending-icon" style="font-size:28px">•••</div>
         <div class="pending-pill">${esc(msg||'รออนุมัติ')}</div>
         <h1>สวัสดี ${esc(u.name||'ไรเดอร์')}</h1>
         <p>เมื่อบัญชีของคุณพร้อมใช้งานแล้ว กลับมาเปิดหน้านี้แล้วเข้าสู่ระบบอีกครั้งได้เลย</p>
@@ -999,7 +1065,7 @@ function renderStage(){
       <div class="topbar">
         <div class="who">
           <div class="name">${esc(S.user.name||'ไรเดอร์')}</div>
-          <div class="plate">🛵 ${esc((S.riderProfile&&S.riderProfile.vehicle_plate)||'ยังไม่ระบุทะเบียน')}</div>
+          <div class="plate">RIDER • ${esc((S.riderProfile&&S.riderProfile.vehicle_plate)||'ยังไม่ระบุทะเบียน')}</div>
         </div>
         <div class="status-pill" id="status-pill">
           <span class="dot"></span><span id="status-text">ออฟไลน์</span>
@@ -1007,16 +1073,14 @@ function renderStage(){
         </div>
       </div>
       <div class="route-badge" id="route-badge" style="display:none"><span>เส้นทางปัจจุบัน</span><b id="route-text">กำลังคำนวณ...</b></div><div class="fab-stack">
-        <button class="fab" id="fab-locate" title="ตำแหน่งของฉัน">📍</button>
-        <button class="fab" id="fab-refresh" title="รีเฟรช">🔄</button>
+        <button class="fab" id="fab-locate" title="ตำแหน่งของฉัน">⌖</button>
+        <button class="fab" id="fab-refresh" title="รีเฟรช">↻</button>
       </div>
       <div class="sheet" id="sheet"></div>
       <div class="panel-screen" id="panel-jobs"></div>
       <div class="panel-screen" id="panel-ai"></div><div class="panel-screen" id="panel-profile"></div>
       <div class="bottomnav">
-        <button class="tab-btn active" data-tab="home"><span class="ic">🏠</span>หน้าแรก</button>
-        <button class="tab-btn" data-tab="jobs"><span class="ic">📦</span>งานของฉัน</button>
-        <button class="tab-btn" data-tab="ai"><span class="ic">✦</span>AI</button><button class="tab-btn" data-tab="profile"><span class="ic">👤</span>โปรไฟล์</button>
+        <button class="tab-btn active" data-tab="home"><span class="ic"><svg class="qt-icon" viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/><path d="M9.5 19.5v-6h5v6"/></svg></span>หน้าแรก</button><button class="tab-btn" data-tab="jobs"><span class="ic"><svg class="qt-icon" viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="14" rx="3"/><path d="M8 6V4h8v2M8 11h8M8 15h5"/></svg></span>งานของฉัน</button><button class="tab-btn" data-tab="ai"><span class="ic"><svg class="qt-icon" viewBox="0 0 24 24"><path d="M12 3l1.4 4.1L17.5 8.5l-4.1 1.4L12 14l-1.4-4.1-4.1-1.4 4.1-1.4L12 3Z"/><path d="m18.5 14 .8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8.8-2.2Z"/></svg></span>AI</button><button class="tab-btn" data-tab="profile"><span class="ic"><svg class="qt-icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c.7-4 3.1-6 7.5-6s6.8 2 7.5 6"/></svg></span>โปรไฟล์</button>
       </div>
     </div>`));
 
@@ -1218,7 +1282,7 @@ function renderSheet(){
     <div class="sheet-handle"></div>
     <div class="sheet-title">งานที่รอไรเดอร์ (${S.openJobs.length})</div>
     <div class="sheet-sub">ค้นหางานในรัศมี 2 กม. ก่อน และถ้าไม่มีงานใกล้เคียงจะแสดงงานที่ใกล้ที่สุด</div>
-    ${S.openJobs.length ? S.openJobs.map(x=>jobRowHTML(x)).join('') : '<div class="empty-note">ยังไม่มีออเดอร์รอไรเดอร์ตอนนี้<br>ระบบจะอัปเดตอัตโนมัติทุกไม่กี่วินาที</div>'}`;
+    ${S.openJobs.length ? S.openJobs.map(x=>jobRowHTML(x)).join('') : '<div class="empty-note">ยังไม่มีงานใหม่ในบริเวณนี้<br>ระบบกำลังค้นหาออเดอร์ให้คุณอัตโนมัติ</div>'}`;
   S.openJobs.forEach(x=>{
     const b = document.getElementById('accept-'+x.order.id);
     if(b) b.onclick = ()=>acceptJob(x.order.id);
@@ -1424,7 +1488,7 @@ async function acceptJob(orderId){
       const row=Array.isArray(verify)?verify[0]:null;
       if(!row || row.rider_id!==S.riderProfile.id) throw new Error('เซิร์ฟเวอร์ไม่ยืนยันการรับงาน');
     }
-    toast('รับงานสำเร็จ 🎉');
+    toast('รับงานสำเร็จ');
     await refreshData();
   }catch(e){
     console.error('acceptJob failed',e);
@@ -1442,7 +1506,7 @@ async function advanceOrder(o){
     await sbTable('orders?id=eq.'+encodeURIComponent(o.id), {method:'PATCH', token, body:{
       status:statusToDb(next.to), note:noteWithTag(o,next.to), updated_at:new Date().toISOString()
     }});
-    toast(next.to==='completed' ? 'ส่งสำเร็จ! 🎉' : 'อัปเดตสถานะแล้ว');
+    toast(next.to==='completed' ? 'ส่งสำเร็จ' : 'อัปเดตสถานะแล้ว');
     refreshData();
   }catch(e){ console.error(e); toast('อัปเดตสถานะไม่สำเร็จ: '+e.message); }
 }
@@ -1457,7 +1521,7 @@ function dayKey(d){ return d.toLocaleDateString('th-TH',{year:'numeric',month:'l
 function renderHistoryPanel(){
   const p = document.getElementById('panel-jobs');
   if(!S.history.length){
-    p.innerHTML = `<div class="panel-head">📦 งานที่ส่งสำเร็จ</div><div class="empty-note">ยังไม่มีงานที่ส่งสำเร็จ</div>`;
+    p.innerHTML = `<div class="panel-head">งานที่ส่งสำเร็จ</div><div class="empty-note">ยังไม่มีงานที่ส่งสำเร็จ</div>`;
     return;
   }
 
@@ -1483,7 +1547,7 @@ function renderHistoryPanel(){
     `).join('')}
   `).join('');
 
-  p.innerHTML = `<div class="panel-head">📦 งานที่ส่งสำเร็จ</div>
+  p.innerHTML = `<div class="panel-head">งานที่ส่งสำเร็จ</div>
     <div class="earn-summary">
       <div class="lbl">รายได้วันนี้</div>
       <div class="amt">฿${todayTotal.toLocaleString('th-TH')}</div>
@@ -1494,16 +1558,48 @@ function renderHistoryPanel(){
 
 function renderAIPanel(){
   const p=document.getElementById('panel-ai'); if(!p)return;
-  const o=S.activeOrder; const status=o?statusFromRow(o):'';
-  const hint=o?(status==='assigned'?'มุ่งหน้าไปร้านและกดรับสินค้าเมื่อถึงร้าน':status==='picked_up'||status==='delivering'?'ตรวจสอบสินค้าและเดินทางไปหาลูกค้า':'ตรวจสอบขั้นตอนงานปัจจุบัน'):'เปิดออนไลน์เพื่อเริ่มค้นหางานใกล้คุณ';
-  p.innerHTML=`<div class="panel-head">✦ AI ผู้ช่วยไรเดอร์</div><div class="profile-card"><div style="font-size:42px;text-align:center">🤖</div><h3 style="text-align:center;margin:8px 0">สวัสดี ${esc(S.user.name||'ไรเดอร์')}</h3><p style="color:#667b75;line-height:1.7;text-align:center">${esc(hint)}</p></div><div class="profile-card"><div class="prow"><span>🧭 เส้นทางที่เร็วที่สุด</span><b>ดูบนแผนที่</b></div><div class="prow"><span>💬 ช่วยร่างข้อความถึงลูกค้า</span><b>ใช้ข้อความด่วน</b></div><div class="prow"><span>📊 สรุปรายได้</span><b>${S.history.length} งาน</b></div></div>`;
+  const o=S.activeOrder, status=o?statusFromRow(o):'';
+  const hint=o?(status==='assigned'?'ตอนนี้มีงานอยู่: มุ่งหน้าไปร้านและตรวจสอบออเดอร์ก่อนรับสินค้า':status==='picked_up'||status==='delivering'?'รับสินค้าแล้ว ตรวจสอบรายการและเดินทางไปหาลูกค้า':'ผมช่วยสรุปขั้นตอนของงานปัจจุบันให้ได้'):'ตอนนี้ยังไม่มีงานที่กำลังส่ง เปิดออนไลน์เมื่อพร้อมรับออเดอร์';
+  p.innerHTML=`<div class="ai-shell">
+    <div class="ai-head"><h2>AI ผู้ช่วยไรเดอร์</h2><span class="ai-badge">QueueTech Assistant</span></div>
+    <div class="ai-hero"><div class="ai-orb">✦</div><h3>สวัสดี ${esc(S.user.name||'ไรเดอร์')}</h3><p>${esc(hint)}</p></div>
+    <div class="ai-quick">
+      <button type="button" data-aiq="สรุปงานปัจจุบันให้หน่อย">สรุปงานปัจจุบัน<br><small>ดูขั้นตอนต่อไป</small></button>
+      <button type="button" data-aiq="ช่วยร่างข้อความสุภาพแจ้งลูกค้าว่ากำลังเดินทาง">ร่างข้อความลูกค้า<br><small>พร้อมส่งได้ทันที</small></button>
+      <button type="button" data-aiq="สรุปรายได้และจำนวนงานของฉัน">สรุปรายได้<br><small>${S.history.length} งานล่าสุด</small></button>
+      <button type="button" id="ai-map-btn">ดูเส้นทาง<br><small>กลับไปยังแผนที่</small></button>
+    </div>
+    <div class="ai-chat">
+      <div class="ai-messages" id="ai-messages"><div class="ai-msg bot">ถามผมเรื่องงาน เส้นทาง การคุยกับลูกค้า หรือขั้นตอนการจัดส่งได้ครับ</div></div>
+      <form class="ai-compose" id="ai-form"><input id="ai-input" maxlength="600" autocomplete="off" placeholder="ถาม AI ผู้ช่วยไรเดอร์..."><button type="submit">➜</button></form>
+      <div class="ai-connect">โหมดช่วยงานในเครื่อง • รองรับการเชื่อมต่อ <b>OpenAI ผ่าน Edge Function</b> โดยไม่เปิดเผยคีย์</div>
+    </div>
+  </div>`;
+  document.querySelectorAll('[data-aiq]').forEach(b=>b.onclick=()=>qtAIAsk(b.dataset.aiq));
+  document.getElementById('ai-map-btn').onclick=()=>switchTab('home');
+  document.getElementById('ai-form').onsubmit=e=>{e.preventDefault();const i=document.getElementById('ai-input');const q=(i.value||'').trim();if(q){i.value='';qtAIAsk(q);}};
+}
+function qtAIAdd(role,text){
+  const box=document.getElementById('ai-messages');if(!box)return;
+  const d=document.createElement('div');d.className='ai-msg '+(role==='me'?'me':'bot');d.textContent=text;box.appendChild(d);box.scrollTop=box.scrollHeight;
+}
+async function qtAIAsk(q){
+  qtAIAdd('me',q);
+  const o=S.activeOrder;
+  let local='';
+  if(/รายได้|กี่งาน/.test(q)){const total=S.history.reduce((a,x)=>a+riderEarning(x),0);local=`งานที่ส่งสำเร็จล่าสุด ${S.history.length} งาน รายได้รวมจากค่าจัดส่ง ฿${total.toLocaleString('th-TH')}`;}
+  else if(/เส้นทาง|แผนที่/.test(q)){local=o?'เปิดหน้าแรกเพื่อดูเส้นทางของงานปัจจุบันได้เลยครับ':'ตอนนี้ยังไม่มีงานปัจจุบัน เปิดออนไลน์เพื่อค้นหางานก่อนครับ';}
+  else if(/ข้อความ|ลูกค้า|ร่าง/.test(q)){local='ตัวอย่างข้อความ: “สวัสดีครับ ไรเดอร์กำลังเดินทางไปส่งออเดอร์ให้ครับ หากมีจุดสังเกตเพิ่มเติมแจ้งได้เลยครับ”';}
+  else if(/งาน|ขั้นตอน|สรุป/.test(q)){local=o?`ออเดอร์ ${o.order_number||String(o.id).slice(0,8)} อยู่ในสถานะ ${statusFromRow(o)} ครับ`:'ตอนนี้ยังไม่มีงานที่กำลังจัดส่งครับ';}
+  else local='ตอนนี้ AI ในไฟล์นี้ทำงานแบบผู้ช่วยในเครื่องก่อนครับ เมื่อต่อ Backend แล้วจะสามารถส่งคำถามไปยัง OpenAI และตอบแบบ ChatGPT ได้ โดยไม่เปิดเผย API key ในหน้าเว็บ';
+  qtAIAdd('bot',local);
 }
 
 /* ---------- profile panel ---------- */
 function renderProfilePanel(){
   const p = document.getElementById('panel-profile');
   const rp = S.riderProfile || {};
-  p.innerHTML = `<div class="panel-head">โปรไฟล์</div><div class="profile-hero"><div class="profile-avatar">🛵</div><div style="font-size:20px;font-weight:800;margin-top:10px">${esc(S.user.name||'ไรเดอร์')}</div><div style="font-size:12px;color:#72837e">QueueTech Rider</div></div>
+  p.innerHTML = `<div class="panel-head">โปรไฟล์</div><div class="profile-hero"><div class="profile-avatar"><svg class="v4-avatar-svg" viewBox="0 0 48 48"><circle cx="24" cy="17" r="8"/><path d="M10 40c1.5-9 6-14 14-14s12.5 5 14 14"/><path d="M17 40h14"/></svg></div><div style="font-size:20px;font-weight:800;margin-top:10px">${esc(S.user.name||'ไรเดอร์')}</div><div style="font-size:12px;color:#72837e">QueueTech Rider</div></div>
     <div class="profile-card">
       <div class="pname">${esc(S.user.name||'ไรเดอร์')}</div>
       <div class="prow"><span>เบอร์โทร</span><b>${esc(S.user.phone||'-')}</b></div>
@@ -1518,6 +1614,15 @@ function renderProfilePanel(){
 /* ---------- polling ---------- */
 function startPolling(){ stopPolling(); S.pollTimer = setInterval(refreshData, POLL_MS); }
 function stopPolling(){ if(S.pollTimer) clearInterval(S.pollTimer); S.pollTimer=null; }
+
+
+/* ===== v4 runtime resilience ===== */
+(function(){
+  const bar=document.createElement('div');bar.id='qt-netbar';bar.textContent='ออฟไลน์ — ระบบจะเชื่อมต่อใหม่อัตโนมัติ';document.body.appendChild(bar);
+  function sync(){bar.classList.toggle('show',!navigator.onLine);if(navigator.onLine && window.S && S.user){try{refreshData();}catch(e){}}}
+  addEventListener('online',sync);addEventListener('offline',sync);sync();
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden && navigator.onLine && window.S && S.user){try{refreshData();}catch(e){}}});
+})();
 
 boot();
 
