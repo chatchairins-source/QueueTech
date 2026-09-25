@@ -521,6 +521,191 @@ background:#17362e;color:#fff;border-radius:0 0 14px 14px;padding:7px 14px;font-
 .v4-avatar-svg{width:40px;height:40px;stroke:currentColor;fill:none;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round}
 @media(max-width:360px){.bottomnav button{font-size:9.5px}.topbar{left:9px;right:9px}.who{padding:9px 11px}.status-pill{padding:7px 8px}.sheet{border-radius:24px 24px 0 0}}
 
+
+/* ===== v5 DRIVE MODE: one-screen, thumb-first, no horizontal overflow ===== */
+*{box-sizing:border-box}
+html,body,#app{max-width:100vw!important;overflow-x:hidden!important}
+.stage{height:100dvh!important;min-height:100dvh!important;overflow:hidden!important}
+#map{height:100%!important;width:100%!important}
+.topbar{top:calc(8px + var(--safe-top))!important;left:10px!important;right:10px!important}
+.who{max-width:48vw!important;padding:9px 11px!important;border-radius:18px!important}
+.who .name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px!important}
+.who .plate{font-size:10px!important}
+.status-pill{padding:7px 9px!important;font-size:12px!important;min-width:auto!important}
+.fab-stack{right:12px!important;top:calc(88px + var(--safe-top))!important;gap:8px!important}
+.fab{width:48px!important;height:48px!important;font-size:20px!important}
+.route-hud{left:12px!important;top:calc(94px + var(--safe-top))!important;max-width:54vw!important;padding:9px 11px!important;border-radius:16px!important}
+.route-hud .big{font-size:14px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sheet{
+  left:8px!important;right:8px!important;bottom:calc(78px + var(--safe-bottom))!important;
+  width:auto!important;max-width:none!important;max-height:42dvh!important;min-height:0!important;
+  padding:12px 12px 14px!important;border-radius:24px!important;overflow-y:auto!important;overflow-x:hidden!important;
+}
+.sheet-handle{margin:0 auto 8px!important}
+.sheet-title{font-size:17px!important}.sheet-sub{font-size:11.5px!important;line-height:1.35!important}
+.job-card,.active-card{padding:12px!important;border-radius:20px!important;max-width:100%!important;overflow:hidden!important}
+.job-top{gap:8px!important}.job-shop{font-size:16px!important}.job-fee{font-size:17px!important}
+.distance-grid{gap:7px!important;margin:9px 0!important}.dist-box{padding:8px!important;border-radius:13px!important;font-size:11px!important}.dist-box b{font-size:14px!important}
+.job-address{font-size:11.5px!important;line-height:1.4!important;margin:7px 0!important;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.job-actions,.active-actions{display:grid!important;grid-template-columns:48px minmax(0,1fr)!important;gap:8px!important;width:100%!important}
+.job-actions .btn,.active-actions .btn{width:100%!important;min-width:0!important;margin:0!important;height:48px!important;padding:0 10px!important;border-radius:15px!important;font-size:13px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.job-actions .btn:first-child,.active-actions .btn:first-child{font-size:0!important;padding:0!important}
+.job-actions .btn:first-child:after,.active-actions .btn:first-child:after{content:"แชต";font-size:11px}
+.job-actions .btn.primary,.active-actions .btn.primary{font-size:15px!important;font-weight:850!important}
+.bottomnav{
+  left:8px!important;right:8px!important;bottom:calc(6px + var(--safe-bottom))!important;
+  height:66px!important;padding:4px!important;border-radius:20px!important
+}
+.bottomnav button{min-width:0!important;padding:5px 1px!important;font-size:9.5px!important}
+.bottomnav button span.ic{height:19px!important}.qt-icon{width:19px!important;height:19px!important}
+
+/* chat must fit viewport exactly */
+.chat-screen{height:100dvh!important;max-width:100vw!important;overflow:hidden!important;padding:0!important;display:grid!important;grid-template-rows:auto minmax(0,1fr) auto auto!important}
+.chat-head{width:100%!important;min-width:0!important;padding:calc(10px + var(--safe-top)) 12px 10px!important}
+.chat-messages{width:100%!important;min-width:0!important;min-height:0!important;overflow-y:auto!important;overflow-x:hidden!important;padding:12px!important}
+.chat-bubble{max-width:82%!important;overflow-wrap:anywhere!important}
+.quick-wrap{width:100%!important;min-width:0!important;overflow:hidden!important;padding:7px 10px!important}
+.quick-row{width:100%!important;max-width:100%!important;overflow-x:auto!important;display:flex!important;gap:7px!important;padding:2px 0 5px!important;scrollbar-width:none}
+.quick-row::-webkit-scrollbar{display:none}.quick-chip{flex:0 0 auto!important;max-width:78vw!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.chat-compose{width:100%!important;min-width:0!important;display:grid!important;grid-template-columns:44px minmax(0,1fr) 48px!important;gap:7px!important;padding:8px 10px calc(8px + var(--safe-bottom))!important}
+.chat-compose>*{min-width:0!important}.chat-compose input{width:100%!important}.chat-compose button{width:100%!important;margin:0!important}
+
+/* compact driving state: one obvious action */
+body.qt-driving .sheet{max-height:34dvh!important}
+body.qt-driving .active-card .route-points{max-height:88px!important;overflow:hidden!important}
+body.qt-driving .active-card .secondary-info{display:none!important}
+body.qt-driving .active-actions{grid-template-columns:48px minmax(0,1fr)!important}
+@media(max-height:700px){
+ .sheet{max-height:38dvh!important;bottom:calc(72px + var(--safe-bottom))!important}
+ .bottomnav{height:60px!important}
+ .active-card .route-points{max-height:70px!important;overflow:hidden!important}
+}
+@media(max-width:350px){
+ .who{max-width:44vw!important}.status-pill{font-size:11px!important}
+ .sheet{left:5px!important;right:5px!important;padding:10px!important}
+ .bottomnav{left:5px!important;right:5px!important}
+}
+
+
+/* ===== v6 LOCKED VIEWPORT: preserve all controls even on very small screens ===== */
+:root{
+  --qt-safe-t:env(safe-area-inset-top,0px);
+  --qt-safe-b:env(safe-area-inset-bottom,0px);
+  --qt-w:100vw; --qt-h:100dvh;
+  --qt-scale:clamp(.72,calc(100vw / 390),1);
+}
+html,body{
+  width:100%!important;height:100%!important;min-width:0!important;
+  margin:0!important;padding:0!important;overflow:hidden!important;
+  -webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation;
+}
+#app,.stage,.panel-screen,.chat-screen,.summary-screen,.screen-center{
+  width:100vw!important;max-width:100vw!important;height:100dvh!important;
+  max-height:100dvh!important;min-width:0!important;overflow:hidden!important;
+}
+img,svg,canvas,video{max-width:100%;height:auto}
+button,input,textarea,select{max-width:100%;min-width:0}
+
+/* Map home: fixed regions, never pushes controls outside viewport */
+.stage{position:relative!important}
+#map{position:absolute!important;inset:0!important}
+.topbar{max-width:calc(100vw - 20px)!important}
+.sheet{
+  width:auto!important;left:8px!important;right:8px!important;
+  max-width:calc(100vw - 16px)!important;
+  overscroll-behavior:contain!important;
+}
+.bottomnav{max-width:calc(100vw - 16px)!important}
+.job-card,.active-card,.route-points,.job-actions,.active-actions,.distance-grid{min-width:0!important;max-width:100%!important}
+.job-top>*{min-width:0!important}
+.job-shop,.job-address,.sheet-title,.sheet-sub{overflow-wrap:anywhere}
+
+/* Never hide important information: compact it, then allow ONLY the card body to scroll */
+@media(max-height:640px){
+  .topbar{top:calc(4px + var(--qt-safe-t))!important}
+  .fab-stack{top:calc(76px + var(--qt-safe-t))!important}
+  .route-hud{top:calc(80px + var(--qt-safe-t))!important}
+  .sheet{max-height:39dvh!important;padding:9px 10px 10px!important}
+  .job-card,.active-card{padding:9px!important}
+  .route-points{max-height:78px!important;overflow-y:auto!important}
+  .bottomnav{height:56px!important}
+  .bottomnav button{font-size:8.8px!important}
+}
+@media(max-height:560px){
+  .sheet{max-height:36dvh!important;bottom:calc(66px + var(--qt-safe-b))!important}
+  .who{padding:7px 9px!important}.who .name{font-size:12px!important}
+  .status-pill{padding:6px 7px!important}
+  .fab{width:42px!important;height:42px!important}
+  .job-actions .btn,.active-actions .btn{height:44px!important}
+}
+
+/* Narrow phones: retain four tabs and every action without horizontal scrolling */
+@media(max-width:360px){
+  .topbar{left:6px!important;right:6px!important}
+  .who{max-width:43vw!important}
+  .status-pill{font-size:10.5px!important}
+  .sheet{left:4px!important;right:4px!important;max-width:calc(100vw - 8px)!important}
+  .bottomnav{left:4px!important;right:4px!important;max-width:calc(100vw - 8px)!important}
+  .bottomnav button{font-size:8.5px!important}
+  .distance-grid{grid-template-columns:1fr 1fr!important}
+}
+@media(max-width:320px){
+  .who .plate{display:none!important}
+  .who{max-width:42vw!important}
+  .status-pill{font-size:9.5px!important}
+  .sheet-title{font-size:15px!important}
+  .job-shop{font-size:14px!important}.job-fee{font-size:15px!important}
+  .bottomnav button{font-size:7.8px!important}
+  .qt-icon{width:17px!important;height:17px!important}
+}
+
+/* Panels: header/body/footer contract */
+.panel-screen,.summary-screen{
+  padding-top:calc(10px + var(--qt-safe-t))!important;
+  padding-bottom:calc(76px + var(--qt-safe-b))!important;
+  overflow-y:auto!important;overflow-x:hidden!important;
+}
+.panel-screen>* ,.summary-screen>*{max-width:100%;min-width:0}
+
+/* Chat: exact 4-row viewport; no page scroll, no clipped composer */
+.chat-screen{
+  display:grid!important;
+  grid-template-rows:auto minmax(0,1fr) auto auto!important;
+  padding:0!important;overflow:hidden!important;
+}
+.chat-head{min-width:0!important;max-width:100vw!important}
+.chat-messages{min-height:0!important;max-width:100vw!important;overflow-y:auto!important;overflow-x:hidden!important}
+.quick-wrap{min-width:0!important;max-width:100vw!important;overflow:hidden!important}
+.chat-compose{
+  min-width:0!important;max-width:100vw!important;
+  grid-template-columns:42px minmax(0,1fr) 46px!important;
+}
+.chat-compose input{font-size:16px!important} /* prevents iOS input zoom */
+@media(max-width:330px){
+  .chat-compose{grid-template-columns:38px minmax(0,1fr) 42px!important;padding-left:6px!important;padding-right:6px!important;gap:5px!important}
+  .quick-chip{max-width:72vw!important;font-size:11px!important}
+}
+
+/* Login and registration: viewport contract */
+.auth-shell{max-width:100vw!important;max-height:100dvh!important}
+.auth-main{min-width:0!important}
+.rider-wizard{width:100%!important;max-width:100vw!important;max-height:100dvh!important}
+.rider-grid{min-width:0!important}
+@media(max-height:600px){
+  .auth-shell{grid-template-rows:120px minmax(0,1fr)!important}
+  .auth-main{overflow-y:auto!important}
+}
+
+/* Landscape/super-short screens: preserve details in internal scroll areas */
+@media(orientation:landscape) and (max-height:500px){
+  .sheet{max-height:52dvh!important;bottom:8px!important;right:74px!important}
+  .bottomnav{left:auto!important;right:6px!important;top:50%!important;bottom:auto!important;
+    transform:translateY(-50%);width:62px!important;height:auto!important;display:flex!important;flex-direction:column!important}
+  .bottomnav button{min-height:48px!important}
+  .topbar{right:78px!important}
+  .panel-screen,.summary-screen{padding-bottom:10px!important;padding-right:76px!important}
+}
+
 </style>
 </head>
 <body>
@@ -977,7 +1162,7 @@ function renderRiderRegistration(){
             <section class="rider-panel"><h3>📷 รูปถ่ายหน้าตรง <span class="req">(บังคับ)</span></h3><div class="rider-face-upload"><img id="rr-photo-preview" style="display:none"><button type="button" class="btn btn-brand rider-file-btn" onclick="openRiderFilePicker('rr-photo')">📷 อัปโหลดรูปภาพ</button><div id="rr-photo-name" style="font-size:12px;color:var(--night-text-dim);margin-bottom:6px">ยังไม่ได้เลือกรูป</div><input id="rr-photo" class="rider-file-input" type="file" accept="image/*" data-required="1" onchange="riderFilePreview('rr-photo','rr-photo-preview'); event.stopPropagation();"><small>ไฟล์ JPG, PNG ขนาดไม่เกิน 8 MB<br>รูปต้องเป็นหน้าตรง ชัดเจน เห็นใบหน้าเต็ม</small></div></section>
             <section class="rider-panel"><h3>👤 ข้อมูลส่วนตัว</h3><label>ชื่อ - นามสกุล <span class="req">*</span></label><input required id="rr-name" placeholder="เช่น นายสมชาย ใจดี"><label>เบอร์โทรศัพท์ <span class="req">*</span></label><input required id="rr-phone" inputmode="tel" placeholder="เช่น 081-234-5678"><label>รหัสผ่าน <span class="req">*</span></label><input required id="rr-password" type="password" minlength="6" placeholder="อย่างน้อย 6 ตัวอักษร"><label>อีเมล (ถ้ามี)</label><input id="rr-email" type="email" placeholder="เช่น rider@example.com"></section>
             <section class="rider-panel"><h3>🚗 ข้อมูลยานพาหนะ</h3><label>ประเภทพาหนะ <span class="req">*</span></label><select required id="rr-vehicle"><option value="motorcycle">🛵 รถจักรยานยนต์</option><option value="car">🚗 รถยนต์</option><option value="bicycle">🚲 จักรยาน</option></select><label>ทะเบียนรถ <span class="req">*</span></label><input required id="rr-plate" placeholder="เช่น กข 1234 นครราชสีมา"><label>ยี่ห้อ (ถ้ามี)</label><input id="rr-make" placeholder="เช่น Honda, Yamaha"><label>รุ่น (ถ้ามี)</label><input id="rr-model" placeholder="เช่น Wave, Click"><div class="rider-note">ระบบไม่บังคับให้ระบุยี่ห้อและรุ่น แต่ต้องระบุทะเบียนรถเพื่อความปลอดภัย</div></section>
-            <section class="rider-panel"><h3>📍 พื้นที่ให้บริการ</h3><label>เลือกจังหวัด <span class="req">*</span></label><select required id="rr-province"><option value="">-- เลือกจังหวัด --</option><option>กรุงเทพมหานคร</option><option>บุรีรัมย์</option><option>นครราชสีมา</option><option>ขอนแก่น</option><option>เชียงใหม่</option><option>ชลบุรี</option><option>อุบลราชธานี</option><option>สุรินทร์</option><option>ศรีสะเกษ</option><option>มหาสารคาม</option><option>ร้อยเอ็ด</option><option>สระบุรี</option><option>ปทุมธานี</option><option>นนทบุรี</option><option>สมุทรปราการ</option><option>ภูเก็ต</option></select><label>เขต/อำเภอ <span class="req">*</span></label><input required id="rr-district" placeholder="เช่น เมืองนครราชสีมา"><label>พื้นที่เพิ่มเติม (ถ้ามี)</label><input id="rr-area" placeholder="เช่น ปากช่อง, โพธิ์กลาง"></section>
+            <section class="rider-panel"><h3>พื้นที่ให้บริการ</h3><label>เลือกจังหวัด <span class="req">*</span></label><select required id="rr-province"><option value="">-- เลือกจังหวัด --</option><option>กรุงเทพมหานคร</option><option>บุรีรัมย์</option><option>นครราชสีมา</option><option>ขอนแก่น</option><option>เชียงใหม่</option><option>ชลบุรี</option><option>อุบลราชธานี</option><option>สุรินทร์</option><option>ศรีสะเกษ</option><option>มหาสารคาม</option><option>ร้อยเอ็ด</option><option>สระบุรี</option><option>ปทุมธานี</option><option>นนทบุรี</option><option>สมุทรปราการ</option><option>ภูเก็ต</option></select><label>เขต/อำเภอ <span class="req">*</span></label><input required id="rr-district" placeholder="เช่น เมืองนครราชสีมา"><label>พื้นที่เพิ่มเติม (ถ้ามี)</label><input id="rr-area" placeholder="เช่น ปากช่อง, โพธิ์กลาง"></section>
             <section class="rider-panel rider-docs"><h3>📄 เอกสารประกอบการสมัคร</h3>${riderUploadCard('rr-id-front','บัตรประชาชน (ด้านหน้า)',true,'image/*,.pdf')}${riderUploadCard('rr-id-back','บัตรประชาชน (ด้านหลัง)',true,'image/*,.pdf')}${riderUploadCard('rr-license','ใบขับขี่',true,'image/*,.pdf')}${riderUploadCard('rr-prb','พ.ร.บ. รถ',true,'image/*,.pdf')}${riderUploadCard('rr-vehicle-photo','รูปถ่ายคู่กับรถ (ปัจจุบัน)',true,'image/*')}</section>
             <section class="rider-panel rider-confirm"><h3>☑️ ยืนยันข้อมูลการสมัคร</h3><label><input type="checkbox" required> <span>ข้าพเจ้าขอรับรองว่าข้อมูลที่ให้เป็นความจริง และยินยอมให้ QueueTech ตรวจสอบข้อมูลและเอกสารประกอบการสมัคร</span></label><p>หลังส่งใบสมัคร สถานะจะเป็น <b>รอ Admin ตรวจสอบ</b> และยังไม่สามารถรับงานได้จนกว่าจะได้รับอนุมัติ</p></section>
           </div>
@@ -1299,12 +1484,12 @@ function jobRowHTML(x){
       <div class="fee">฿${Number(o.delivery_fee||0)}</div>
     </div>
     <div class="job-distances">
-      <div class="job-distance pickup">🟢 จุดรับจากคุณ<b>${Number.isFinite(pickupKm)?pickupKm.toFixed(1)+' กม.':'ไม่มีพิกัด'}</b></div>
-      <div class="job-distance delivery">🔴 จุดรับ → จุดส่ง<b>${Number.isFinite(deliveryKm)?deliveryKm.toFixed(1)+' กม.':'ไม่มีพิกัด'}</b></div>
+      <div class="job-distance pickup">จุดรับ<b>${Number.isFinite(pickupKm)?pickupKm.toFixed(1)+' กม.':'ไม่มีพิกัด'}</b></div>
+      <div class="job-distance delivery">ระยะส่ง<b>${Number.isFinite(deliveryKm)?deliveryKm.toFixed(1)+' กม.':'ไม่มีพิกัด'}</b></div>
     </div>
-    <div class="meta">📍 ${esc(o.pickup_address||'ไม่มีที่อยู่จุดรับ')}<br>🏠 ${esc(o.delivery_address||'ไม่มีที่อยู่จุดส่ง')}</div>
+    <div class="meta">${esc(o.pickup_address||'ไม่มีที่อยู่จุดรับ')}<br>${esc(o.delivery_address||'ไม่มีที่อยู่จุดส่ง')}</div>
     <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap">
-      <a class="accept" style="text-decoration:none;display:inline-block" href="${esc(mapsLink(o.pickup_latitude,o.pickup_longitude,o.pickup_address))}" target="_blank" rel="noopener">🧭 นำทางไปร้าน</a>
+      <a class="accept" style="text-decoration:none;display:inline-block" href="${esc(mapsLink(o.pickup_latitude,o.pickup_longitude,o.pickup_address))}" target="_blank" rel="noopener">นำทาง</a>
       <button class="accept" id="accept-${o.id}">รับงานนี้</button>
     </div>
   </div>`;
@@ -1327,7 +1512,7 @@ function jobCardHTML(o){
       <div class="stage-label">${esc(STEP_LABEL[status]||status)}</div>
       <div class="job-distances">
         <div class="job-distance pickup">🟢 ไรเดอร์ → จุดรับ<b>${Number.isFinite(riderToShop)?riderToShop.toFixed(1)+' กม.':'ไม่มีพิกัด'}</b></div>
-        <div class="job-distance delivery">🔴 จุดรับ → จุดส่ง<b>${Number.isFinite(shopToCustomer)?shopToCustomer.toFixed(1)+' กม.':'ไม่มีพิกัด'}</b></div>
+        <div class="job-distance delivery">ระยะส่ง<b>${Number.isFinite(shopToCustomer)?shopToCustomer.toFixed(1)+' กม.':'ไม่มีพิกัด'}</b></div>
       </div>
       <div class="stop">
         <div class="mk"><i style="background:#16a34a"></i><div class="ln"></div></div>
@@ -1339,8 +1524,8 @@ function jobCardHTML(o){
       </div>
       <div class="job-actions">
         ${cust.phone ? `<a href="tel:${esc(cust.phone)}">📞 โทรลูกค้า</a>` : ''}
-        <button type="button" class="chat-icon-btn" id="chat-btn" aria-label="แชทกับลูกค้า" title="แชทกับลูกค้า">💬</button>
-        <a class="nav-btn" href="${esc(mapsLink(navLat,navLng,navAddr))}" target="_blank" rel="noopener">🧭 นำทาง</a>
+        <button type="button" class="chat-icon-btn" id="chat-btn" aria-label="แชทกับลูกค้า" title="แชทกับลูกค้า">แชต</button>
+        <a class="nav-btn" href="${esc(mapsLink(navLat,navLng,navAddr))}" target="_blank" rel="noopener">นำทาง</a>
       </div>
       ${next && next.to==='completed' ? slideConfirmHTML() : (next ? `<button class="job-primary" id="advance-btn">${esc(next.label)}</button>` : '')}
     </div>`;
@@ -1622,6 +1807,39 @@ function stopPolling(){ if(S.pollTimer) clearInterval(S.pollTimer); S.pollTimer=
   function sync(){bar.classList.toggle('show',!navigator.onLine);if(navigator.onLine && window.S && S.user){try{refreshData();}catch(e){}}}
   addEventListener('online',sync);addEventListener('offline',sync);sync();
   document.addEventListener('visibilitychange',()=>{if(!document.hidden && navigator.onLine && window.S && S.user){try{refreshData();}catch(e){}}});
+})();
+
+
+(function(){
+  function driveClass(){
+    try{document.body.classList.toggle('qt-driving',!!(window.S&&S.activeOrder));}catch(e){}
+  }
+  const mo=new MutationObserver(driveClass);
+  mo.observe(document.getElementById('app'),{childList:true,subtree:true});
+  driveClass();
+  window.addEventListener('resize',()=>{document.documentElement.style.setProperty('--qt-vh',(window.innerHeight*.01)+'px')});
+})();
+
+
+/* v6 dynamic viewport lock for iOS Safari / Android browser chrome / keyboard */
+(function(){
+  const root=document.documentElement;
+  function lockViewport(){
+    const vv=window.visualViewport;
+    const h=vv?vv.height:window.innerHeight;
+    const w=vv?vv.width:window.innerWidth;
+    root.style.setProperty('--qt-real-h',h+'px');
+    root.style.setProperty('--qt-real-w',w+'px');
+    root.style.height=h+'px';
+    document.body.style.height=h+'px';
+  }
+  lockViewport();
+  addEventListener('resize',lockViewport,{passive:true});
+  addEventListener('orientationchange',()=>setTimeout(lockViewport,120),{passive:true});
+  if(window.visualViewport){
+    visualViewport.addEventListener('resize',lockViewport,{passive:true});
+    visualViewport.addEventListener('scroll',lockViewport,{passive:true});
+  }
 })();
 
 boot();
