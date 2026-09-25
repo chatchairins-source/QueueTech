@@ -706,6 +706,32 @@ button,input,textarea,select{max-width:100%;min-width:0}
   .panel-screen,.summary-screen{padding-bottom:10px!important;padding-right:76px!important}
 }
 
+
+/* ===== QueueTech Rider v8 FUTURE UI ===== */
+:root{--qg:#00b96b;--qg2:#2acb86;--qi:#14231f;--qm:#74817d;--qc:#fff;--ql:#e7efeb;--qs:0 14px 40px rgba(18,55,45,.10);--qst:env(safe-area-inset-top,0px);--qsb:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html,body,#app{width:100%;max-width:100vw;height:100%;margin:0;overflow-x:hidden;background:#f5faf7;color:var(--qi)}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Noto Sans Thai",sans-serif;-webkit-font-smoothing:antialiased}
+.stage{height:100dvh!important;min-height:100dvh!important;position:relative!important;overflow:hidden!important;background:#eaf1ee}
+#map{position:absolute!important;inset:0!important;width:100%!important;height:100%!important}
+.topbar{top:calc(10px + var(--qst))!important;left:14px!important;right:14px!important;justify-content:flex-end!important}.who{display:none!important}
+.status-pill{height:44px!important;padding:0 14px!important;border:0!important;border-radius:22px!important;background:rgba(255,255,255,.94)!important;box-shadow:var(--qs)!important;backdrop-filter:blur(22px);font-size:14px!important;font-weight:800!important}
+.fab-stack{right:14px!important;top:calc(72px + var(--qst))!important;gap:9px!important}.fab{width:44px!important;height:44px!important;border:0!important;border-radius:22px!important;background:rgba(255,255,255,.95)!important;box-shadow:0 8px 24px rgba(18,55,45,.12)!important;color:#176c55!important}
+.route-hud{top:calc(72px + var(--qst))!important;left:14px!important;max-width:calc(100vw - 84px)!important;border:0!important;border-radius:18px!important;background:rgba(17,30,27,.94)!important;color:#fff!important;padding:10px 13px!important;box-shadow:0 12px 32px rgba(0,0,0,.18)!important}.route-hud .big{color:#fff!important;font-size:15px!important}
+.sheet{left:10px!important;right:10px!important;bottom:calc(63px + var(--qsb))!important;width:auto!important;max-width:none!important;max-height:42dvh!important;padding:12px!important;border:1px solid var(--ql)!important;border-radius:26px!important;background:rgba(255,255,255,.97)!important;box-shadow:0 -8px 36px rgba(20,55,45,.10)!important;overflow:auto!important}
+.sheet-handle{width:34px!important;height:4px!important;margin:0 auto 9px!important;background:#d8e4df!important}.sheet-title{font-size:18px!important;font-weight:850!important}.sheet-sub{font-size:11.5px!important;color:var(--qm)!important}
+.job-card,.active-card{padding:4px!important;border:0!important;box-shadow:none!important;background:transparent!important}.job-shop{font-size:17px!important;font-weight:850!important}.job-fee{font-size:18px!important;color:#168761!important}
+.distance-grid{grid-template-columns:1fr 1fr!important;gap:7px!important;margin:8px 0!important}.dist-box{border:0!important;border-radius:14px!important;background:#f2f7f5!important;padding:8px 9px!important;font-size:10.5px!important}.dist-box b{font-size:13px!important}
+.job-address{font-size:11px!important;color:#687772!important;line-height:1.45!important;margin:7px 0!important}
+.job-actions,.active-actions{display:grid!important;grid-template-columns:44px minmax(0,1fr)!important;gap:8px!important;width:100%!important;margin-top:9px!important}.job-actions .btn,.active-actions .btn{height:48px!important;width:100%!important;min-width:0!important;margin:0!important;border-radius:15px!important;border:0!important;font-size:13px!important}.job-actions .btn.primary,.active-actions .btn.primary{background:linear-gradient(135deg,var(--qg),var(--qg2))!important;color:#fff!important;font-size:15px!important;font-weight:850!important;box-shadow:0 8px 20px rgba(0,185,107,.20)!important}
+.bottomnav{position:fixed!important;z-index:1000!important;left:8px!important;right:8px!important;bottom:calc(5px + var(--qsb))!important;height:54px!important;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;padding:3px!important;border:1px solid #e2ece8!important;border-radius:18px!important;background:rgba(255,255,255,.96)!important;box-shadow:0 10px 30px rgba(18,55,45,.10)!important;backdrop-filter:blur(24px)}
+.bottomnav button{position:relative!important;min-width:0!important;border:0!important;background:transparent!important;color:#7f8d88!important;border-radius:13px!important;padding:4px 1px 3px!important;gap:1px!important;font-size:8.5px!important;font-weight:700!important}.bottomnav button.active{background:#eaf9f3!important;color:#008c59!important}.bottomnav button span.ic{height:18px!important}.qt-icon{width:18px!important;height:18px!important}
+.qt-chat-badge{position:absolute;top:1px;left:calc(50% + 7px);min-width:15px;height:15px;padding:0 4px;border-radius:8px;background:#ff3b30;color:#fff;font-size:9px;line-height:15px;font-weight:900;box-shadow:0 0 0 2px #fff;display:none}.qt-chat-badge.show{display:block}
+.qt-message-toast{position:fixed;z-index:20000;left:12px;right:12px;top:calc(9px + var(--qst));padding:11px 13px;border-radius:18px;background:rgba(18,31,28,.96);color:#fff;box-shadow:0 14px 40px rgba(0,0,0,.24);display:flex;gap:10px;align-items:center;transform:translateY(-150%);opacity:0;transition:.28s ease;backdrop-filter:blur(22px)}.qt-message-toast.show{transform:translateY(0);opacity:1}.qt-message-toast .bubble{width:32px;height:32px;border-radius:11px;background:#10bf77;display:grid;place-items:center}.qt-message-toast b{font-size:12px}.qt-message-toast small{display:block;margin-top:2px;color:#cbd7d3;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:72vw}
+.chat-screen{height:100dvh!important;max-width:100vw!important;display:grid!important;grid-template-rows:auto minmax(0,1fr) auto auto!important;overflow:hidden!important;padding:0!important;background:#f8fbfa!important}.chat-head{padding:calc(10px + var(--qst)) 12px 10px!important;background:#fff!important;border-bottom:1px solid var(--ql)!important}.chat-messages{min-width:0!important;min-height:0!important;overflow:auto!important;padding:12px!important}.chat-bubble{max-width:80%!important;border-radius:17px!important;font-size:12px!important;line-height:1.45!important;overflow-wrap:anywhere!important}.quick-wrap{min-width:0!important;overflow:hidden!important;padding:6px 9px!important}.quick-row{display:flex!important;gap:6px!important;overflow-x:auto!important;scrollbar-width:none!important}.quick-row::-webkit-scrollbar{display:none}.quick-chip{flex:0 0 auto!important;max-width:75vw!important;border-radius:15px!important;font-size:10.5px!important;padding:7px 10px!important}.chat-compose{display:grid!important;grid-template-columns:40px minmax(0,1fr) 44px!important;gap:6px!important;width:100%!important;min-width:0!important;padding:7px 9px calc(7px + var(--qsb))!important;background:#fff!important;border-top:1px solid var(--ql)!important}.chat-compose input{min-width:0!important;width:100%!important;height:42px!important;font-size:16px!important;border-radius:14px!important}
+.panel-screen,.summary-screen{min-height:100dvh!important;max-width:100vw!important;padding:calc(14px + var(--qst)) 14px calc(70px + var(--qsb))!important;background:linear-gradient(#fbfdfc,#f4faf7)!important;overflow-y:auto!important;overflow-x:hidden!important}.panel-head{font-size:23px!important;font-weight:900!important;color:var(--qi)!important}.hist-row,.profile-card,.earn-summary{border:1px solid var(--ql)!important;border-radius:20px!important;background:#fff!important;box-shadow:0 8px 24px rgba(18,55,45,.05)!important}
+@media(max-width:350px){.sheet{left:6px!important;right:6px!important;padding:9px!important}.sheet-title{font-size:16px!important}.bottomnav{left:4px!important;right:4px!important}.bottomnav button{font-size:7.7px!important}}
+@media(max-height:650px){.sheet{max-height:38dvh!important}.job-actions .btn,.active-actions .btn{height:44px!important}}
+
 </style>
 </head>
 <body>
@@ -1840,6 +1866,47 @@ function stopPolling(){ if(S.pollTimer) clearInterval(S.pollTimer); S.pollTimer=
     visualViewport.addEventListener('resize',lockViewport,{passive:true});
     visualViewport.addEventListener('scroll',lockViewport,{passive:true});
   }
+})();
+
+
+/* v8 future navigation + unread chat */
+(function(){
+ let unread=0, lastId=null, timer=null;
+ const chatIcon='<svg class="qt-icon" viewBox="0 0 24 24"><path d="M5 5.5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H10l-5 3v-3H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2Z"/><path d="M8 11h.01M12 11h.01M16 11h.01"/></svg>';
+ function enhanceNav(){
+   const nav=document.querySelector('.bottomnav'); if(!nav||nav.dataset.v8)return;
+   nav.dataset.v8='1';
+   const ai=nav.querySelector('[data-tab="ai"]');
+   if(ai){ai.dataset.tab='chatnav';ai.innerHTML='<span class="ic">'+chatIcon+'</span><span>แชต</span><i class="qt-chat-badge" id="qt-chat-badge"></i>';ai.onclick=()=>openCurrentChat();}
+   const jobs=nav.querySelector('[data-tab="jobs"]'); if(jobs) jobs.querySelector(':scope > :last-child') && (jobs.lastChild.textContent='งานของฉัน');
+   updateBadge();
+ }
+ function updateBadge(){const b=document.getElementById('qt-chat-badge');if(!b)return;b.textContent=unread>99?'99+':unread;b.classList.toggle('show',unread>0)}
+ function toastMessage(text){
+   let t=document.getElementById('qt-message-toast');
+   if(!t){t=document.createElement('div');t.id='qt-message-toast';t.className='qt-message-toast';t.innerHTML='<div class="bubble">✦</div><div><b>มีข้อความใหม่</b><small></small></div>';document.body.appendChild(t)}
+   t.querySelector('small').textContent=text||'ลูกค้าส่งข้อความถึงคุณ';t.classList.add('show');clearTimeout(timer);timer=setTimeout(()=>t.classList.remove('show'),3500)
+ }
+ window.openCurrentChat=function(){
+   unread=0;updateBadge();
+   try{
+     if(S&&S.activeOrder){openChat(S.activeOrder);return}
+     if(S&&S.history&&S.history[0]){openChat(S.history[0]);return}
+     toast('ยังไม่มีห้องแชตสำหรับงานปัจจุบัน');
+   }catch(e){}
+ }
+ async function pollChat(){
+   try{
+     if(!S||!S.user||!S.activeOrder)return;
+     const oid=S.activeOrder.id||S.activeOrder.order_id;if(!oid)return;
+     const rows=await api('order_chat_messages?select=id,sender_id,message,created_at&order_id=eq.'+encodeURIComponent(oid)+'&order=created_at.desc&limit=1');
+     const m=rows&&rows[0];if(!m)return;
+     if(lastId===null){lastId=m.id;return}
+     if(m.id!==lastId){lastId=m.id;if(m.sender_id!==S.user.id){unread++;updateBadge();toastMessage((m.message||'ข้อความใหม่').replace(/^__QT_IMAGE__:.*/,'ส่งรูปภาพ'))}}
+   }catch(e){}
+ }
+ const obs=new MutationObserver(enhanceNav);obs.observe(document.getElementById('app'),{childList:true,subtree:true});enhanceNav();
+ setInterval(pollChat,5000);
 })();
 
 boot();
