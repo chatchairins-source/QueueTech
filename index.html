@@ -92,6 +92,46 @@ svg{display:block}.ico{width:20px;height:20px;fill:none;stroke:currentColor;stro
 .qt-dayorders{display:grid;gap:5px;margin-top:9px;padding-top:8px;border-top:1px solid var(--line)}
 .qt-dayorder{display:flex;justify-content:space-between;gap:8px;font-size:9.5px}.qt-dayorder span:last-child{font-weight:800}
 
+
+/* v13 — Jobs becomes customer inbox; completed jobs live under Earnings */
+.qt-periods{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0 0 12px}
+.qt-period{height:38px;border:0;border-radius:13px;background:#edf4f1;color:#71807a;font-size:10px;font-weight:800}
+.qt-period.active{background:#dff7ed;color:#07875a}
+.qt-inbox{display:grid;gap:8px}
+.qt-thread{width:100%;border:1px solid var(--line);border-radius:18px;background:#fff;padding:11px;display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:9px;align-items:center;text-align:left;box-shadow:0 7px 20px rgba(18,55,45,.045)}
+.qt-thread-avatar{width:38px;height:38px;border-radius:50%;background:#e4f8ef;color:#07875a;display:grid;place-items:center;font-weight:900;font-size:13px}
+.qt-thread-main{min-width:0}.qt-thread-main b{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.qt-thread-main small{display:block;margin-top:3px;color:var(--muted);font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qt-thread-side{text-align:right;min-width:42px}.qt-thread-side time{display:block;color:#8a9792;font-size:8px}.qt-thread-badge{display:inline-grid;place-items:center;margin-top:4px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:#ff3b30;color:#fff;font-size:8px;font-weight:900}
+.qt-period-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:9px 0 12px}
+.qt-period-stat{padding:10px 8px;border:1px solid var(--line);border-radius:15px;background:#fff;min-width:0}.qt-period-stat span{display:block;font-size:8px;color:var(--muted)}.qt-period-stat b{display:block;margin-top:3px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+
+/* v14 — iPhone-style daily customer inbox + in-app call UI */
+.qt-inbox-note{margin:-4px 0 10px;color:var(--muted);font-size:9px}
+.qt-thread{position:relative}
+.qt-thread-lock{display:inline-flex;align-items:center;gap:4px;margin-top:4px;color:#8a9792;font-size:8px;font-weight:700}
+.qt-thread-ready{color:#07875a}
+.qt-chat-actions{display:flex;gap:7px;padding:8px 12px 4px}
+.qt-call-btn{height:36px;padding:0 13px;border:0;border-radius:18px;background:#e2f7ee;color:#07875a;font-size:10px;font-weight:850}
+.qt-call-btn[disabled]{background:#f0f2f1;color:#a5aeaa}
+.qt-ios-call{position:fixed;inset:0;z-index:5000;background:linear-gradient(180deg,#17201d 0%,#0b100e 100%);color:#fff;display:flex;flex-direction:column;align-items:center;padding:calc(58px + var(--safeT)) 22px calc(28px + var(--safeB))}
+.qt-ios-call .qt-call-state{font-size:11px;color:rgba(255,255,255,.62)}
+.qt-ios-call .qt-call-name{margin-top:10px;font-size:28px;font-weight:750;letter-spacing:-.7px;text-align:center}
+.qt-ios-call .qt-call-order{margin-top:5px;font-size:11px;color:rgba(255,255,255,.58)}
+.qt-ios-call .qt-call-avatar{margin-top:38px;width:112px;height:112px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.13);font-size:38px;font-weight:800}
+.qt-ios-call .qt-call-time{margin-top:18px;font-size:13px;color:rgba(255,255,255,.76)}
+.qt-call-spacer{flex:1}
+.qt-call-controls{width:min(330px,100%);display:grid;grid-template-columns:repeat(3,1fr);gap:22px 18px;text-align:center}
+.qt-call-control{border:0;background:none;color:#fff;font-size:9px;font-weight:700}
+.qt-call-circle{width:64px;height:64px;margin:0 auto 7px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.16)}
+.qt-call-circle svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.8}
+.qt-call-end{grid-column:2}
+.qt-call-end .qt-call-circle{background:#ff453a}
+.qt-call-answer .qt-call-circle{background:#30d158}
+.qt-call-incoming-actions{width:min(300px,100%);display:flex;justify-content:space-between;align-items:flex-end}
+.qt-call-incoming-actions .qt-call-control{width:90px}
+.qt-chat-locked{margin:8px 12px 10px;padding:9px 11px;border-radius:13px;background:#f2f4f3;color:#7d8984;font-size:9px;text-align:center}
+
 </style></head><body>
 <div id="app"></div><div id="toast" class="toast"></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -1084,303 +1124,62 @@ function riderEarning(o){
   return Number(o.delivery_fee ?? o.rider_fee ?? 0) || 0;
 }
 function dayKey(d){ return d.toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'}); }
-function renderHistoryPanel(){
-  const p = document.getElementById('panel-jobs');
-  if(!S.history.length){
-    p.innerHTML = `<div class="panel-head">งานที่ส่งสำเร็จ</div><div class="empty-note">ยังไม่มีงานที่ส่งสำเร็จ</div>`;
-    return;
-  }
 
-  const todayKey = dayKey(new Date());
-  let todayTotal = 0, grandTotal = 0;
-  const groups = new Map(); // dayKey -> {label, total, rows:[]}
-  for(const o of S.history){
-    const d = new Date(o.updated_at || o.created_at);
-    const key = dayKey(d);
-    const fee = riderEarning(o);
-    grandTotal += fee;
-    if(key===todayKey) todayTotal += fee;
-    if(!groups.has(key)) groups.set(key, {label:key, total:0, rows:[]});
-    const g = groups.get(key);
-    g.total += fee;
-    g.rows.push({o, d, fee});
-  }
-
-  const daysHtml = [...groups.values()].map(g=>`
-    <div class="hist-day-head"><span class="d">${esc(g.label)}</span><span class="t">฿${g.total.toLocaleString('th-TH')}</span></div>
-    ${g.rows.map(({o,d,fee})=>`
-      <div class="hist-row"><span><b>${esc(o.order_number||o.id.slice(0,8))}</b><br>${d.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})}</span><span class="amt">฿${fee.toLocaleString('th-TH')}</span></div>
-    `).join('')}
-  `).join('');
-
-  p.innerHTML = `<div class="panel-head">งานที่ส่งสำเร็จ</div>
-    <div class="earn-summary">
-      <div class="lbl">รายได้วันนี้</div>
-      <div class="amt">฿${todayTotal.toLocaleString('th-TH')}</div>
-      <div class="sub"><span>รวมล่าสุด (${S.history.length} งาน)</span><span>฿${grandTotal.toLocaleString('th-TH')}</span></div>
-    </div>
-    ${daysHtml}`;
+const QT_POSTJOB_CONTACT={}; // unlocked only after a customer contacts the rider after completion
+function qtIsFinished(o){return ['delivered','completed','done','success'].includes(String(o?.status||'').toLowerCase())}
+function qtCustomerContactUnlocked(o){return !qtIsFinished(o)||!!QT_POSTJOB_CONTACT[String(o?.id)]}
+function qtCustomerName(o){return o?._customer?.name||o?.customer_name||'ลูกค้า':'ลูกค้า'}
+function qtOpenCustomerThread(o){
+ if(!o)return;
+ openChat(o);
+ setTimeout(()=>qtApplyPostJobChatRules(o),40);
+}
+function qtApplyPostJobChatRules(o){
+ const root=document.querySelector('.qt-chatpage,.qt-chat-page,#chat-page'); if(!root)return;
+ let actions=root.querySelector('.qt-chat-actions');
+ if(!actions){actions=document.createElement('div');actions.className='qt-chat-actions';const head=root.querySelector('.qt-chathead,.qt-chat-head,header');(head||root).appendChild(actions)}
+ const unlocked=qtCustomerContactUnlocked(o);
+ actions.innerHTML=`<button class="qt-call-btn" ${unlocked?'':'disabled'}>โทรในแอป</button>`;
+ const btn=actions.querySelector('button'); if(unlocked)btn.onclick=()=>qtOpenCall(o,'outgoing');
+ if(qtIsFinished(o)&&!unlocked){
+   let lock=root.querySelector('.qt-chat-locked');
+   if(!lock){lock=document.createElement('div');lock.className='qt-chat-locked';lock.textContent='งานจบแล้ว · รอลูกค้าติดต่อกลับก่อนจึงจะตอบหรือโทรกลับได้';actions.after(lock)}
+   root.querySelectorAll('textarea,input[type="text"],button[type="submit"]').forEach(el=>{el.disabled=true});
+ }
+}
+function qtOpenCall(o,mode='outgoing'){
+ if(qtIsFinished(o)&&!qtCustomerContactUnlocked(o)&&mode!=='incoming')return;
+ document.getElementById('qt-ios-call')?.remove();
+ const name=qtCustomerName(o),initial=String(name).trim().slice(0,1)||'ล';
+ const d=document.createElement('div');d.id='qt-ios-call';d.className='qt-ios-call';
+ d.innerHTML=`<div class="qt-call-state">${mode==='incoming'?'สายเรียกเข้า':'กำลังโทรใน QueueTech'}</div><div class="qt-call-name">${esc(name)}</div><div class="qt-call-order">${esc(qtShortOrder(o))}</div><div class="qt-call-avatar">${esc(initial)}</div><div class="qt-call-time">${mode==='incoming'?'ลูกค้า QueueTech':'กำลังเชื่อมต่อ…'}</div><div class="qt-call-spacer"></div>${mode==='incoming'?`<div class="qt-call-incoming-actions"><button class="qt-call-control" data-act="decline"><span class="qt-call-circle">✕</span>ปฏิเสธ</button><button class="qt-call-control qt-call-answer" data-act="answer"><span class="qt-call-circle">⌕</span>รับสาย</button></div>`:`<div class="qt-call-controls"><button class="qt-call-control"><span class="qt-call-circle">⌁</span>ปิดไมค์</button><button class="qt-call-control"><span class="qt-call-circle">◖</span>ลำโพง</button><button class="qt-call-control"><span class="qt-call-circle">＋</span>เพิ่มเติม</button><button class="qt-call-control qt-call-end" data-act="end"><span class="qt-call-circle">⌕</span>วางสาย</button></div>`}`;
+ document.body.appendChild(d);
+ d.querySelector('[data-act="decline"]')?.addEventListener('click',()=>d.remove());
+ d.querySelector('[data-act="end"]')?.addEventListener('click',()=>d.remove());
+ d.querySelector('[data-act="answer"]')?.addEventListener('click',()=>{QT_POSTJOB_CONTACT[String(o.id)]=true;d.remove();qtOpenCall(o,'answered')});
 }
 
-function renderAIPanel(){
-  const p=document.getElementById('panel-ai'); if(!p)return;
-  const o=S.activeOrder, status=o?statusFromRow(o):'';
-  const hint=o?(status==='assigned'?'ตอนนี้มีงานอยู่: มุ่งหน้าไปร้านและตรวจสอบออเดอร์ก่อนรับสินค้า':status==='picked_up'||status==='delivering'?'รับสินค้าแล้ว ตรวจสอบรายการและเดินทางไปหาลูกค้า':'ผมช่วยสรุปขั้นตอนของงานปัจจุบันให้ได้'):'ตอนนี้ยังไม่มีงานที่กำลังส่ง เปิดออนไลน์เมื่อพร้อมรับออเดอร์';
-  p.innerHTML=`<div class="ai-shell">
-    <div class="ai-head"><h2>AI ผู้ช่วยไรเดอร์</h2><span class="ai-badge">QueueTech Assistant</span></div>
-    <div class="ai-hero"><div class="ai-orb">✦</div><h3>สวัสดี ${esc(S.user.name||'ไรเดอร์')}</h3><p>${esc(hint)}</p></div>
-    <div class="ai-quick">
-      <button type="button" data-aiq="สรุปงานปัจจุบันให้หน่อย">สรุปงานปัจจุบัน<br><small>ดูขั้นตอนต่อไป</small></button>
-      <button type="button" data-aiq="ช่วยร่างข้อความสุภาพแจ้งลูกค้าว่ากำลังเดินทาง">ร่างข้อความลูกค้า<br><small>พร้อมส่งได้ทันที</small></button>
-      <button type="button" data-aiq="สรุปรายได้และจำนวนงานของฉัน">สรุปรายได้<br><small>${S.history.length} งานล่าสุด</small></button>
-      <button type="button" id="ai-map-btn">ดูเส้นทาง<br><small>กลับไปยังแผนที่</small></button>
-    </div>
-    <div class="ai-chat">
-      <div class="ai-messages" id="ai-messages"><div class="ai-msg bot">ถามผมเรื่องงาน เส้นทาง การคุยกับลูกค้า หรือขั้นตอนการจัดส่งได้ครับ</div></div>
-      <form class="ai-compose" id="ai-form"><input id="ai-input" maxlength="600" autocomplete="off" placeholder="ถาม AI ผู้ช่วยไรเดอร์..."><button type="submit">➜</button></form>
-      <div class="ai-connect">โหมดช่วยงานในเครื่อง • รองรับการเชื่อมต่อ <b>OpenAI ผ่าน Edge Function</b> โดยไม่เปิดเผยคีย์</div>
-    </div>
-  </div>`;
-  document.querySelectorAll('[data-aiq]').forEach(b=>b.onclick=()=>qtAIAsk(b.dataset.aiq));
-  document.getElementById('ai-map-btn').onclick=()=>switchTab('home');
-  document.getElementById('ai-form').onsubmit=e=>{e.preventDefault();const i=document.getElementById('ai-input');const q=(i.value||'').trim();if(q){i.value='';qtAIAsk(q);}};
-}
-function qtAIAdd(role,text){
-  const box=document.getElementById('ai-messages');if(!box)return;
-  const d=document.createElement('div');d.className='ai-msg '+(role==='me'?'me':'bot');d.textContent=text;box.appendChild(d);box.scrollTop=box.scrollHeight;
-}
-async function qtAIAsk(q){
-  qtAIAdd('me',q);
-  const o=S.activeOrder;
-  let local='';
-  if(/รายได้|กี่งาน/.test(q)){const total=S.history.reduce((a,x)=>a+riderEarning(x),0);local=`งานที่ส่งสำเร็จล่าสุด ${S.history.length} งาน รายได้รวมจากค่าจัดส่ง ฿${total.toLocaleString('th-TH')}`;}
-  else if(/เส้นทาง|แผนที่/.test(q)){local=o?'เปิดหน้าแรกเพื่อดูเส้นทางของงานปัจจุบันได้เลยครับ':'ตอนนี้ยังไม่มีงานปัจจุบัน เปิดออนไลน์เพื่อค้นหางานก่อนครับ';}
-  else if(/ข้อความ|ลูกค้า|ร่าง/.test(q)){local='ตัวอย่างข้อความ: “สวัสดีครับ ไรเดอร์กำลังเดินทางไปส่งออเดอร์ให้ครับ หากมีจุดสังเกตเพิ่มเติมแจ้งได้เลยครับ”';}
-  else if(/งาน|ขั้นตอน|สรุป/.test(q)){local=o?`ออเดอร์ ${o.order_number||String(o.id).slice(0,8)} อยู่ในสถานะ ${statusFromRow(o)} ครับ`:'ตอนนี้ยังไม่มีงานที่กำลังจัดส่งครับ';}
-  else local='ตอนนี้ AI ในไฟล์นี้ทำงานแบบผู้ช่วยในเครื่องก่อนครับ เมื่อต่อ Backend แล้วจะสามารถส่งคำถามไปยัง OpenAI และตอบแบบ ChatGPT ได้ โดยไม่เปิดเผย API key ในหน้าเว็บ';
-  qtAIAdd('bot',local);
-}
-
-/* ---------- profile panel ---------- */
-function renderProfilePanel(){
-  const p = document.getElementById('panel-profile');
-  const rp = S.riderProfile || {};
-  p.innerHTML = `<div class="panel-head">โปรไฟล์</div><div class="profile-hero"><div class="profile-avatar"><svg class="v4-avatar-svg" viewBox="0 0 48 48"><circle cx="24" cy="17" r="8"/><path d="M10 40c1.5-9 6-14 14-14s12.5 5 14 14"/><path d="M17 40h14"/></svg></div><div style="font-size:20px;font-weight:800;margin-top:10px">${esc(S.user.name||'ไรเดอร์')}</div><div style="font-size:12px;color:#72837e">QueueTech Rider</div></div>
-    <div class="profile-card">
-      <div class="pname">${esc(S.user.name||'ไรเดอร์')}</div>
-      <div class="prow"><span>เบอร์โทร</span><b>${esc(S.user.phone||'-')}</b></div>
-      <div class="prow"><span>ประเภทรถ</span><b>${esc(rp.vehicle_type||'-')}</b></div>
-      <div class="prow"><span>ทะเบียนรถ</span><b>${esc(rp.vehicle_plate||'-')}</b></div>
-      <div class="prow"><span>สถานะบัญชี</span><b>${S.user.status==='active'?'อนุมัติแล้ว':esc(S.user.status)}</b></div>
-    </div>
-    <button class="btn-logout" id="pf-logout">ออกจากระบบ</button>`;
-  document.getElementById('pf-logout').onclick = doLogout;
-}
-
-/* ---------- polling ---------- */
-function startPolling(){ stopPolling(); S.pollTimer = setInterval(refreshData, POLL_MS); }
-function stopPolling(){ if(S.pollTimer) clearInterval(S.pollTimer); S.pollTimer=null; }
-
-
-/* ===== v4 runtime resilience ===== */
-(function(){
-  const bar=document.createElement('div');bar.id='qt-netbar';bar.textContent='ออฟไลน์ — ระบบจะเชื่อมต่อใหม่อัตโนมัติ';document.body.appendChild(bar);
-  function sync(){bar.classList.toggle('show',!navigator.onLine);if(navigator.onLine && window.S && S.user){try{refreshData();}catch(e){}}}
-  addEventListener('online',sync);addEventListener('offline',sync);sync();
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden && navigator.onLine && window.S && S.user){try{refreshData();}catch(e){}}});
-})();
-
-
-(function(){
-  function driveClass(){
-    try{document.body.classList.toggle('qt-driving',!!(window.S&&S.activeOrder));}catch(e){}
-  }
-  const mo=new MutationObserver(driveClass);
-  mo.observe(document.getElementById('app'),{childList:true,subtree:true});
-  driveClass();
-  window.addEventListener('resize',()=>{document.documentElement.style.setProperty('--qt-vh',(window.innerHeight*.01)+'px')});
-})();
-
-
-/* v6 dynamic viewport lock for iOS Safari / Android browser chrome / keyboard */
-(function(){
-  const root=document.documentElement;
-  function lockViewport(){
-    const vv=window.visualViewport;
-    const h=vv?vv.height:window.innerHeight;
-    const w=vv?vv.width:window.innerWidth;
-    root.style.setProperty('--qt-real-h',h+'px');
-    root.style.setProperty('--qt-real-w',w+'px');
-    root.style.height=h+'px';
-    document.body.style.height=h+'px';
-  }
-  lockViewport();
-  addEventListener('resize',lockViewport,{passive:true});
-  addEventListener('orientationchange',()=>setTimeout(lockViewport,120),{passive:true});
-  if(window.visualViewport){
-    visualViewport.addEventListener('resize',lockViewport,{passive:true});
-    visualViewport.addEventListener('scroll',lockViewport,{passive:true});
-  }
-})();
-
-boot();
-
-/* ===== QueueTech Rider: new-order alert ===== */
-(function(){
-  let audioCtx=null, repeatTimer=null, alertJobId=null, alertJob=null, alertBusy=false;
-  function ctx(){try{if(!audioCtx){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;audioCtx=new AC();}return audioCtx;}catch(e){return null;}}
-  function unlockAudio(){try{const c=ctx();if(c&&c.state==='suspended')c.resume().catch(()=>{});}catch(e){}}
-  function beep(){try{const c=ctx();if(!c)return;if(c.state==='suspended')c.resume().catch(()=>{});const now=c.currentTime;[880,1175].forEach((freq,i)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=freq;g.gain.setValueAtTime(.0001,now+i*.13);g.gain.exponentialRampToValueAtTime(.20,now+i*.13+.025);g.gain.exponentialRampToValueAtTime(.0001,now+i*.13+.30);o.connect(g);g.connect(c.destination);o.start(now+i*.13);o.stop(now+i*.13+.31);});}catch(e){}}
-  function speak(){try{if(!('speechSynthesis'in window))return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance('มีออเดอร์ใหม่เข้ามา กรุณาตรวจสอบและรับออเดอร์');u.lang='th-TH';u.rate=.92;u.pitch=1;u.volume=1;window.speechSynthesis.speak(u);}catch(e){}}
-  function vibrate(){try{if(navigator.vibrate)navigator.vibrate([450,180,450,180,750]);}catch(e){}}
-  function ensureUI(){
-    let el=document.getElementById('qt-new-order-alert');if(el)return el;
-    el=document.createElement('div');el.id='qt-new-order-alert';el.className='qt-alert-backdrop';el.setAttribute('role','alertdialog');el.setAttribute('aria-modal','true');
-    el.innerHTML='<div class="qt-alert-card"><div class="qt-alert-icon">🔔</div><div class="qt-alert-title">มีออเดอร์ใหม่</div><div class="qt-alert-sub">มีงานใหม่เข้ามาสำหรับไรเดอร์</div><div class="qt-alert-order"><b id="qt-alert-order-no">ออเดอร์ใหม่</b><span id="qt-alert-order-detail">กรุณากดรับทราบเพื่อดูรายละเอียดออเดอร์</span></div><button type="button" class="qt-alert-btn" id="qt-alert-ack">รับทราบ</button></div>';
-    document.body.appendChild(el);document.getElementById('qt-alert-ack').addEventListener('click',acknowledge);return el;
-  }
-  function show(job){
-    if(!job||!job.id)return;const id=String(job.id);if(alertJobId===id)return;alertJobId=id;alertJob=job;const el=ensureUI();
-    const no=document.getElementById('qt-alert-order-no'),detail=document.getElementById('qt-alert-order-detail');
-    if(no)no.textContent='ออเดอร์ '+(job.order_number||id.slice(0,8));
-    if(detail){const shop=(job._shop&&job._shop.shop_name)||'ร้านค้า';detail.textContent=shop+' • '+(job.pickup_address||'จุดรับสินค้า');}
-    el.classList.add('show');document.body.style.overflow='hidden';unlockAudio();beep();speak();vibrate();
-    clearInterval(repeatTimer);repeatTimer=setInterval(()=>{if(alertJobId){beep();speak();vibrate();}},7000);S.newJobAlert={active:true,jobId:id};
-  }
-  function acknowledge(){
-    if(alertBusy)return;alertBusy=true;clearInterval(repeatTimer);repeatTimer=null;try{if(navigator.vibrate)navigator.vibrate(0);}catch(e){}try{if('speechSynthesis'in window)window.speechSynthesis.cancel();}catch(e){}
-    alertJobId=null;alertJob=null;S.newJobAlert={active:false,jobId:null};const el=document.getElementById('qt-new-order-alert');if(el)el.classList.remove('show');document.body.style.overflow='';alertBusy=false;
-  }
-  function checkNewJobs(previousIds,jobs){if(!S.online||S.activeOrder)return;const fresh=jobs.find(o=>o&&o.id&&!previousIds.has(String(o.id)));if(fresh)show(fresh);}
-  ['click','touchstart','pointerdown'].forEach(ev=>document.addEventListener(ev,unlockAudio,{passive:true}));
-  window.qtStartNewJobAlert=show;window.qtCheckNewJobs=checkNewJobs;window.qtStopNewJobAlert=function(){clearInterval(repeatTimer);repeatTimer=null;try{if(navigator.vibrate)navigator.vibrate(0);}catch(e){}try{if('speechSynthesis'in window)window.speechSynthesis.cancel();}catch(e){}alertJobId=null;alertJob=null;const el=document.getElementById('qt-new-order-alert');if(el)el.classList.remove('show');document.body.style.overflow='';S.newJobAlert={active:false,jobId:null};};
-})();
-
-
-function qtShortOrder(o){
-  const raw=String((o&&o.order_number)||(o&&o.id)||'')
-    .replace(/^QT[-_\s]*/i,'')
-    .replace(/[^A-Za-z0-9]/g,'');
-  return 'QT-' + (raw.slice(-4)||'----').toUpperCase();
-}
-
-const QTICON={'home': '<svg class="ico" viewBox="0 0 24 24"><path d="M3.5 11 12 4l8.5 7v8a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 19Z"/><path d="M9 20v-6h6v6"/></svg>', 'jobs': '<svg class="ico" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4M16 3v4M8 11h8M8 15h5"/></svg>', 'chat': '<svg class="ico" viewBox="0 0 24 24"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-9l-5 3v-3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"/><path d="M8 11h.01M12 11h.01M16 11h.01"/></svg>', 'earn': '<svg class="ico" viewBox="0 0 24 24"><path d="M4 18V9M10 18V5M16 18v-7M22 18H2"/></svg>', 'user': '<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/></svg>', 'loc': '<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>', 'phone': '<svg class="ico" viewBox="0 0 24 24"><path d="M7 3 4.5 5.5c0 7.7 6.3 14 14 14L21 17l-4-3-2 2c-3.1-1.2-5.8-3.9-7-7l2-2Z"/></svg>', 'arrow': '<svg class="ico" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg>', 'back': '<svg class="ico" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></svg>'};
-let qtUnread=0,qtLastMsg=null,qtMsgTimer=null;
-function qtNavHTML(){
- return `<nav class="qt-nav">
- <button class="qt-tab active" data-tab="home">${QTICON.home}<span>หน้าแรก</span></button>
- <button class="qt-tab" data-tab="jobs">${QTICON.jobs}<span>งาน</span></button>
- <button class="qt-tab" data-tab="chat">${QTICON.chat}<i class="qt-badge" id="qt-badge"></i><span>แชต</span></button>
- <button class="qt-tab" data-tab="earn">${QTICON.earn}<span>รายได้</span></button>
- <button class="qt-tab" data-tab="profile">${QTICON.user}<span>โปรไฟล์</span></button>
- </nav>`;
-}
-function renderStage(){
- stopPolling();
- document.getElementById('app').innerHTML=`<div class="stage">
-   <div id="map" class="map"></div>
-   <header class="qt-top"><div class="qt-brand"><i></i>QueueTech Rider</div><div class="qt-status" id="status-pill"><span id="status-text">ออฟไลน์</span><button class="qt-switch" id="status-switch" aria-label="เปลี่ยนสถานะ"></button></div></header>
-   <div class="qt-route" id="route-badge"><div>${QTICON.loc}</div><div><strong id="route-text">กำลังคำนวณเส้นทาง</strong><small>แตะนำทางเพื่อเปิดเส้นทางแบบ turn-by-turn</small></div></div>
-   <div class="qt-fabs"><button class="qt-fab" id="recenter">${QTICON.loc}</button></div>
-   <section class="qt-sheet" id="sheet"></section>
-   <section class="qt-panel" id="panel-jobs"></section><section class="qt-panel" id="panel-earn"></section><section class="qt-panel" id="panel-profile"></section>
-   ${qtNavHTML()}
- </div><div class="qt-message" id="qt-message"><i>●</i><div><b>ข้อความใหม่</b><small id="qt-message-text"></small></div></div>`;
- document.getElementById('status-switch').onclick=toggleOnline;
- document.getElementById('recenter').onclick=recenterMap;
- document.querySelectorAll('.qt-tab').forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
- initMap(); updateStatusUI(); renderSheet(); startGeolocation(); refreshData(); startPolling(); qtStartMessageWatch();
-}
-function switchTab(tab){
- S.activeTab=tab;
- document.querySelectorAll('.qt-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
- document.querySelectorAll('.qt-panel').forEach(p=>p.classList.remove('show'));
- const map=document.getElementById('map'),sheet=document.getElementById('sheet'),fabs=document.querySelector('.qt-fabs'),route=document.getElementById('route-badge');
- const home=tab==='home'; if(map)map.style.display=home?'':'none'; if(sheet)sheet.style.display=home?'':'none'; if(fabs)fabs.style.display=home?'':'none'; if(route&&!home)route.style.display='none';
- if(tab==='jobs'){document.getElementById('panel-jobs').classList.add('show');renderHistoryPanel();}
- if(tab==='earn'){document.getElementById('panel-earn').classList.add('show');qtRenderEarnings();}
- if(tab==='profile'){document.getElementById('panel-profile').classList.add('show');renderProfilePanel();}
- if(tab==='chat'){qtUnread=0;qtBadge();const o=S.activeOrder||(S.history&&S.history[0]);if(o)openChat(o);else toast('ยังไม่มีออเดอร์สำหรับแชต');}
- if(home&&S.map)requestAnimationFrame(()=>S.map.invalidateSize({animate:false}));
-}
-function updateStatusUI(){
- const pill=document.getElementById('status-pill'),label=document.getElementById('status-text');if(!pill)return;
- pill.classList.toggle('on',S.online);if(label)label.textContent=S.online?'ออนไลน์':'ออฟไลน์';
-}
-function placeRiderMarker(){
- if(!S.pos||!S.map)return;
- const icon=L.divIcon({html:'<div style="width:26px;height:26px;border-radius:50%;background:#08bd78;border:5px solid white;box-shadow:0 5px 16px #0003"></div>',className:'',iconSize:[30,30],iconAnchor:[15,15]});
- if(S.riderMarker)S.riderMarker.setLatLng([S.pos.lat,S.pos.lng]);else S.riderMarker=L.marker([S.pos.lat,S.pos.lng],{icon}).addTo(S.map);
-}
-function renderSheet(){
- const s=document.getElementById('sheet');if(!s)return;
- if(S.activeOrder){s.innerHTML=jobCardHTML(S.activeOrder);bindJobCardEvents(S.activeOrder);return}
- if(!S.online){s.innerHTML=`<div class="qt-handle"></div><div class="qt-ready"><div class="qt-copy"><div class="qt-title">พร้อมรับงาน</div><div class="qt-sub">เปิดสถานะเพื่อรับออเดอร์ที่อยู่ใกล้คุณ</div></div><button class="qt-online" id="go-online">ออนไลน์</button></div>`;document.getElementById('go-online').onclick=toggleOnline;return}
- if(!S.openJobs.length){s.innerHTML=`<div class="qt-handle"></div><div class="qt-title">กำลังค้นหางานใกล้คุณ</div><div class="qt-sub">คุณออนไลน์อยู่ ระบบจะอัปเดตงานให้อัตโนมัติ</div>`;return}
- const x=S.openJobs[0];s.innerHTML=jobCardHTML(x.order,x);bindJobCardEvents(x.order);
-}
-function jobCardHTML(o,x){
- const st=statusFromRow(o),shop=o._shop||{},cust=o._customer||{};
- const km=x&&Number.isFinite(x.distanceKm)?x.distanceKm:haversineKm(S.pos&&S.pos.lat,S.pos&&S.pos.lng,o.pickup_latitude,o.pickup_longitude);
- const delivery=haversineKm(o.pickup_latitude,o.pickup_longitude,o.delivery_latitude,o.delivery_longitude);
- const fee=riderEarning(o);const active=!!S.activeOrder;
- const targetShop=st==='assigned';const nav=mapsLink(targetShop?o.pickup_latitude:o.delivery_latitude,targetShop?o.pickup_longitude:o.delivery_longitude,targetShop?o.pickup_address:o.delivery_address);
- const next=STEP_NEXT[st];
- return `<div class="qt-handle"></div><div class="qt-jobhead"><div><div class="qt-shop">${esc(shop.shop_name||'งานจัดส่ง')}</div><div class="qt-order">${active?esc(STEP_LABEL[st]||'งานที่กำลังทำ'):'งานใหม่'} · #${esc(qtShortOrder(o))}</div></div><div class="qt-fee">฿${Number(fee||0).toLocaleString('th-TH')}<small>รายได้งานนี้</small></div></div>
- <div class="qt-metrics"><div class="qt-metric"><span>ถึงร้าน</span><b>${Number.isFinite(km)?km.toFixed(1):'-'} กม.</b></div><div class="qt-metric"><span>ระยะส่ง</span><b>${Number.isFinite(delivery)?delivery.toFixed(1):'-'} กม.</b></div><div class="qt-metric"><span>ยอดออเดอร์</span><b>฿${Number(o.total_amount||0).toLocaleString('th-TH')}</b></div></div>
- <div class="qt-address">${esc(targetShop?(o.pickup_address||shop.address||'จุดรับสินค้า'):(o.delivery_address||'จุดส่งสินค้า'))}</div>
- <div class="qt-actions"><a class="qt-ghost" href="${nav}" target="_blank" rel="noopener" aria-label="นำทาง">${QTICON.loc}</a><button class="qt-ghost" id="chat-${o.id}" aria-label="แชต">${QTICON.chat}</button>${active?`<button class="qt-primary" id="next-${o.id}">${next?esc(next.label):'ตรวจสอบงาน'}</button>`:`<button class="qt-primary" id="accept-${o.id}">รับงานนี้</button>`}</div>`;
-}
-function bindJobCardEvents(o){
- const c=document.getElementById('chat-'+o.id);if(c)c.onclick=()=>openChat(o);
- const a=document.getElementById('accept-'+o.id);if(a)a.onclick=()=>acceptJob(o.id);
- const n=document.getElementById('next-'+o.id);if(n)n.onclick=()=>advanceOrder(o);
-}
 function renderHistoryPanel(){
  const p=document.getElementById('panel-jobs');if(!p)return;
- p.innerHTML=`<div class="qt-panelhead"><h1>งานของฉัน</h1><small>${S.history.length} งาน</small></div><div class="qt-list">${S.history.length?S.history.map(o=>`<div class="qt-row"><div class="qt-rowtop"><div><b>#${esc(qtShortOrder(o))}</b><br><small>${new Date(o.updated_at||o.created_at).toLocaleString('th-TH')}</small></div><b>฿${Number(riderEarning(o)||0).toLocaleString('th-TH')}</b></div></div>`).join(''):'<div class="qt-empty">ยังไม่มีประวัติงาน</div>'}</div>`;
+ const today=qtDateKey(new Date()),orders=[...(S.history||[])];
+ if(S.activeOrder&&!orders.some(o=>String(o.id)===String(S.activeOrder.id)))orders.unshift(S.activeOrder);
+ const threads=orders.filter(o=>qtDateKey(o.updated_at||o.created_at)===today).sort((a,b)=>new Date(b.updated_at||b.created_at)-new Date(a.updated_at||a.created_at));
+ p.innerHTML=`<div class="qt-panelhead"><div><h1>ข้อความ</h1><small>ลูกค้าทั้งหมดวันนี้</small></div></div><div class="qt-inbox-note">งานที่จบแล้ว Rider จะตอบหรือโทรกลับได้เมื่อมีลูกค้าติดต่อกลับมาก่อน</div><div class="qt-inbox">${threads.length?threads.map(o=>{
+  const name=qtCustomerName(o),unlocked=qtCustomerContactUnlocked(o),done=qtIsFinished(o),d=new Date(o.updated_at||o.created_at);
+  return `<button class="qt-thread" data-order="${esc(o.id)}"><span class="qt-thread-avatar">${esc(String(name).trim().slice(0,1)||'ล')}</span><span class="qt-thread-main"><b>${esc(name)}</b><small>${esc(qtShortOrder(o))} · ${done?'ส่งสำเร็จ':'กำลังดำเนินงาน'}</small><span class="qt-thread-lock ${unlocked?'qt-thread-ready':''}">${done?(unlocked?'ลูกค้าติดต่อกลับแล้ว · ตอบได้':'ล็อก · รอลูกค้าติดต่อกลับ'):'ติดต่อได้ระหว่างงาน'}</span></span><span class="qt-thread-side"><time>${Number.isFinite(d.getTime())?d.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}):''}</time></span></button>`;
+ }).join(''):'<div class="qt-empty">วันนี้ยังไม่มีลูกค้า</div>'}</div>`;
+ p.querySelectorAll('.qt-thread').forEach(btn=>{btn.onclick=()=>{const o=orders.find(x=>String(x.id)===String(btn.dataset.order));qtOpenCustomerThread(o)}});
 }
-
-function qtDateKey(v){
- const d=new Date(v);if(!Number.isFinite(d.getTime()))return '';
- return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-}
-function qtDayName(key){
- const d=new Date(key+'T12:00:00'),now=new Date();
- if(key===qtDateKey(now))return 'วันนี้';
- const y=new Date();y.setDate(y.getDate()-1);if(key===qtDateKey(y))return 'เมื่อวาน';
- return d.toLocaleDateString('th-TH',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
-}
-function qtWorkDuration(rows){
- let mins=0;
- for(const o of rows){
-  const a=new Date(o.created_at),b=new Date(o.updated_at||o.created_at);
-  if(Number.isFinite(a.getTime())&&Number.isFinite(b.getTime())&&b>=a)mins+=(b-a)/60000;
- }
- const h=Math.floor(mins/60),m=Math.round(mins%60);
- return h?`${h} ชม. ${m} นาที`:`${m} นาที`;
-}
-function qtGroups(){
- const g={};for(const o of (S.history||[])){const k=qtDateKey(o.updated_at||o.created_at);if(k)(g[k]||(g[k]=[])).push(o)}
- return Object.entries(g).sort((a,b)=>b[0].localeCompare(a[0]));
-}
-
 function qtRenderEarnings(){
  const p=document.getElementById('panel-earn');if(!p)return;
- const groups=qtGroups(),todayKey=qtDateKey(new Date()),today=(groups.find(([k])=>k===todayKey)||['',[]])[1];
- const todayIncome=today.reduce((a,o)=>a+Number(riderEarning(o)||0),0);
- const total=(S.history||[]).reduce((a,o)=>a+Number(riderEarning(o)||0),0);
- p.innerHTML=`<div class="qt-panelhead"><h1>รายได้</h1></div>
- <div class="qt-profilehero"><small>รายได้วันนี้</small><h2 style="font-size:38px;margin:8px 0">฿${todayIncome.toLocaleString('th-TH')}</h2><p>${today.length} งานวันนี้ · รายได้สะสม ฿${total.toLocaleString('th-TH')}</p></div>
- <div class="qt-todaygrid">
-  <div class="qt-todaystat"><span>จำนวนงาน</span><b>${today.length} งาน</b></div>
-  <div class="qt-todaystat"><span>เวลาทำงาน</span><b>${qtWorkDuration(today)}</b></div>
-  <div class="qt-todaystat"><span>รายได้วันนี้</span><b>฿${todayIncome.toLocaleString('th-TH')}</b></div>
- </div>
- <div class="qt-list">${groups.length?groups.map(([key,rows])=>{
-  const income=rows.reduce((a,o)=>a+Number(riderEarning(o)||0),0);
-  return `<div class="qt-daycard"><div class="qt-dayhead"><div><b>${qtDayName(key)}</b><div class="qt-daymeta"><span>${rows.length} งาน</span><span>ทำงาน ${qtWorkDuration(rows)}</span></div></div><strong>฿${income.toLocaleString('th-TH')}</strong></div><div class="qt-dayorders">${rows.map(o=>`<div class="qt-dayorder"><span>${esc(qtShortOrder(o))}</span><span>+฿${Number(riderEarning(o)||0).toLocaleString('th-TH')}</span></div>`).join('')}</div></div>`;
- }).join(''):'<div class="qt-empty">ยังไม่มีรายได้</div>'}</div>`;
+ const rows=qtPeriodRows(qtIncomePeriod),income=rows.reduce((a,o)=>a+Number(riderEarning(o)||0),0);
+ const label=qtIncomePeriod==='day'?'วันนี้':qtIncomePeriod==='week'?'7 วัน':'เดือนนี้';
+ p.innerHTML=`<div class="qt-panelhead"><h1>รายได้และงาน</h1></div>
+ <div class="qt-periods"><button class="qt-period ${qtIncomePeriod==='day'?'active':''}" data-period="day">1 วัน</button><button class="qt-period ${qtIncomePeriod==='week'?'active':''}" data-period="week">7 วัน</button><button class="qt-period ${qtIncomePeriod==='month'?'active':''}" data-period="month">1 เดือน</button></div>
+ <div class="qt-profilehero"><small>รายได้ ${label}</small><h2 style="font-size:38px;margin:8px 0">฿${income.toLocaleString('th-TH')}</h2><p>${rows.length} งานที่จัดส่งสำเร็จ</p></div>
+ <div class="qt-period-summary"><div class="qt-period-stat"><span>จำนวนงาน</span><b>${rows.length} งาน</b></div><div class="qt-period-stat"><span>เวลาทำงาน</span><b>${qtWorkDuration(rows)}</b></div><div class="qt-period-stat"><span>รายได้</span><b>฿${income.toLocaleString('th-TH')}</b></div></div>
+ <div class="qt-list">${rows.length?rows.slice().sort((a,b)=>new Date(b.updated_at||b.created_at)-new Date(a.updated_at||a.created_at)).map(o=>`<div class="qt-row"><div class="qt-rowtop"><div><b>${esc(qtShortOrder(o))}</b><br><small>${new Date(o.updated_at||o.created_at).toLocaleString('th-TH')}</small></div><b>+฿${Number(riderEarning(o)||0).toLocaleString('th-TH')}</b></div></div>`).join(''):'<div class="qt-empty">ยังไม่มีงานในช่วงนี้</div>'}</div>`;
+ p.querySelectorAll('.qt-period').forEach(b=>b.onclick=()=>qtSetIncomePeriod(b.dataset.period));
 }
 function renderProfilePanel(){
  const p=document.getElementById('panel-profile');if(!p)return;const name=S.user?.name||'Rider',phone=S.user?.phone||'';
@@ -1421,6 +1220,19 @@ function qtStartMessageWatch(){
  if(window.qtMessagePoll)clearInterval(window.qtMessagePoll);qtLastMsg=null;
  window.qtMessagePoll=setInterval(async()=>{try{const o=S.activeOrder;if(!o||!S.user)return;const rows=await loadChatMessages(o.id),m=rows[rows.length-1];if(!m)return;if(qtLastMsg===null){qtLastMsg=m.id;return}if(m.id!==qtLastMsg){qtLastMsg=m.id;if(String(m.sender_id)!==String(S.user.id)&&S.chatOrder?.id!==o.id){qtUnread++;qtBadge();qtShowMessage(String(m.message||'ข้อความใหม่').startsWith('__IMG__')?'ส่งรูปภาพ':m.message)}}}catch(e){}},5000);
 }
+
+
+// Production hook: call this ONLY when Supabase realtime confirms a new customer message after job completion.
+window.qtCustomerMessagedAfterCompletion=function(orderId){
+ QT_POSTJOB_CONTACT[String(orderId)]=true;
+ try{renderHistoryPanel()}catch(e){}
+};
+// Production hook: call when signaling backend receives a customer-initiated incoming call.
+window.qtIncomingCustomerCall=function(orderId){
+ const all=[...(S.history||[])];if(S.activeOrder)all.unshift(S.activeOrder);
+ const o=all.find(x=>String(x.id)===String(orderId));if(!o)return;
+ QT_POSTJOB_CONTACT[String(orderId)]=true;qtOpenCall(o,'incoming');
+};
 
 boot();
 </script></body></html>
